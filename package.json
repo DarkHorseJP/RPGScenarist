@@ -1,6 +1,6 @@
 {
   "name": "rpgscenarist",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "RPGScenarist assists you and your team in creating Role-Playing Games",
   "main": "index.js",
   "repository": {
