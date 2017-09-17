@@ -1,0 +1,190 @@
+{
+  "name": "rpgscenarist",
+  "version": "0.0.2",
+  "description": "RPGScenarist assists you and your team in creating Role-Playing Games",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DarkHorseJP/RPGScenarist.git"
+  },
+  "engines": {
+    "npm": "4.1.2",
+    "node": "7.5.0"
+  },
+  "author": "DarkHorse",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DarkHorseJP/RPGScenarist/issues"
+  },
+  "homepage": "https://github.com/DarkHorseJP/RPGScenarist#readme",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress",
+    "start": "cross-env NODE_ENV=development node server",
+    "start:prod": "cross-env NODE_ENV=production node server",
+    "lint": "npm run lint:js",
+    "lint:eslint": "eslint --ignore-path .gitignore --ignore-pattern internals/scripts",
+    "lint:js": "npm run lint:eslint -- .",
+    "lint:staged": "lint-staged",
+    "test": "cross-env NODE_ENV=test jest --coverage",
+    "heroku-postbuild": "npm run build"
+  },
+  "lint-staged": {
+    "*.js": "lint:eslint"
+  },
+  "pre-commit": "lint:staged",
+  "babel": {
+    "presets": [
+      [
+        "latest",
+        {
+          "es2015": {
+            "modules": false
+          }
+        }
+      ],
+      "react",
+      "stage-0"
+    ],
+    "env": {
+      "production": {
+        "only": [
+          "client"
+        ],
+        "plugins": [
+          "transform-react-remove-prop-types",
+          "transform-react-constant-elements",
+          "transform-react-inline-elements"
+        ]
+      },
+      "test": {
+        "plugins": [
+          "transform-es2015-modules-commonjs",
+          "dynamic-import-node"
+        ]
+      }
+    }
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "env": {
+      "browser": true,
+      "node": true,
+      "jest": true,
+      "es6": true
+    },
+    "plugins": [
+      "redux-saga",
+      "react"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {}
+    },
+    "rules": {},
+    "settings": {
+      "import/resolver": {
+        "webpack": {
+          "config": "./internals/webpack/webpack.prod.babel.js"
+        }
+      }
+    }
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "client/**/*.{js,jsx}",
+      "!client/**/*.test.{js,jsx}",
+      "server/**/*.js",
+      "!server/**/*.test.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 98,
+        "branches": 91,
+        "functions": 98,
+        "lines": 98
+      }
+    },
+    "moduleDirectories": [
+      "node_modules",
+      "client",
+      "server"
+    ],
+    "moduleNameMapper": {},
+    "setupTestFrameworkScriptFile": "<rootDir>/internals/testing/test-bundler.js",
+    "testRegex": "tests/.*\\.test\\.js$"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-dynamic-import-node": "^1.0.2",
+    "babel-plugin-react-intl": "^2.3.1",
+    "babel-plugin-react-transform": "^2.0.2",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-react-constant-elements": "^6.23.0",
+    "babel-plugin-transform-react-inline-elements": "^6.22.0",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.8",
+    "babel-preset-latest": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "bundle-loader": "^0.5.5",
+    "cheerio": "^1.0.0-rc.2",
+    "circular-dependency-plugin": "^4.2.0",
+    "eslint": "^4.7.0",
+    "eslint-import-resolver-webpack": "^0.8.3",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-react": "^7.3.0",
+    "eslint-plugin-redux-saga": "^0.5.0",
+    "eventsource-polyfill": "^0.9.6",
+    "exports-loader": "^0.6.4",
+    "file-loader": "^0.11.2",
+    "history": "^3.3.0",
+    "html-loader": "^0.5.1",
+    "html-webpack-plugin": "^2.30.1",
+    "jest-cli": "^21.1.0",
+    "lint-staged": "^4.2.1",
+    "ngrok": "^2.2.21",
+    "offline-plugin": "^4.8.3",
+    "passport": "^0.4.0",
+    "passport-github2": "^0.1.10",
+    "pre-commit": "^1.2.2",
+    "react-immutable-proptypes": "^2.1.0",
+    "react-router-dom": "^4.2.2",
+    "webpack": "^3.5.5",
+    "webpack-dev-middleware": "^1.12.0",
+    "webpack-hot-middleware": "^2.18.2"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "chalk": "^2.1.0",
+    "compression": "^1.7.0",
+    "convict": "^4.0.0",
+    "cookie-session": "^1.3.1",
+    "cross-env": "^5.0.5",
+    "express": "^4.15.4",
+    "express-session": "^1.15.5",
+    "immutable": "^3.8.1",
+    "intl": "^1.2.5",
+    "invariant": "^2.2.2",
+    "ip": "^1.1.5",
+    "jsonwebtoken": "^8.0.1",
+    "lodash": "^4.17.4",
+    "minimist": "^1.2.0",
+    "prop-types": "^15.5.10",
+    "react": "^15.6.1",
+    "react-bootstrap": "^0.31.2",
+    "react-dom": "^15.6.1",
+    "react-helmet": "^5.2.0",
+    "react-intl": "^2.3.0",
+    "react-redux": "^5.0.6",
+    "react-router": "^4.2.0",
+    "react-router-redux": "^4.0.8",
+    "redux": "^3.7.2",
+    "redux-immutable": "^4.0.0",
+    "redux-saga": "^0.15.6",
+    "reselect": "^3.0.1",
+    "styled-components": "^2.1.2"
+  }
+}
