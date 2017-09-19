@@ -1,3 +1,5 @@
 {
+  "pages.HomePage.message01": "Hello!",
+
   "pages.NotFoundPage.header": "Page not found"
 }

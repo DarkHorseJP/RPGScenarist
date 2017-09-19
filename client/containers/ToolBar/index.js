@@ -40,7 +40,7 @@ class ToolBar extends React.PureComponent {
   }
 }
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
     onOpenWindow: (page, features) => { dispatch(openWindow(page, features)) }
   }

@@ -1,3 +1,5 @@
 {
+  "pages.HomePage.message01": "こんにちは！",
+
   "pages.NotFoundPage.header": "ページが見つかりませんでした"
 }

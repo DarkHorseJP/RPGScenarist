@@ -7,7 +7,7 @@ import { ListGroup, ListGroupItem } from 'react-bootstrap'
 
 import { makeSelectMapId } from 'redux/modules/map'
 
-export class ItemData extends React.PureComponent {
+class ItemData extends React.PureComponent {
   render() {
     const item = this.props.item
     const content = (
@@ -24,7 +24,7 @@ ItemData.propTypes = {
   id: PropTypes.string
 }
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
   }
 }

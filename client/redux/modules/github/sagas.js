@@ -4,6 +4,8 @@ import { fromJS } from 'immutable'
 
 import request from 'utils/request'
 import { 
+  userLoaded,
+  LOAD_USER,
   organizationsLoaded, 
   LOAD_ORGANIZATIONS,
   repositoriesLoaded,
@@ -16,6 +18,20 @@ const getOptions = () => {
       'X-CSRF-TOKEN': localStorage.getItem('token')
     },
     credentials: 'same-origin'
+  }
+}
+
+export function* getUser() {
+  const url = '/github/user'
+
+  try {
+    const userJson = yield call(request, url, getOptions())
+    console.log('userJson: ' + JSON.stringify(userJson))
+    const immutableUser = fromJS(userJson)
+
+    yield put(userLoaded(immutableUser))
+  }catch(err){
+    console.error(err)
   }
 }
 
@@ -46,6 +62,13 @@ export function* getRepositories(action) {
   }
 }
 
+export function* userData() {
+  yield call(getUser)
+  //const watcher = yield takeLatest(LOCATION_CHANGE, getUser)
+  //yield take(LOCATION_CHANGE)
+  //yield cancel(watcher)
+}
+
 export function* orgListData() {
   const watcher = yield takeLatest(LOAD_ORGANIZATIONS, getOrganizations)
 
@@ -61,6 +84,7 @@ export function* reposListData() {
 }
 
 export default [
+  userData,
   orgListData,
   reposListData
 ]

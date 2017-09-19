@@ -76,6 +76,7 @@ store.runSaga(mapSagas[0])
 store.runSaga(modelSagas[0])
 store.runSaga(githubSagas[0])
 store.runSaga(githubSagas[1])
+store.runSaga(githubSagas[2])
 
 const render = (messages) => {
   ReactDOM.render(

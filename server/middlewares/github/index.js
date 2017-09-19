@@ -31,9 +31,13 @@ const cookieSecret = config.get('cookie.secret')
 const cookieMaxAge = config.get('cookie.maxAge')
 
 const authHtml = fs.readFileSync(require.resolve('./authenticated.html'), 'utf8')
+const logoutHtml = fs.readFileSync(require.resolve('./logout.html'), 'utf8')
 
 const getAuthHtml = (token, nextUrl = '/') => {
   return authHtml.replace('{{token}}', token).replace('{{nextUrl}}', nextUrl)
+}
+const getLogoutHtml = (nextUrl = '/') => {
+  return logoutHtml.replace('{{nextUrl}}', nextUrl)
 }
 
 const generateAccessToken = (uid, payload = {}) => {
@@ -138,7 +142,8 @@ const githubAppMiddleware = (app, webpackConfig) => {
   passport.serializeUser((user, done) => {
     const data = {
       accessToken: user.accessToken,
-      userToken: user.userToken
+      userToken: user.userToken,
+      name: user._json.login
     }
     const encrypted = {
       data: encryptObj(data)
@@ -192,8 +197,33 @@ const githubAppMiddleware = (app, webpackConfig) => {
       })
     })(req, res, next)
   })
+  app.get('/github/logout', (req, res, next) => {
+    req.logout()
+    const logoutHtml = getLogoutHtml('/')
+    res.send(logoutHtml)
+  })
 
   app.get('/github/*', checkUserToken)
+  app.get('/github/user', (req, res) => {
+    if(req.isAuthenticated()){
+      return fetch(`https://api.github.com/users/${req.user.name}`, {
+        headers: {Accept:'application/vnd.github.machine-man-preview+json'}
+      })
+      .then(res => res.json())
+      .then(json => {
+        const user = {
+          name: json.login,
+          avatar_url: json.avatar_url + '&s=40'
+        }
+        res.send(user)
+      })
+      .catch(err => {
+        console.error(err)
+        res.send({})
+      })
+    }
+    res.send({})
+  })
   app.get('/github/organizations/:instid/repos/:repid', (req, res) => {
   })
   app.get('/github/organizations/:instid/repos', (req, res) => {
@@ -220,7 +250,6 @@ const githubAppMiddleware = (app, webpackConfig) => {
         res.send([])
       })
     }
-    console.error('!req.isAuthenticated')
     res.send([])
   })
 

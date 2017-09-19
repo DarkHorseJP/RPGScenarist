@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 
 import { loadModels } from 'redux/modules/model'
 
-export class ModelPage extends React.PureComponent {
+class ModelPage extends React.PureComponent {
   componentDidMount() {
     this.props.onLoadModels()
   }
@@ -27,7 +27,7 @@ export class ModelPage extends React.PureComponent {
 ModelPage.propTypes = {
 }
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
     onLoadModels: () => {
       dispatch(loadModels())

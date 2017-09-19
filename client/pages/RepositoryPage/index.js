@@ -5,6 +5,8 @@ import Helmet from 'react-helmet'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 
+import CommonHeader from 'containers/CommonHeader'
+import EditorHeader from 'containers/EditorHeader'
 import EditableList from 'components/EditableList'
 
 import { 
@@ -18,17 +20,17 @@ import {
   loadRepositories
 } from 'redux/modules/github'
 
-export class RepositoryPage extends React.PureComponent {
+class RepositoryPage extends React.PureComponent {
   componentDidMount() {
     this.props.onLoadOrganizations()
   }
   
   render() {
     return (
-      <article>
-        <Helmet
-          title="Repository Page"
-        />
+      <div>
+        <Helmet title="Repository Page" />
+        <CommonHeader />
+        <EditorHeader />
         Repository Page
         <EditableList
           items={this.props.list}
@@ -36,7 +38,8 @@ export class RepositoryPage extends React.PureComponent {
           keyName="id"
           valueName="account.login"
           onClick={this.props.onChangeOrganization} />
-      </article>
+        Repository Info
+      </div>
     )
   }
 }
@@ -44,7 +47,7 @@ export class RepositoryPage extends React.PureComponent {
 //RepositoryPage.propTypes = {
 //}
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
     onLoadOrganizations: () => {
       dispatch(loadOrganizations())
@@ -63,8 +66,8 @@ export function mapDispatchToProps(dispatch) {
 const mapStateToProps = createStructuredSelector({
   id: makeSelectOrganizationId(),
   list: makeSelectOrganizationList(),
-  reposId: makeSelectRepositoryId(),
-  repos: makeSelectRepositoryList()
+  //reposId: makeSelectRepositoryId(),
+  //repos: makeSelectRepositoryList()
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(RepositoryPage)

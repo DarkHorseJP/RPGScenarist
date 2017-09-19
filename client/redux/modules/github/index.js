@@ -2,6 +2,9 @@ import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
 
 // Constants
+export const LOAD_USER = 'github/LOAD_USER'
+const USER_LOADED = 'github/USER_LOADED'
+
 const CHANGE_ORGANIZATION = 'github/CHANGE_ORGANIZATION'
 export const LOAD_ORGANIZATIONS = 'github/LOAD_ORGANIZATIONS'
 const ORGANIZATIONS_LOADED = 'github/ORGANIZATIONS_LOADED'
@@ -11,6 +14,19 @@ export const LOAD_REPOSITORIES = 'github/LOAD_REPOSITORIES'
 const REPOSITORIES_LOADED = 'github/REPOSITORIES_LOADED'
 
 // Actions
+export function loadUser() {
+  return {
+    type: LOAD_USER
+  }
+}
+
+export function userLoaded(user) {
+  return {
+    type: USER_LOADED,
+    user: user
+  }
+}
+
 export function changeOrganization(id) {
   return {
     type: CHANGE_ORGANIZATION,
@@ -54,6 +70,10 @@ export function loadRepositories(instid) {
 
 // Selector
 export const selectGithub = (state) => state.get('github')
+export const makeSelectGithubUser = () => createSelector(
+  selectGithub,
+  (state) => state.get('user')
+)
 export const makeSelectOrganizationList = () => createSelector(
   selectGithub,
   (state) => state.get('organizations')
@@ -73,16 +93,19 @@ export const makeSelectRepositoryId = () => createSelector(
 
 // Initial State
 const initialState = fromJS({
+  user: {},
   organizations: [],
   organizationId: '',
   repositories: [],
-  repositoryId: '',
-  name: ''
+  repositoryId: ''
 })
 
 // Reducer
 export default function reducer(state = initialState, action) {
   switch(action.type){
+    case USER_LOADED:
+      console.log('USER_LOADED: ' + JSON.stringify(action.user))
+      return state.set('user', action.user)
     case CHANGE_ORGANIZATION:
       return state.set('organizationId', action.id)
     case ORGANIZATIONS_LOADED:

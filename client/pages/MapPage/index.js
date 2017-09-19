@@ -11,7 +11,7 @@ import MapEditor from 'containers/MapEditor'
 import { loadMaps } from 'redux/modules/map'
 //import mapSagas from 'redux/modules/map/sagas'
 
-export class MapPage extends React.PureComponent {
+class MapPage extends React.PureComponent {
   componentDidMount() {
     this.props.onLoadMaps()
   }
@@ -36,7 +36,7 @@ export class MapPage extends React.PureComponent {
 MapPage.propTypes = {
 }
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
     onLoadMaps: () => {
       dispatch(loadMaps())
