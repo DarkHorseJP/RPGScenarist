@@ -20,9 +20,10 @@ import Header from 'components/Header'
 import Footer from 'components/Footer'
 
 import loadHomePage from 'bundle-loader?lazy!./pages/HomePage'
+import loadRepositoryPage from 'bundle-loader?lazy!./pages/RepositoryPage'
+import loadEditorPage from 'bundle-loader?lazy!./pages/EditorPage'
 import loadMapPage from 'bundle-loader?lazy!./pages/MapPage'
 import loadModelPage from 'bundle-loader?lazy!./pages/ModelPage'
-import loadRepositoryPage from 'bundle-loader?lazy!./pages/RepositoryPage'
 import loadNotFoundPage from 'bundle-loader?lazy!./pages/NotFoundPage'
 
 
@@ -33,9 +34,10 @@ const pageLoader = (loader) => (props) => (
 )
 
 const HomePage = pageLoader(loadHomePage)
+const RepositoryPage = pageLoader(loadRepositoryPage)
+const EditorPage = pageLoader(loadEditorPage)
 const MapPage = pageLoader(loadMapPage)
 const ModelPage = pageLoader(loadModelPage)
-const RepositoryPage = pageLoader(loadRepositoryPage)
 const NotFoundPage = pageLoader(loadNotFoundPage)
 
 const AppWrapper = styled.div`
@@ -57,8 +59,9 @@ function Root() {
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route path='/maps' component={MapPage} />
-          <Route path='/organizations' component={RepositoryPage} />
+          <Route path='/orgs' component={RepositoryPage} />
           <Route path='/models' component={ModelPage} />
+          <Route path='/edit/:repoid' component={EditorPage} />
           <Route component={NotFoundPage} />
         </Switch>
       <Footer />

@@ -1,27 +1,31 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
-//import { FormattedMessage } from 'react-intl'
+import { Route, Link } from 'react-router-dom'
+import { FormattedMessage, FormattedDate } from 'react-intl'
 import { connect } from 'react-redux'
+import { Panel, ListGroup, ListGroupItem, PageHeader } from 'react-bootstrap'
 import { createStructuredSelector } from 'reselect'
 
 import CommonHeader from 'containers/CommonHeader'
 import EditorHeader from 'containers/EditorHeader'
 import EditableList from 'components/EditableList'
+import OrganizationList from './OrganizationList'
+import RepositoryList from './RepositoryList'
+import messages from './messages'
 
 import { 
   changeOrganization,
   changeRepository,
-  makeSelectOrganizationId,
+  makeSelectOrganization,
   makeSelectOrganizationList,
-  makeSelectRepositoryId,
-  makeSelectRepositoryList,
   makeSelectRepository,
+  makeSelectRepositoryList,
   loadOrganizations,
   loadRepositories
 } from 'redux/modules/github'
 
-class RepositoryPage extends React.PureComponent {
+class RepositoryPage extends React.Component {
   componentDidMount() {
     this.props.onLoadOrganizations()
   }
@@ -31,31 +35,18 @@ class RepositoryPage extends React.PureComponent {
       <div>
         <Helmet title="Repository" />
         <CommonHeader />
-        <EditorHeader />
-        <div className="row" style={{marginLeft: 0, marginRight: 0}}>
-          <EditableList
-            className="col-md-2 col-sm-3"
-            style={{paddingLeft: 0, paddingRight: 0}}
-            height="100vh - 100px"
-            items={this.props.orgList}
-            selectedKey={this.props.orgId}
-            keyName="id"
-            valueName="account.login"
-            onClick={this.props.onChangeOrganization} />
-          <EditableList
-            className="col-md-2 col-sm-3"
-            style={{paddingLeft: 0, paddingRight: 0}}
-            height="100vh - 100px"
-            items={this.props.repoList}
-            selectedKey={this.props.repoId}
-            keyName="id"
-            valueName="name"
-            onClick={this.props.onChangeRepository} />
-          <div className="col-md-8 col-sm-6">
-            Repository Info
-            <div>
-              {this.props.repo ? this.props.repo.get('name') : ''}
-            </div>
+        <div className="row" style={{margin: 0}}>
+          <div className="col-sm-3" style={{padding: '15px'}}>
+            <OrganizationList 
+              list={this.props.orgList} 
+              selected={this.props.org ? this.props.org.get('id') : ''} 
+            />
+          </div>
+          <div className="col-sm-9">
+            <RepositoryList
+              list={this.props.repoList}
+              selected={this.props.repo ? this.props.repo.get('id') : ''}
+            />
           </div>
         </div>
       </div>
@@ -83,11 +74,10 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = createStructuredSelector({
-  orgId: makeSelectOrganizationId(),
+  org: makeSelectOrganization(),
   orgList: makeSelectOrganizationList(),
-  repoId: makeSelectRepositoryId(),
+  repo: makeSelectRepository(),
   repoList: makeSelectRepositoryList(),
-  repo: makeSelectRepository()
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(RepositoryPage)
