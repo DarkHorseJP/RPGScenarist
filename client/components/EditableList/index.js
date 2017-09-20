@@ -19,12 +19,10 @@ class EditableList extends React.PureComponent {
 
   render() {
     const content = (
-      <div className={this.props.className}>
+      <div className={this.props.className} style={this.props.style}>
         <Wrapper height={this.props.height}>
           <ListGroup>
             {this.props.items.map(item => {
-              //const key = item.get(this.props.keyName)
-              //const value = item.get(this.props.valueName)
               const key = this.getKeyPath(item, this.props.keyName)
               const value = this.getKeyPath(item, this.props.valueName)
               return <ListGroupItem key={key} onClick={() => {this.props.onClick(key)}} active={key===this.props.selectedKey}>{value}</ListGroupItem>
@@ -45,6 +43,7 @@ EditableList.defaultProps = {
 
 EditableList.propTypes = {
   className: PropTypes.string,
+  style: PropTypes.object,
   height: PropTypes.string,
   items: ImmutablePropTypes.list,
   selectedKey: PropTypes.oneOfType([

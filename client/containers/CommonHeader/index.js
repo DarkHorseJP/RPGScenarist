@@ -6,9 +6,13 @@ import { FormattedNumber } from 'react-intl'
 import Helmet from 'react-helmet'
 import { Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap'
 
-import { makeSelectGithubUser } from 'redux/modules/github'
+import { loadUser, makeSelectGithubUser } from 'redux/modules/github'
 
 class CommonHeader extends React.PureComponent {
+  componentDidMount() {
+    this.props.onLoadUser()
+  }
+
   render() {
     let loginOrUser
     if(!this.props.user.has || !this.props.user.has('name')){
@@ -51,6 +55,7 @@ class CommonHeader extends React.PureComponent {
 
 function mapDispatchToProps(dispatch) {
   return {
+    onLoadUser: () => dispatch(loadUser())
   }
 }
 

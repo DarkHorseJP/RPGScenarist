@@ -4,12 +4,37 @@ import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 import { FormattedNumber } from 'react-intl'
 import Helmet from 'react-helmet'
-import { Nav, Navbar, NavItem } from 'react-bootstrap'
+import { Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap'
 
-import { makeSelectGithubUser } from 'redux/modules/github'
+import { 
+  makeSelectGithubUser,
+  makeSelectOrganization,
+  makeSelectRepository
+} from 'redux/modules/github'
 
 class EditorHeader extends React.PureComponent {
   render() {
+    let orgLink, orgAvatar
+    if(this.props.organization && this.props.organization.get('id')){
+      console.log(JSON.stringify(this.props.organization))
+      orgLink = `/organizations/${this.props.organization.get('id')}`
+      const orgAvatarURL = this.props.organization.getIn(['account', 'avatar_url']) + '&s=40'
+      orgAvatar = <img src={orgAvatarURL} width="20" height="20" />
+    }else{
+      orgLink = '#'
+      orgAvatar = ''
+    }
+
+    let repLink, repName, separator
+    if(this.props.repository && this.props.repository.has('id')){
+      repLink = `/organizations/${this.props.organization.get('id')}/repositories/${this.props.repository.get('id')}`
+      repName = this.props.repository.get('name')
+      separator = ' / '
+    }else{
+      repLink = '#'
+      repName = ''
+      separator = ''
+    }
     return (
       <Navbar fixedTop fluid style={{top: "50px", zIndex: "970"}}>
         <Helmet
@@ -21,13 +46,18 @@ class EditorHeader extends React.PureComponent {
           ]} 
         />
         <Navbar.Header>
-          <Navbar.Link href="#">Orgs</Navbar.Link>
-          <Navbar.Link href="#">Repos</Navbar.Link>
+          <Navbar.Brand>
+            <span className="hidden-xs"><a href={orgLink}>{orgAvatar}</a>{separator}</span><a href={repLink}>{repName}</a>
+          </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
           {this.props.children}
-          <Navbar.Text>PageName</Navbar.Text>
+          <Nav pullRight>
+            <NavDropdown title="PageName" id="editorPageName">
+              <MenuItem href="#">AnotherPageName</MenuItem>
+            </NavDropdown>
+          </Nav>
         </Navbar.Collapse>
       </Navbar>
     )
@@ -40,7 +70,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = createStructuredSelector({
-  user: makeSelectGithubUser()
+  user: makeSelectGithubUser(),
+  organization: makeSelectOrganization(),
+  repository: makeSelectRepository()
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditorHeader)

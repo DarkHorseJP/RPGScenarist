@@ -16,6 +16,7 @@ import {
   makeSelectOrganizationList,
   makeSelectRepositoryId,
   makeSelectRepositoryList,
+  makeSelectRepository,
   loadOrganizations,
   loadRepositories
 } from 'redux/modules/github'
@@ -28,17 +29,35 @@ class RepositoryPage extends React.PureComponent {
   render() {
     return (
       <div>
-        <Helmet title="Repository Page" />
+        <Helmet title="Repository" />
         <CommonHeader />
         <EditorHeader />
-        Repository Page
-        <EditableList
-          items={this.props.list}
-          selectedKey={this.props.id}
-          keyName="id"
-          valueName="account.login"
-          onClick={this.props.onChangeOrganization} />
-        Repository Info
+        <div className="row" style={{marginLeft: 0, marginRight: 0}}>
+          <EditableList
+            className="col-md-2 col-sm-3"
+            style={{paddingLeft: 0, paddingRight: 0}}
+            height="100vh - 100px"
+            items={this.props.orgList}
+            selectedKey={this.props.orgId}
+            keyName="id"
+            valueName="account.login"
+            onClick={this.props.onChangeOrganization} />
+          <EditableList
+            className="col-md-2 col-sm-3"
+            style={{paddingLeft: 0, paddingRight: 0}}
+            height="100vh - 100px"
+            items={this.props.repoList}
+            selectedKey={this.props.repoId}
+            keyName="id"
+            valueName="name"
+            onClick={this.props.onChangeRepository} />
+          <div className="col-md-8 col-sm-6">
+            Repository Info
+            <div>
+              {this.props.repo ? this.props.repo.get('name') : ''}
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -64,10 +83,11 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = createStructuredSelector({
-  id: makeSelectOrganizationId(),
-  list: makeSelectOrganizationList(),
-  //reposId: makeSelectRepositoryId(),
-  //repos: makeSelectRepositoryList()
+  orgId: makeSelectOrganizationId(),
+  orgList: makeSelectOrganizationList(),
+  repoId: makeSelectRepositoryId(),
+  repoList: makeSelectRepositoryList(),
+  repo: makeSelectRepository()
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(RepositoryPage)

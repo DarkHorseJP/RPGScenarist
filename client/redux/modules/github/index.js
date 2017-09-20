@@ -82,6 +82,11 @@ export const makeSelectOrganizationId = () => createSelector(
   selectGithub,
   (state) => state.get('organizationId')
 )
+export const makeSelectOrganization = () => createSelector(
+  makeSelectOrganizationList(),
+  makeSelectOrganizationId(),
+  (list, id) => list.find(info => info.get('id') === id)
+)
 export const makeSelectRepositoryList = () => createSelector(
   selectGithub,
   (state) => state.get('repositories')
@@ -89,6 +94,11 @@ export const makeSelectRepositoryList = () => createSelector(
 export const makeSelectRepositoryId = () => createSelector(
   selectGithub,
   (state) => state.get('repositoryId')
+)
+export const makeSelectRepository = () => createSelector(
+  makeSelectRepositoryList(),
+  makeSelectRepositoryId(),
+  (list, id) => list.find(info => info.get('id') === id)
 )
 
 // Initial State
@@ -104,7 +114,6 @@ const initialState = fromJS({
 export default function reducer(state = initialState, action) {
   switch(action.type){
     case USER_LOADED:
-      console.log('USER_LOADED: ' + JSON.stringify(action.user))
       return state.set('user', action.user)
     case CHANGE_ORGANIZATION:
       return state.set('organizationId', action.id)

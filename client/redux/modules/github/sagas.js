@@ -26,8 +26,9 @@ export function* getUser() {
 
   try {
     const userJson = yield call(request, url, getOptions())
-    console.log('userJson: ' + JSON.stringify(userJson))
     const immutableUser = fromJS(userJson)
+
+    console.log(JSON.stringify(immutableUser))
 
     yield put(userLoaded(immutableUser))
   }catch(err){
@@ -53,7 +54,7 @@ export function* getRepositories(action) {
   const url = `/github/organizations/${action.instid}/repos`
   try{
     const json = yield call(request, url, getOptions())
-    const immutableRepos = fromJS(json)
+    const immutableRepos = fromJS(json.repositories)
     
     yield put(repositoriesLoaded(immutableRepos))
   }catch(err){
@@ -63,10 +64,10 @@ export function* getRepositories(action) {
 }
 
 export function* userData() {
-  yield call(getUser)
-  //const watcher = yield takeLatest(LOCATION_CHANGE, getUser)
-  //yield take(LOCATION_CHANGE)
-  //yield cancel(watcher)
+  const watcher = yield takeLatest(LOAD_USER, getUser)
+
+  yield take(LOCATION_CHANGE)
+  yield cancel(watcher)
 }
 
 export function* orgListData() {
