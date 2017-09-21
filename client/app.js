@@ -3,7 +3,6 @@ import 'babel-polyfill'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import Helmet from 'react-helmet'
 import styled from 'styled-components'
 
@@ -15,30 +14,9 @@ import mapSagas from 'redux/modules/map/sagas'
 import modelSagas from 'redux/modules/model/sagas'
 import githubSagas from 'redux/modules/github/sagas'
 
-import Bundle from 'components/Bundle'
 import Header from 'components/Header'
 import Footer from 'components/Footer'
-
-import loadHomePage from 'bundle-loader?lazy!./pages/HomePage'
-import loadRepositoryPage from 'bundle-loader?lazy!./pages/RepositoryPage'
-import loadEditorPage from 'bundle-loader?lazy!./pages/EditorPage'
-import loadMapPage from 'bundle-loader?lazy!./pages/MapPage'
-import loadModelPage from 'bundle-loader?lazy!./pages/ModelPage'
-import loadNotFoundPage from 'bundle-loader?lazy!./pages/NotFoundPage'
-
-
-const pageLoader = (loader) => (props) => (
-  <Bundle load={loader}>
-    {(Page) => <Page {...props}/>}
-  </Bundle>
-)
-
-const HomePage = pageLoader(loadHomePage)
-const RepositoryPage = pageLoader(loadRepositoryPage)
-const EditorPage = pageLoader(loadEditorPage)
-const MapPage = pageLoader(loadMapPage)
-const ModelPage = pageLoader(loadModelPage)
-const NotFoundPage = pageLoader(loadNotFoundPage)
+import Switcher from 'containers/Switcher'
 
 const AppWrapper = styled.div`
   margin: 0;
@@ -54,16 +32,9 @@ function Root() {
       <Helmet
         titleTemplate="%s - RPGScenarist"
         defaultTitle="RPGScenarist"
-      />    
+      />
       <Header />
-        <Switch>
-          <Route exact path='/' component={HomePage} />
-          <Route path='/maps' component={MapPage} />
-          <Route path='/orgs' component={RepositoryPage} />
-          <Route path='/models' component={ModelPage} />
-          <Route path='/edit/:repoid' component={EditorPage} />
-          <Route component={NotFoundPage} />
-        </Switch>
+      <Switcher />
       <Footer />
     </AppWrapper>
   )
@@ -85,9 +56,7 @@ const render = (messages) => {
   ReactDOM.render(
     <Provider store={store}>
       <LanguageProvider messages={messages}>
-        <BrowserRouter>
-          <Root />
-        </BrowserRouter>
+        <Root />
       </LanguageProvider>
     </Provider>,
     document.getElementById('app')
