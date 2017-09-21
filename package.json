@@ -53,7 +53,8 @@
         "plugins": [
           "transform-react-remove-prop-types",
           "transform-react-constant-elements",
-          "transform-react-inline-elements"
+          "transform-react-inline-elements",
+          "universal-import"
         ]
       },
       "test": {
@@ -125,6 +126,7 @@
     "babel-plugin-transform-react-constant-elements": "^6.23.0",
     "babel-plugin-transform-react-inline-elements": "^6.22.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.8",
+    "babel-plugin-universal-import": "^1.2.7",
     "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-react-hmre": "^1.1.1",
@@ -140,7 +142,6 @@
     "eventsource-polyfill": "^0.9.6",
     "exports-loader": "^0.6.4",
     "file-loader": "^0.11.2",
-    "history": "^3.3.0",
     "html-loader": "^0.5.1",
     "html-webpack-plugin": "^2.30.1",
     "jest-cli": "^21.1.0",
@@ -165,6 +166,7 @@
     "cross-env": "^5.0.5",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
+    "history": "^4.7.2",
     "immutable": "^3.8.1",
     "intl": "^1.2.5",
     "invariant": "^2.2.2",
@@ -181,10 +183,14 @@
     "react-redux": "^5.0.6",
     "react-router": "^4.2.0",
     "react-router-redux": "^4.0.8",
+    "react-universal-component": "^2.5.4",
     "redux": "^3.7.2",
+    "redux-first-router": "0.0.16-next",
+    "redux-first-router-link": "^1.4.1",
     "redux-immutable": "^4.0.0",
     "redux-saga": "^0.15.6",
     "reselect": "^3.0.1",
-    "styled-components": "^2.1.2"
+    "styled-components": "^2.1.2",
+    "transition-group": "0.0.2"
   }
 }
