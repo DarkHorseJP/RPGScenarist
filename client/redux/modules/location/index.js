@@ -5,10 +5,12 @@ import createHistory from 'history/createBrowserHistory'
 import { connectRoutes } from 'redux-first-router'
 
 import routesMap, { 
-  routeOptions,
+  routeOptions
+} from 'redux/routes/map'
+import {
   ROUTE_HOME,
   ROUTE_ORGS
-} from 'redux/routesMap'
+} from 'redux/routes/name'
 
 const history = createHistory()
 const routes = connectRoutes(history, routesMap, routeOptions)

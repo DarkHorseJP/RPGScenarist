@@ -1,17 +1,21 @@
 import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
-import { ROUTE_ORGS, ROUTE_ORG_REPOS } from 'redux/routesMap'
+import { 
+  ROUTE_ORGS, 
+  ROUTE_ORG_REPOS,
+  ROUTE_EDIT
+} from 'redux/routes/name'
 
 import request from 'utils/request'
 
 // Constants
-export const LOAD_USER = 'github/LOAD_USER'
+const LOAD_USER = 'github/LOAD_USER'
 const USER_LOADED = 'github/USER_LOADED'
 
-export const LOAD_ORGANIZATIONS = 'github/LOAD_ORGANIZATIONS'
+const LOAD_ORGANIZATIONS = 'github/LOAD_ORGANIZATIONS'
 const ORGANIZATIONS_LOADED = 'github/ORGANIZATIONS_LOADED'
 
-export const LOAD_REPOSITORIES = 'github/LOAD_REPOSITORIES'
+const LOAD_REPOSITORIES = 'github/LOAD_REPOSITORIES'
 const REPOSITORIES_LOADED = 'github/REPOSITORIES_LOADED'
 
 // Actions
@@ -82,6 +86,12 @@ export async function getRepositories(instId) {
   return fromJS(json.repositories)
 }
 
+export async function getRepository(instId, repoId) {
+  const repositories = getRepositories(instId)
+  const repository = repositories.find((repo) => repo.get('id') == repoId)
+  return repository
+}
+
 // Selector
 export const selectGithub = (state) => state.get('github')
 export const selectGithubUser = createSelector(
@@ -110,8 +120,7 @@ export const selectRepositoryId = createSelector(
   (state) => state.get('repositoryId')
 )
 export const selectRepository = createSelector(
-  selectRepositoryList,
-  selectRepositoryId,
+  selectRepositoryList, selectRepositoryId,
   (list, id) => list.find(info => info.get('id') == id)
 )
 
@@ -130,11 +139,16 @@ export default function reducer(state = initialState, action) {
     case ROUTE_ORGS:
     case ROUTE_ORG_REPOS:
       return state.set('organizationId', action.payload.orgid)
+    case ROUTE_EDIT:
+      return state.withMutations(s => 
+        s.set('repositoryId', action.payload.repoid)
+         .set('organizationId', action.payload.orgid)
+      )
+
     case USER_LOADED:
       return state.set('user', action.user)
-    case ORGANIZATIONS_LOADED: {
+    case ORGANIZATIONS_LOADED:
       return state.set('organizations', action.list)
-    }
     case REPOSITORIES_LOADED:
       return state.set('repositories', action.list)
     default:

@@ -11,12 +11,6 @@ const crypto = require('crypto')
 
 const config = require('../../config')
 
-//const appId = process.env.GITHUB_APP_ID
-//const clientId = process.env.GITHUB_APP_CLIENT_ID
-//const clientSecret = process.env.GITHUB_APP_CLIENT_SECRET
-//const domainName = process.env.DOMAIN_NAME
-//const privateKey = process.env.GITHUB_APP_PRIVATE_KEY
-//const tokenKey = process.env.TOKEN_KEY
 const appId = config.get('github.appId')
 const clientId = config.get('github.clientId')
 const clientSecret = config.get('github.clientSecret')
@@ -205,7 +199,6 @@ const githubAppMiddleware = (app, webpackConfig) => {
 
   app.get('/github/*', checkUserToken)
   app.get('/github/user', (req, res) => {
-    console.log('github/user')
     if(req.isAuthenticated()){
       console.log('authenticated')
       return fetch(`https://api.github.com/users/${req.user.name}`, {
@@ -228,33 +221,45 @@ const githubAppMiddleware = (app, webpackConfig) => {
     console.log('not authenticated')
     res.send({})
   })
-  app.get('/github/organizations/:instid/repos/:repid', (req, res) => {
-  })
+  //app.get('/github/organizations/:instid/repos/:repoid', (req, res) => {
+  //  if(!req.isAuthenticated){
+  //    return res.send([])
+  //  }
+  //  getInstallationRepos(req.params.instid)
+  //  .then(repos => {
+  //    const repo = repos.find((repo) => repo.id == req.param.repoid)
+  //    res.send(repo)
+  //  })
+  //  .catch(err => {
+  //    res.send([])
+  //  })
+  //})
   app.get('/github/organizations/:instid/repos', (req, res) => {
-    if(req.isAuthenticated()){
-      getInstallationRepos(req.params.instid)
-      .then(repos => res.send(repos))
-      .catch(err => {
-        res.send([])
-      })
+    if(!req.isAuthenticated){
+      return res.send([])
     }
+    getInstallationRepos(req.params.instid)
+    .then(repos => res.send(repos))
+    .catch(err => {
+      res.send([])
+    })
   })
   app.get('/github/organizations', (req, res) => {
-    if(req.isAuthenticated()){
-      return fetch('https://api.github.com/user/installations', {
-        headers: {Authorization:`token ${req.user.accessToken}`, Accept:'application/vnd.github.machine-man-preview+json'}
-      })
-      .then(res => res.json())
-      .then(json => {
-        const orgs = json.installations.filter(installation => installation.target_type === 'Organization')
-        res.send(orgs)
-      })
-      .catch(err => {
-        console.error(err)
-        res.send([])
-      })
+    if(!req.isAuthenticated){
+      return res.send([])
     }
-    res.send([])
+    fetch('https://api.github.com/user/installations', {
+      headers: {Authorization:`token ${req.user.accessToken}`, Accept:'application/vnd.github.machine-man-preview+json'}
+    })
+    .then(res => res.json())
+    .then(json => {
+      const orgs = json.installations.filter(installation => installation.target_type === 'Organization')
+      res.send(orgs)
+    })
+    .catch(err => {
+      console.error(err)
+      res.send([])
+    })
   })
 
   return app

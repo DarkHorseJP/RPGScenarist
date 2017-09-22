@@ -1,19 +1,17 @@
 import { redirect, NOT_FOUND } from 'redux-first-router'
 import { fromJS } from 'immutable'
 
+import * as Route from './name'
 import { 
   userLoaded, 
   organizationsLoaded,
   repositoriesLoaded,
+  repositoryLoaded,
   getUser, 
   getOrganizations, 
-  getRepositories 
-} from './modules/github'
-
-export const ROUTE_HOME = 'routesMap/ROUTE_HOME'
-export const ROUTE_ORGS = 'routesMap/ROUTE_ORGS'
-export const ROUTE_ORG_REPOS = 'routesMap/ROUTE_ORG_REPOS'
-export const ROUTE_EDIT = 'routesMap/ROUTE_EDIT'
+  getRepositories,
+  setRepositoryId
+} from 'redux/modules/github'
 
 const isAllowed = (type, user, routesMap) => {
   const role = routesMap[type] && routesMap[type].role
@@ -33,7 +31,7 @@ export const routeOptions = {
     const state = getState()
     const user = state.getIn(['github', 'user'])
     if(typeof user.name === 'undefined' && localStorage.token){
-      getUser().then((user) => {
+      return getUser().then((user) => {
         dispatch(userLoaded(user))
       })
     }
@@ -51,11 +49,11 @@ export const routeOptions = {
 }
 
 const routesMap = {
-  [ROUTE_HOME]: {
+  [Route.ROUTE_HOME]: {
     path: '/',
     page: 'HomePage'
   },
-  [ROUTE_ORGS]: {
+  [Route.ROUTE_ORGS]: {
     path: '/orgs',
     page: 'RepositoryPage',
     thunk: async (dispatch, getState) => {
@@ -65,7 +63,7 @@ const routesMap = {
       dispatch(repositoriesLoaded(fromJS([])))
     }
   },
-  [ROUTE_ORG_REPOS]: {
+  [Route.ROUTE_ORG_REPOS]: {
     path: '/orgs/:orgid/repos',
     page: 'RepositoryPage',
     thunk: async (dispatch, getState) => {
@@ -79,9 +77,20 @@ const routesMap = {
       })
     }
   },
-  [ROUTE_EDIT]: {
-    path: '/edit/:repoid',
-    page: 'EditorPage'
+  [Route.ROUTE_EDIT]: {
+    path: '/edit/:orgid/:repoid',
+    page: 'EditorPage',
+    thunk: async (dispatch, getState) => {
+      const state = getState()
+      const orgid = state.get('location').payload.orgid
+      //const repoid = state.get('location').payload.repoid
+      getOrganizations().then((data) => {
+        dispatch(organizationsLoaded(data))
+      })
+      getRepositories(orgid).then((data) => {
+        dispatch(repositoriesLoaded(data))
+      })
+    }
   }
 }
 

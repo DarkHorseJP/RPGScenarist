@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 
 import { selectLocation } from 'redux/modules/location'
-import routesMap from 'redux/routesMap'
+import routesMap from 'redux/routes/map'
 
 class RouteItem extends React.Component {
   render() {

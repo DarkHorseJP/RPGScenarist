@@ -28,6 +28,7 @@ class RepositoryPage extends React.Component {
   }
   
   render() {
+    const orgId = this.props.org ? this.props.org.get('id') : ''
     const orgName = this.props.org ? this.props.org.getIn(['account', 'login']) : ''
     return (
       <div>
@@ -39,7 +40,7 @@ class RepositoryPage extends React.Component {
           </div>
           <div className="col-sm-9">
             <PageHeader>{orgName}</PageHeader>
-            <RepositoryList list={this.props.repoList} />
+            <RepositoryList list={this.props.repoList} instId={orgId} />
           </div>
         </div>
       </div>

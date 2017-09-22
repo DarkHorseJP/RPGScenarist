@@ -5,6 +5,9 @@ import { createStructuredSelector } from 'reselect'
 import { FormattedNumber } from 'react-intl'
 import Helmet from 'react-helmet'
 import { Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap'
+import Link from 'redux-first-router-link'
+
+import LinkItem from 'components/LinkItem'
 
 import { 
   selectGithubUser,
@@ -14,27 +17,23 @@ import {
 
 class EditorHeader extends React.PureComponent {
   render() {
-    let orgLink, orgAvatar
+    let orgLink = '#'
+    let orgAvatar = ''
+    let repLink = '#'
+    let repName = ''
+    let separator = ''
+
     if(this.props.organization && this.props.organization.get('id')){
-      console.log(JSON.stringify(this.props.organization))
-      orgLink = `/organizations/${this.props.organization.get('id')}`
+      orgLink = `/orgs/${this.props.organization.get('id')}/repos`
       const orgAvatarURL = this.props.organization.getIn(['account', 'avatar_url']) + '&s=40'
       orgAvatar = <img src={orgAvatarURL} width="20" height="20" />
-    }else{
-      orgLink = '#'
-      orgAvatar = ''
+      if(this.props.repository && this.props.repository.has('id')){
+        repLink = `/edit/${this.props.organization.get('id')}/${this.props.repository.get('id')}`
+        repName = this.props.repository.get('name')
+        separator = ' / '
+      }
     }
 
-    let repLink, repName, separator
-    if(this.props.repository && this.props.repository.has('id')){
-      repLink = `/organizations/${this.props.organization.get('id')}/repositories/${this.props.repository.get('id')}`
-      repName = this.props.repository.get('name')
-      separator = ' / '
-    }else{
-      repLink = '#'
-      repName = ''
-      separator = ''
-    }
     return (
       <Navbar fixedTop fluid style={{top: "50px", zIndex: "970"}}>
         <Helmet
@@ -47,7 +46,7 @@ class EditorHeader extends React.PureComponent {
         />
         <Navbar.Header>
           <Navbar.Brand>
-            <span className="hidden-xs"><a href={orgLink}>{orgAvatar}</a>{separator}</span><a href={repLink}>{repName}</a>
+            <span className="hidden-xs"><Link to={orgLink}>{orgAvatar}</Link>{separator}</span><Link to={repLink}>{repName}</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
@@ -55,7 +54,7 @@ class EditorHeader extends React.PureComponent {
           {this.props.children}
           <Nav pullRight>
             <NavDropdown title="PageName" id="editorPageName">
-              <MenuItem href="#">AnotherPageName</MenuItem>
+              <LinkItem tag={MenuItem} href="#">AnotherPageName</LinkItem>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

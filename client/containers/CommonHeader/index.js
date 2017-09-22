@@ -5,6 +5,7 @@ import { createStructuredSelector } from 'reselect'
 import { FormattedNumber } from 'react-intl'
 import Helmet from 'react-helmet'
 import { Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap'
+import Link from 'redux-first-router-link'
 
 import { loadUser, selectGithubUser } from 'redux/modules/github'
 
@@ -34,7 +35,7 @@ class CommonHeader extends React.PureComponent {
         />
         <Navbar.Header>
           <Navbar.Brand> 
-            <a href="/">RPGScenarist</a>
+            <Link to="/">RPGScenarist</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
