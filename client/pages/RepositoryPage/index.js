@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
-import { Route, Link } from 'react-router-dom'
 import { FormattedMessage, FormattedDate } from 'react-intl'
 import { connect } from 'react-redux'
 import { Panel, ListGroup, ListGroupItem, PageHeader } from 'react-bootstrap'
@@ -15,38 +14,32 @@ import RepositoryList from './RepositoryList'
 import messages from './messages'
 
 import { 
-  changeOrganization,
-  changeRepository,
-  makeSelectOrganization,
-  makeSelectOrganizationList,
-  makeSelectRepository,
-  makeSelectRepositoryList,
+  selectOrganization,
+  selectOrganizationList,
+  //selectRepository,
+  selectRepositoryList,
   loadOrganizations,
   loadRepositories
 } from 'redux/modules/github'
 
 class RepositoryPage extends React.Component {
   componentDidMount() {
-    this.props.onLoadOrganizations()
+    //this.props.onLoadOrganizations()
   }
   
   render() {
+    const orgName = this.props.org ? this.props.org.getIn(['account', 'login']) : ''
     return (
       <div>
         <Helmet title="Repository" />
         <CommonHeader />
         <div className="row" style={{margin: 0}}>
           <div className="col-sm-3" style={{padding: '15px'}}>
-            <OrganizationList 
-              list={this.props.orgList} 
-              selected={this.props.org ? this.props.org.get('id') : ''} 
-            />
+            <OrganizationList list={this.props.orgList} />
           </div>
           <div className="col-sm-9">
-            <RepositoryList
-              list={this.props.repoList}
-              selected={this.props.repo ? this.props.repo.get('id') : ''}
-            />
+            <PageHeader>{orgName}</PageHeader>
+            <RepositoryList list={this.props.repoList} />
           </div>
         </div>
       </div>
@@ -57,27 +50,27 @@ class RepositoryPage extends React.Component {
 //RepositoryPage.propTypes = {
 //}
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
-    onLoadOrganizations: () => {
-      dispatch(loadOrganizations())
-    },
-    onChangeOrganization: (instId) => { 
-      dispatch(changeOrganization(instId)) 
-      dispatch(loadRepositories(instId))
-    },
-    onLoadRepositories: (instid) => {
-      dispatch(loadRepositories(instId))
-    },
-    onChangeRepository: (reposId) => { dispatch(changeRepository(reposId)) }
+    //onLoadOrganizations: () => {
+    //  dispatch(loadOrganizations())
+    //},
+    //onChangeOrganization: (instId) => { 
+    //  dispatch(changeOrganization(instId)) 
+    //  dispatch(loadRepositories(instId))
+    //},
+    //onLoadRepositories: (instid) => {
+    //  dispatch(loadRepositories(instId))
+    //},
+    //onChangeRepository: (reposId) => { dispatch(changeRepository(reposId)) }
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  org: makeSelectOrganization(),
-  orgList: makeSelectOrganizationList(),
-  repo: makeSelectRepository(),
-  repoList: makeSelectRepositoryList(),
+  org: selectOrganization,
+  orgList: selectOrganizationList,
+  //repo: selectRepository,
+  repoList: selectRepositoryList
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(RepositoryPage)

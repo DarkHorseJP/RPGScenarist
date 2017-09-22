@@ -7,9 +7,9 @@ import Helmet from 'react-helmet'
 import { Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap'
 
 import { 
-  makeSelectGithubUser,
-  makeSelectOrganization,
-  makeSelectRepository
+  selectGithubUser,
+  selectOrganization,
+  selectRepository
 } from 'redux/modules/github'
 
 class EditorHeader extends React.PureComponent {
@@ -70,9 +70,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = createStructuredSelector({
-  user: makeSelectGithubUser(),
-  organization: makeSelectOrganization(),
-  repository: makeSelectRepository()
+  user: selectGithubUser,
+  organization: selectOrganization,
+  repository: selectRepository
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditorHeader)

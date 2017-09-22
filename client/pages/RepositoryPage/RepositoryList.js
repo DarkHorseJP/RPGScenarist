@@ -1,22 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ImmutablePropTypes from 'react-immutable-proptypes'
-import { Link } from 'react-router-dom'
 import { fromJS } from 'immutable'
+import Link from 'redux-first-router-link'
 import { Panel, PageHeader } from 'react-bootstrap'
+import RouteItem from 'components/RouteItem'
+import { FormattedMessage, FormattedDate } from 'react-intl'
 
 import messages from './messages'
 
 export default class RepositoryList extends React.Component {
   render() {
-    const org = this.props.list.find(repo => repo.get('id') == this.props.selected)
-    if(!org){
-      return null
-    }
-    const orgName = org.getIn(['account', 'login'])
     return (
       <div>
-        <PageHeader>{orgName}</PageHeader>
         {this.props.list.map(repo => (
           <Panel key={repo.get('id')}>
             <Link to={`/edit/${repo.get('id')}`}>

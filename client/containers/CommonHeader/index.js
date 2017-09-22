@@ -6,13 +6,9 @@ import { FormattedNumber } from 'react-intl'
 import Helmet from 'react-helmet'
 import { Nav, Navbar, NavItem, NavDropdown, MenuItem } from 'react-bootstrap'
 
-import { loadUser, makeSelectGithubUser } from 'redux/modules/github'
+import { loadUser, selectGithubUser } from 'redux/modules/github'
 
 class CommonHeader extends React.PureComponent {
-  componentDidMount() {
-    this.props.onLoadUser()
-  }
-
   render() {
     let loginOrUser
     if(!this.props.user.has || !this.props.user.has('name')){
@@ -55,12 +51,14 @@ class CommonHeader extends React.PureComponent {
 
 function mapDispatchToProps(dispatch) {
   return {
-    onLoadUser: () => dispatch(loadUser())
+    onLoadUser: () => {
+      return dispatch(loadUser())
+    }
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  user: makeSelectGithubUser()
+  user: selectGithubUser
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CommonHeader)

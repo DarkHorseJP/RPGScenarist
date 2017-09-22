@@ -10,10 +10,6 @@ import LanguageProvider from 'containers/LanguageProvider'
 import configureStore from 'redux/configureStore'
 import { renderTranslationMessages } from 'redux/modules/i18n'
 
-import mapSagas from 'redux/modules/map/sagas'
-import modelSagas from 'redux/modules/model/sagas'
-import githubSagas from 'redux/modules/github/sagas'
-
 import Header from 'components/Header'
 import Footer from 'components/Footer'
 import Switcher from 'containers/Switcher'
@@ -43,14 +39,6 @@ function Root() {
 
 const initialState = {}
 const store = configureStore(initialState)
-
-
-// FIXME: select sagas to run
-store.runSaga(mapSagas[0])
-store.runSaga(modelSagas[0])
-store.runSaga(githubSagas[0])
-store.runSaga(githubSagas[1])
-store.runSaga(githubSagas[2])
 
 const render = (messages) => {
   ReactDOM.render(

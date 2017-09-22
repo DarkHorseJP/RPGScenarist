@@ -1,15 +1,16 @@
 import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
+import { ROUTE_ORGS, ROUTE_ORG_REPOS } from 'redux/routesMap'
+
+import request from 'utils/request'
 
 // Constants
 export const LOAD_USER = 'github/LOAD_USER'
 const USER_LOADED = 'github/USER_LOADED'
 
-const CHANGE_ORGANIZATION = 'github/CHANGE_ORGANIZATION'
 export const LOAD_ORGANIZATIONS = 'github/LOAD_ORGANIZATIONS'
 const ORGANIZATIONS_LOADED = 'github/ORGANIZATIONS_LOADED'
 
-const CHANGE_REPOSITORY = 'github/CHANGE_REPOSITORY'
 export const LOAD_REPOSITORIES = 'github/LOAD_REPOSITORIES'
 const REPOSITORIES_LOADED = 'github/REPOSITORIES_LOADED'
 
@@ -27,13 +28,6 @@ export function userLoaded(user) {
   }
 }
 
-export function changeOrganization(id) {
-  return {
-    type: CHANGE_ORGANIZATION,
-    id: id
-  }
-}
-
 export function organizationsLoaded(list) {
   return {
     type: ORGANIZATIONS_LOADED,
@@ -44,13 +38,6 @@ export function organizationsLoaded(list) {
 export function loadOrganizations() {
   return {
     type: LOAD_ORGANIZATIONS
-  }
-}
-
-export function changeRepository(id) {
-  return {
-    type: CHANGE_REPOSITORY,
-    id: id
   }
 }
 
@@ -68,37 +55,64 @@ export function loadRepositories(instid) {
   }
 }
 
+const getOptions = () => {
+  return {
+    headers: {
+      'X-CSRF-TOKEN': localStorage.getItem('token')
+    },
+    credentials: 'same-origin'
+  }
+}
+
+export async function getUser() {
+  const url = '/github/user'
+  const json = await request(url, getOptions())
+  return fromJS(json)
+}
+
+export async function getOrganizations() {
+  const url = '/github/organizations'
+  const json = await request(url, getOptions())
+  return fromJS(json)
+}
+
+export async function getRepositories(instId) {
+  const url = `/github/organizations/${instId}/repos`
+  const json = await request(url, getOptions())
+  return fromJS(json.repositories)
+}
+
 // Selector
 export const selectGithub = (state) => state.get('github')
-export const makeSelectGithubUser = () => createSelector(
+export const selectGithubUser = createSelector(
   selectGithub,
   (state) => state.get('user')
 )
-export const makeSelectOrganizationList = () => createSelector(
+export const selectOrganizationList = createSelector(
   selectGithub,
   (state) => state.get('organizations')
 )
-export const makeSelectOrganizationId = () => createSelector(
+export const selectOrganizationId = createSelector(
   selectGithub,
   (state) => state.get('organizationId')
 )
-export const makeSelectOrganization = () => createSelector(
-  makeSelectOrganizationList(),
-  makeSelectOrganizationId(),
-  (list, id) => list.find(info => info.get('id') === id)
+export const selectOrganization = createSelector(
+  selectOrganizationList,
+  selectOrganizationId,
+  (list, id) => list.find(info => info.get('id') == id)
 )
-export const makeSelectRepositoryList = () => createSelector(
+export const selectRepositoryList = createSelector(
   selectGithub,
   (state) => state.get('repositories')
 )
-export const makeSelectRepositoryId = () => createSelector(
+export const selectRepositoryId = createSelector(
   selectGithub,
   (state) => state.get('repositoryId')
 )
-export const makeSelectRepository = () => createSelector(
-  makeSelectRepositoryList(),
-  makeSelectRepositoryId(),
-  (list, id) => list.find(info => info.get('id') === id)
+export const selectRepository = createSelector(
+  selectRepositoryList,
+  selectRepositoryId,
+  (list, id) => list.find(info => info.get('id') == id)
 )
 
 // Initial State
@@ -113,14 +127,14 @@ const initialState = fromJS({
 // Reducer
 export default function reducer(state = initialState, action) {
   switch(action.type){
+    case ROUTE_ORGS:
+    case ROUTE_ORG_REPOS:
+      return state.set('organizationId', action.payload.orgid)
     case USER_LOADED:
       return state.set('user', action.user)
-    case CHANGE_ORGANIZATION:
-      return state.set('organizationId', action.id)
-    case ORGANIZATIONS_LOADED:
+    case ORGANIZATIONS_LOADED: {
       return state.set('organizations', action.list)
-    case CHANGE_REPOSITORY:
-      return state.set('repositoryId', action.id)
+    }
     case REPOSITORIES_LOADED:
       return state.set('repositories', action.list)
     default:

@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import { fromJS } from 'immutable'
-import createSagaMiddleware from 'redux-saga'
+//import createSagaMiddleware from 'redux-saga'
 
 import createReducer from './reducers'
 import {
@@ -8,11 +8,11 @@ import {
   enhancer as locationEnhancer
 } from './modules/location'
 
-const sagaMiddleware = createSagaMiddleware()
+//const sagaMiddleware = createSagaMiddleware()
 
 export default function configureStore(initialState = {}) {
   const middlewares = [
-    sagaMiddleware,
+    //sagaMiddleware,
     locationMiddleware
   ]
   const enhancers = [
@@ -30,7 +30,7 @@ export default function configureStore(initialState = {}) {
     fromJS(initialState),
     composeEnhancers(...enhancers)
   )
-  store.runSaga = sagaMiddleware.run
+  //store.runSaga = sagaMiddleware.run
   store.asyncReducers = {}
 
   if(module.hot){

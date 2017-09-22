@@ -38,6 +38,7 @@ export function* getUser() {
 
 export function* getOrganizations() {
   const url = '/github/organizations'
+  alert('getOrganizations')
 
   try{
     const orgJson = yield call(request, url, getOptions())
@@ -71,9 +72,11 @@ export function* userData() {
 }
 
 export function* orgListData() {
+  alert('sagas orgListData')
   const watcher = yield takeLatest(LOAD_ORGANIZATIONS, getOrganizations)
 
   yield take(LOCATION_CHANGE)
+  alert('LOCATION_CHANGE')
   yield cancel(watcher)
 }
 
@@ -81,6 +84,7 @@ export function* reposListData() {
   const watcher = yield takeLatest(LOAD_REPOSITORIES, getRepositories)
 
   yield take(LOCATION_CHANGE)
+  alert('LOCATION_CHANGE')
   yield cancel(watcher)
 }
 
