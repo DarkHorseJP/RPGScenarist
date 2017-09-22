@@ -1,5 +1,7 @@
 {
   "pages.HomePage.message01": "Hello!",
 
+  "pages.RepositoryPage.updatedAt": "Updated At",
+
   "pages.NotFoundPage.header": "Page not found"
 }

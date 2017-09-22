@@ -12,7 +12,6 @@ const UniversalComponent = universal(props => import(`pages/${props.page}`), {
 })
 
 const Switcher = (props) => {
-  console.log(JSON.stringify(props))
   return (
     <Transition key={props.page}>
       <UniversalComponent page={props.page} />

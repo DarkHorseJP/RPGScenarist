@@ -1,5 +1,7 @@
 {
   "pages.HomePage.message01": "こんにちは！",
 
+  "pages.RepositoryPage.updatedAt": "更新日 ",
+
   "pages.NotFoundPage.header": "ページが見つかりませんでした"
 }

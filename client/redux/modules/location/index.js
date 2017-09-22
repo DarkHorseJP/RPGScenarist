@@ -1,20 +1,22 @@
+import { applyMiddleware } from 'redux'
 import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
 import createHistory from 'history/createBrowserHistory'
 import { connectRoutes } from 'redux-first-router'
 
-import routesMap, { routeOptions } from 'redux/routesMap'
+import routesMap, { 
+  routeOptions,
+  ROUTE_HOME,
+  ROUTE_ORGS
+} from 'redux/routesMap'
 
 const history = createHistory()
 const routes = connectRoutes(history, routesMap, routeOptions)
 
-// Constants
-export const TEST = 'location/TEST'
-
 // Actions
-export function test() {
+export function goHome() {
   return {
-    type: TEST
+    type: ROUTE_HOME
   }
 }
 
@@ -33,8 +35,10 @@ export const selectPage = createSelector(
   (state) => state.routesMap[state.type].page
 )
 
-// middleware/enhancer
+// middleware
 export const middleware = routes.middleware
+
+// enhancer
 export const enhancer = routes.enhancer
 
 // Reducer

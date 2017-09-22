@@ -1,44 +1,47 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
-//import { FormattedMessage } from 'react-intl'
+import { FormattedMessage, FormattedDate } from 'react-intl'
 import { connect } from 'react-redux'
+import { Panel, ListGroup, ListGroupItem, PageHeader } from 'react-bootstrap'
 import { createStructuredSelector } from 'reselect'
 
 import CommonHeader from 'containers/CommonHeader'
 import EditorHeader from 'containers/EditorHeader'
 import EditableList from 'components/EditableList'
+import OrganizationList from './OrganizationList'
+import RepositoryList from './RepositoryList'
+import messages from './messages'
 
 import { 
-  changeOrganization,
-  changeRepository,
-  makeSelectOrganizationId,
-  makeSelectOrganizationList,
-  makeSelectRepositoryId,
-  makeSelectRepositoryList,
+  selectOrganization,
+  selectOrganizationList,
+  //selectRepository,
+  selectRepositoryList,
   loadOrganizations,
   loadRepositories
 } from 'redux/modules/github'
 
-class RepositoryPage extends React.PureComponent {
+class RepositoryPage extends React.Component {
   componentDidMount() {
-    this.props.onLoadOrganizations()
+    //this.props.onLoadOrganizations()
   }
   
   render() {
+    const orgName = this.props.org ? this.props.org.getIn(['account', 'login']) : ''
     return (
       <div>
-        <Helmet title="Repository Page" />
+        <Helmet title="Repository" />
         <CommonHeader />
-        <EditorHeader />
-        Repository Page
-        <EditableList
-          items={this.props.list}
-          selectedKey={this.props.id}
-          keyName="id"
-          valueName="account.login"
-          onClick={this.props.onChangeOrganization} />
-        Repository Info
+        <div className="row" style={{margin: 0}}>
+          <div className="col-sm-3" style={{padding: '15px'}}>
+            <OrganizationList list={this.props.orgList} />
+          </div>
+          <div className="col-sm-9">
+            <PageHeader>{orgName}</PageHeader>
+            <RepositoryList list={this.props.repoList} />
+          </div>
+        </div>
       </div>
     )
   }
@@ -47,27 +50,27 @@ class RepositoryPage extends React.PureComponent {
 //RepositoryPage.propTypes = {
 //}
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
-    onLoadOrganizations: () => {
-      dispatch(loadOrganizations())
-    },
-    onChangeOrganization: (instId) => { 
-      dispatch(changeOrganization(instId)) 
-      dispatch(loadRepositories(instId))
-    },
-    onLoadRepositories: (instid) => {
-      dispatch(loadRepositories(instId))
-    },
-    onChangeRepository: (reposId) => { dispatch(changeRepository(reposId)) }
+    //onLoadOrganizations: () => {
+    //  dispatch(loadOrganizations())
+    //},
+    //onChangeOrganization: (instId) => { 
+    //  dispatch(changeOrganization(instId)) 
+    //  dispatch(loadRepositories(instId))
+    //},
+    //onLoadRepositories: (instid) => {
+    //  dispatch(loadRepositories(instId))
+    //},
+    //onChangeRepository: (reposId) => { dispatch(changeRepository(reposId)) }
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  id: makeSelectOrganizationId(),
-  list: makeSelectOrganizationList(),
-  //reposId: makeSelectRepositoryId(),
-  //repos: makeSelectRepositoryList()
+  org: selectOrganization,
+  orgList: selectOrganizationList,
+  //repo: selectRepository,
+  repoList: selectRepositoryList
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(RepositoryPage)

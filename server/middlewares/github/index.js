@@ -205,7 +205,9 @@ const githubAppMiddleware = (app, webpackConfig) => {
 
   app.get('/github/*', checkUserToken)
   app.get('/github/user', (req, res) => {
+    console.log('github/user')
     if(req.isAuthenticated()){
+      console.log('authenticated')
       return fetch(`https://api.github.com/users/${req.user.name}`, {
         headers: {Accept:'application/vnd.github.machine-man-preview+json'}
       })
@@ -215,6 +217,7 @@ const githubAppMiddleware = (app, webpackConfig) => {
           name: json.login,
           avatar_url: json.avatar_url + '&s=40'
         }
+        console.log(JSON.stringify(user))
         res.send(user)
       })
       .catch(err => {
@@ -222,6 +225,7 @@ const githubAppMiddleware = (app, webpackConfig) => {
         res.send({})
       })
     }
+    console.log('not authenticated')
     res.send({})
   })
   app.get('/github/organizations/:instid/repos/:repid', (req, res) => {
