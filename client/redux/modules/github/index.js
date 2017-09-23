@@ -75,13 +75,13 @@ export async function getUser() {
 }
 
 export async function getOrganizations() {
-  const url = '/github/organizations'
+  const url = '/github/orgs'
   const json = await request(url, getOptions())
   return fromJS(json)
 }
 
 export async function getRepositories(instId) {
-  const url = `/github/organizations/${instId}/repos`
+  const url = `/github/orgs/${instId}/repos`
   const json = await request(url, getOptions())
   return fromJS(json.repositories)
 }
@@ -102,35 +102,42 @@ export const selectOrganizationList = createSelector(
   selectGithub,
   (state) => state.get('organizations')
 )
-export const selectOrganizationId = createSelector(
+export const selectOrganizationName = createSelector(
   selectGithub,
-  (state) => state.get('organizationId')
+  (state) => state.get('organizationName')
 )
 export const selectOrganization = createSelector(
-  selectOrganizationList,
-  selectOrganizationId,
-  (list, id) => list.find(info => info.get('id') == id)
+  selectOrganizationList, selectOrganizationName,
+  (list, name) => list.find(info => info.getIn(['account', 'login']) == name)
+)
+export const selectInstallationId = createSelector(
+  selectOrganization,
+  (org) => org.get('id')
 )
 export const selectRepositoryList = createSelector(
   selectGithub,
   (state) => state.get('repositories')
 )
-export const selectRepositoryId = createSelector(
+export const selectRepositoryName = createSelector(
   selectGithub,
-  (state) => state.get('repositoryId')
+  (state) => state.get('repositoryName')
 )
 export const selectRepository = createSelector(
-  selectRepositoryList, selectRepositoryId,
-  (list, id) => list.find(info => info.get('id') == id)
+  selectRepositoryList, selectRepositoryName,
+  (list, name) => list.find(info => info.get('name') == name)
+)
+export const selectRepositoryId = createSelector(
+  selectRepository,
+  (repo) => repo.get('id')
 )
 
 // Initial State
 const initialState = fromJS({
   user: {},
   organizations: [],
-  organizationId: '',
+  organizationName: '',
   repositories: [],
-  repositoryId: ''
+  repositoryName: ''
 })
 
 // Reducer
@@ -138,11 +145,11 @@ export default function reducer(state = initialState, action) {
   switch(action.type){
     case ROUTE_ORGS:
     case ROUTE_ORG_REPOS:
-      return state.set('organizationId', action.payload.orgid)
+      return state.set('organizationName', action.payload.orgname)
     case ROUTE_EDIT:
       return state.withMutations(s => 
-        s.set('repositoryId', action.payload.repoid)
-         .set('organizationId', action.payload.orgid)
+        s.set('repositoryName', action.payload.reponame)
+         .set('organizationName', action.payload.orgname)
       )
 
     case USER_LOADED:

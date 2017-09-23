@@ -14,22 +14,17 @@ import RepositoryList from './RepositoryList'
 import messages from './messages'
 
 import { 
-  selectOrganization,
+  selectOrganizationName,
   selectOrganizationList,
-  //selectRepository,
-  selectRepositoryList,
-  loadOrganizations,
-  loadRepositories
+  selectRepositoryList
 } from 'redux/modules/github'
 
 class RepositoryPage extends React.Component {
   componentDidMount() {
-    //this.props.onLoadOrganizations()
   }
   
   render() {
-    const orgId = this.props.org ? this.props.org.get('id') : ''
-    const orgName = this.props.org ? this.props.org.getIn(['account', 'login']) : ''
+    const orgName = this.props.orgName || ''
     return (
       <div>
         <Helmet title="Repository" />
@@ -40,7 +35,7 @@ class RepositoryPage extends React.Component {
           </div>
           <div className="col-sm-9">
             <PageHeader>{orgName}</PageHeader>
-            <RepositoryList list={this.props.repoList} instId={orgId} />
+            <RepositoryList list={this.props.repoList} orgName={orgName} />
           </div>
         </div>
       </div>
@@ -53,24 +48,12 @@ class RepositoryPage extends React.Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    //onLoadOrganizations: () => {
-    //  dispatch(loadOrganizations())
-    //},
-    //onChangeOrganization: (instId) => { 
-    //  dispatch(changeOrganization(instId)) 
-    //  dispatch(loadRepositories(instId))
-    //},
-    //onLoadRepositories: (instid) => {
-    //  dispatch(loadRepositories(instId))
-    //},
-    //onChangeRepository: (reposId) => { dispatch(changeRepository(reposId)) }
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  org: selectOrganization,
+  orgName: selectOrganizationName,
   orgList: selectOrganizationList,
-  //repo: selectRepository,
   repoList: selectRepositoryList
 })
 

@@ -12,12 +12,13 @@ export default class OrganizationList extends React.Component {
       <Panel header="Organization">
         <ListGroup fill>
           {this.props.list.map(org => {
+            const orgName = org.getIn(['account', 'login'])
             return (
               <RouteItem
                 tag={ListGroupItem}
-                key={org.get('id')}
-                href={`/orgs/${org.get('id')}/repos`}>
-                {org.getIn(['account', 'login'])}
+                key={orgName}
+                href={`/edit/${orgName}`}>
+                {orgName}
               </RouteItem>
             )
           })}
@@ -28,12 +29,10 @@ export default class OrganizationList extends React.Component {
 }
 
 OrganizationList.defaultProps = {
-  list: fromJS([]),
-  selected: ''
+  list: fromJS([])
 }
 
 OrganizationList.propTypes = {
-  list: ImmutablePropTypes.list,
-  selected: PropTypes.string
+  list: ImmutablePropTypes.list
 }
 

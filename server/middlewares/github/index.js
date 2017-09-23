@@ -221,20 +221,7 @@ const githubAppMiddleware = (app, webpackConfig) => {
     console.log('not authenticated')
     res.send({})
   })
-  //app.get('/github/organizations/:instid/repos/:repoid', (req, res) => {
-  //  if(!req.isAuthenticated){
-  //    return res.send([])
-  //  }
-  //  getInstallationRepos(req.params.instid)
-  //  .then(repos => {
-  //    const repo = repos.find((repo) => repo.id == req.param.repoid)
-  //    res.send(repo)
-  //  })
-  //  .catch(err => {
-  //    res.send([])
-  //  })
-  //})
-  app.get('/github/organizations/:instid/repos', (req, res) => {
+  app.get('/github/orgs/:instid/repos', (req, res) => {
     if(!req.isAuthenticated){
       return res.send([])
     }
@@ -244,7 +231,7 @@ const githubAppMiddleware = (app, webpackConfig) => {
       res.send([])
     })
   })
-  app.get('/github/organizations', (req, res) => {
+  app.get('/github/orgs', (req, res) => {
     if(!req.isAuthenticated){
       return res.send([])
     }

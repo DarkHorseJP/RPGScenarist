@@ -54,7 +54,7 @@ const routesMap = {
     page: 'HomePage'
   },
   [Route.ROUTE_ORGS]: {
-    path: '/orgs',
+    path: '/edit',
     page: 'RepositoryPage',
     thunk: async (dispatch, getState) => {
       getOrganizations().then((data) => {
@@ -64,31 +64,35 @@ const routesMap = {
     }
   },
   [Route.ROUTE_ORG_REPOS]: {
-    path: '/orgs/:orgid/repos',
+    path: '/edit/:orgname',
     page: 'RepositoryPage',
     thunk: async (dispatch, getState) => {
       const state = getState()
-      const orgid = state.get('location').payload.orgid
-      getOrganizations().then((data) => {
-        dispatch(organizationsLoaded(data))
-      })
-      getRepositories(orgid).then((data) => {
-        dispatch(repositoriesLoaded(data))
+      const orgname = state.get('location').payload.orgname
+      getOrganizations().then((orgData) => {
+        const org = orgData.find(org => org.getIn(['account', 'login']) == orgname)
+        if(org){
+          getRepositories(org.get('id')).then((data) => {
+            dispatch(repositoriesLoaded(data))
+          })
+        }
+        dispatch(organizationsLoaded(orgData))
       })
     }
   },
   [Route.ROUTE_EDIT]: {
-    path: '/edit/:orgid/:repoid',
+    path: '/edit/:orgname/:reponame',
     page: 'EditorPage',
     thunk: async (dispatch, getState) => {
       const state = getState()
-      const orgid = state.get('location').payload.orgid
-      //const repoid = state.get('location').payload.repoid
+      const orgname = state.get('location').payload.orgname
       getOrganizations().then((data) => {
+        if(org){
+          getRepositories(org.get('id')).then((data) => {
+            dispatch(repositoriesLoaded(data))
+          })
+        }
         dispatch(organizationsLoaded(data))
-      })
-      getRepositories(orgid).then((data) => {
-        dispatch(repositoriesLoaded(data))
       })
     }
   }

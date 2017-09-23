@@ -21,7 +21,7 @@ class HomePage extends React.PureComponent {
         <div className="contents">
           <h1>RPGScenarist</h1>
           <FormattedMessage {...messages.message01} />
-          <Link to="/orgs">/orgs</Link>
+          <Link to="/edit">/edit</Link>
         </div>
       </div>
     )

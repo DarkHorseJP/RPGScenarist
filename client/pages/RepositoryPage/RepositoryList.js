@@ -15,7 +15,7 @@ export default class RepositoryList extends React.Component {
       <div>
         {this.props.list.map(repo => (
           <Panel key={repo.get('id')}>
-            <Link to={`/edit/${this.props.instId}/${repo.get('id')}`}>
+            <Link to={`/edit/${this.props.orgName}/${repo.get('name')}`}>
               <h3>{repo.get('name')}</h3>
             </Link>
             <p>{repo.get('description') || ''}</p>
@@ -29,11 +29,11 @@ export default class RepositoryList extends React.Component {
 
 RepositoryList.defaultProps = {
   list: fromJS([]),
-  instId: ''
+  orgName: ''
 }
 
 RepositoryList.propTypes = {
   list: ImmutablePropTypes.list,
-  instId: PropTypes.string
+  orgName: PropTypes.string
 }
 

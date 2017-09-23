@@ -12,7 +12,9 @@ import LinkItem from 'components/LinkItem'
 import { 
   selectGithubUser,
   selectOrganization,
-  selectRepository
+  selectOrganizationName,
+  selectRepository,
+  selectRepositoryName
 } from 'redux/modules/github'
 
 class EditorHeader extends React.PureComponent {
@@ -20,16 +22,15 @@ class EditorHeader extends React.PureComponent {
     let orgLink = '#'
     let orgAvatar = ''
     let repLink = '#'
-    let repName = ''
+    const repoName = this.props.repoName || ''
     let separator = ''
 
-    if(this.props.organization && this.props.organization.get('id')){
-      orgLink = `/orgs/${this.props.organization.get('id')}/repos`
-      const orgAvatarURL = this.props.organization.getIn(['account', 'avatar_url']) + '&s=40'
+    if(this.props.orgName){
+      orgLink = `/edit/${this.props.orgName}`
+      const orgAvatarURL = this.props.org.getIn(['account', 'avatar_url']) + '&s=40'
       orgAvatar = <img src={orgAvatarURL} width="20" height="20" />
-      if(this.props.repository && this.props.repository.has('id')){
-        repLink = `/edit/${this.props.organization.get('id')}/${this.props.repository.get('id')}`
-        repName = this.props.repository.get('name')
+      if(this.props.repoName){
+        repLink = `/edit/${this.props.orgName}/${this.props.repoName}`
         separator = ' / '
       }
     }
@@ -46,7 +47,7 @@ class EditorHeader extends React.PureComponent {
         />
         <Navbar.Header>
           <Navbar.Brand>
-            <span className="hidden-xs"><Link to={orgLink}>{orgAvatar}</Link>{separator}</span><Link to={repLink}>{repName}</Link>
+            <span className="hidden-xs"><Link to={orgLink}>{orgAvatar}</Link>{separator}</span><Link to={repLink}>{repoName}</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
@@ -70,8 +71,10 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = createStructuredSelector({
   user: selectGithubUser,
-  organization: selectOrganization,
-  repository: selectRepository
+  org: selectOrganization,
+  orgName: selectOrganizationName,
+  repo: selectRepository,
+  repoName: selectRepositoryName
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditorHeader)
