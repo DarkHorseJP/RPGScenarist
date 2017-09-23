@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable'
 import { combineReducers } from 'redux-immutable'
+import { reducer as form } from 'redux-form/immutable'
 
 import language from './modules/language'
 import github from './modules/github'
@@ -14,6 +15,7 @@ export default function createReducer(asyncReducers) {
     map,
     window,
     location,
+    form,
     ...asyncReducers
   })
 }
