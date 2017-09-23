@@ -1,7 +1,7 @@
 import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
-import { 
-  ROUTE_ORGS, 
+import {
+  ROUTE_ORGS,
   ROUTE_ORG_REPOS,
   ROUTE_EDIT
 } from 'redux/routes/name'
@@ -28,14 +28,14 @@ export function loadUser() {
 export function userLoaded(user) {
   return {
     type: USER_LOADED,
-    user: user
+    user
   }
 }
 
 export function organizationsLoaded(list) {
   return {
     type: ORGANIZATIONS_LOADED,
-    list: list
+    list
   }
 }
 
@@ -48,25 +48,23 @@ export function loadOrganizations() {
 export function repositoriesLoaded(list) {
   return {
     type: REPOSITORIES_LOADED,
-    list: list
+    list
   }
 }
 
 export function loadRepositories(instid) {
   return {
     type: LOAD_REPOSITORIES,
-    instid: instid
+    instid
   }
 }
 
-const getOptions = () => {
-  return {
-    headers: {
-      'X-CSRF-TOKEN': localStorage.getItem('token')
-    },
-    credentials: 'same-origin'
-  }
-}
+const getOptions = () => ({
+  headers: {
+    'X-CSRF-TOKEN': localStorage.getItem('token')
+  },
+  credentials: 'same-origin'
+})
 
 export async function getUser() {
   const url = '/github/user'
@@ -88,7 +86,7 @@ export async function getRepositories(instId) {
 
 export async function getRepository(instId, repoId) {
   const repositories = getRepositories(instId)
-  const repository = repositories.find((repo) => repo.get('id') == repoId)
+  const repository = repositories.find((repo) => repo.get('id') == repoId) // eslint-disable-line eqeqeq
   return repository
 }
 
@@ -108,7 +106,7 @@ export const selectOrganizationName = createSelector(
 )
 export const selectOrganization = createSelector(
   selectOrganizationList, selectOrganizationName,
-  (list, name) => list.find(info => info.getIn(['account', 'login']) == name)
+  (list, name) => list.find((info) => info.getIn(['account', 'login']) == name) // eslint-disable-line eqeqeq
 )
 export const selectInstallationId = createSelector(
   selectOrganization,
@@ -124,7 +122,7 @@ export const selectRepositoryName = createSelector(
 )
 export const selectRepository = createSelector(
   selectRepositoryList, selectRepositoryName,
-  (list, name) => list.find(info => info.get('name') == name)
+  (list, name) => list.find((info) => info.get('name') == name) // eslint-disable-line eqeqeq
 )
 export const selectRepositoryId = createSelector(
   selectRepository,
@@ -142,14 +140,14 @@ const initialState = fromJS({
 
 // Reducer
 export default function reducer(state = initialState, action) {
-  switch(action.type){
+  switch (action.type) {
     case ROUTE_ORGS:
     case ROUTE_ORG_REPOS:
       return state.set('organizationName', action.payload.orgname)
     case ROUTE_EDIT:
-      return state.withMutations(s => 
+      return state.withMutations((s) =>
         s.set('repositoryName', action.payload.reponame)
-         .set('organizationName', action.payload.orgname)
+          .set('organizationName', action.payload.orgname)
       )
 
     case USER_LOADED:

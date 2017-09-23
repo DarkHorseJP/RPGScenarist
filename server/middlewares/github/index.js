@@ -1,6 +1,4 @@
-const express = require('express')
 const cookieSession = require('cookie-session')
-const path = require('path')
 const fs = require('fs')
 const passport = require('passport')
 const GitHubStrategy = require('passport-github2').Strategy
@@ -24,45 +22,41 @@ const cookieName = config.get('cookie.name')
 const cookieSecret = config.get('cookie.secret')
 const cookieMaxAge = config.get('cookie.maxAge')
 
-const authHtml = fs.readFileSync(require.resolve('./authenticated.html'), 'utf8')
-const logoutHtml = fs.readFileSync(require.resolve('./logout.html'), 'utf8')
+const authHtmlText = fs.readFileSync(require.resolve('./authenticated.html'), 'utf8')
+const logoutHtmlText = fs.readFileSync(require.resolve('./logout.html'), 'utf8')
 
-const getAuthHtml = (token, nextUrl = '/') => {
-  return authHtml.replace('{{token}}', token).replace('{{nextUrl}}', nextUrl)
-}
-const getLogoutHtml = (nextUrl = '/') => {
-  return logoutHtml.replace('{{nextUrl}}', nextUrl)
-}
+const getAuthHtml = (token, nextUrl = '/') => authHtmlText.replace('{{token}}', token).replace('{{nextUrl}}', nextUrl)
+const getLogoutHtml = (nextUrl = '/') => logoutHtmlText.replace('{{nextUrl}}', nextUrl)
 
-const generateAccessToken = (uid, payload = {}) => {
+const generateAccessToken = (userId, payload = {}) => {
   const expiresIn = '1 hour'
 
   const token = jwt.sign(payload, tokenSecret, {
-    expiresIn: expiresIn,
+    expiresIn,
     audience: tokenAudience,
     issuer: tokenIssuer,
-    subject: uid
+    subject: userId
   })
-  
+
   return token
 }
 
 const verifyAccessToken = (token) => {
-  if(typeof token !== 'string'){
+  if (typeof token !== 'string') {
     return null
   }
 
-  try{
-    const data = jwt.verify(token, tokenSecret, {audience: tokenAudience, issuer: tokenIssuer})
+  try {
+    const data = jwt.verify(token, tokenSecret, { audience: tokenAudience, issuer: tokenIssuer })
     return data
-  }catch(err){
+  } catch (err) {
     console.error(err)
     return null
   }
 }
 
 const isValidUserToken = (req) => {
-  if(!req.isAuthenticated()){
+  if (!req.isAuthenticated()) {
     return false
   }
   const reqToken = req.get('X-CSRF-TOKEN')
@@ -71,10 +65,10 @@ const isValidUserToken = (req) => {
 }
 
 const checkUserToken = (req, res, next) => {
-  if(isValidUserToken(req)){
+  if (isValidUserToken(req)) {
     return next()
   }
-  res.send()
+  return res.send()
 }
 
 const encryptObj = (obj) => {
@@ -93,15 +87,13 @@ const decryptObj = (encrypted) => {
   return obj
 }
 
-const getRepositories = (token) => {
-  return fetch('https://api.github.com/installation/repositories', {
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.github.machine-man-preview+json'
-    }
-  })
-  .then(res => res.json())
-}
+const getRepositories = (token) => fetch('https://api.github.com/installation/repositories', {
+  headers: {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github.machine-man-preview+json'
+  }
+})
+  .then((res) => res.json())
 
 const getInstallationRepos = (installationId) => {
   const tokenUrl = `https://api.github.com/installations/${installationId}/access_tokens`
@@ -110,26 +102,28 @@ const getInstallationRepos = (installationId) => {
     expiresIn: (60 * 10), // 10min
     issuer: appId
   })
-  
+
   return fetch(tokenUrl, {
     method: 'POST',
-    headers: {Authorization:`Bearer ${token}`, Accept:'application/vnd.github.machine-man-preview+json'}
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.machine-man-preview+json' }
   })
-  .then(res => res.json())
-  .then(json => getRepositories(json.token))
+    .then((res) => res.json())
+    .then((json) => getRepositories(json.token))
 }
 
 
-const githubAppMiddleware = (app, webpackConfig) => {
+const githubAppMiddleware = (app) => {
   passport.use(new GitHubStrategy({
     clientID: clientId,
-    clientSecret: clientSecret,
+    clientSecret,
     state: true
   }, (accessToken, refreshToken, profile, done) => {
     process.nextTick(() => {
-      profile.accessToken = accessToken
-      profile.userToken = uid(32)
-      return done(null, profile)
+      const userProfile = Object.assign({
+        accessToken,
+        userToken: uid(32)
+      }, profile)
+      return done(null, userProfile)
     })
   }))
 
@@ -137,22 +131,26 @@ const githubAppMiddleware = (app, webpackConfig) => {
     const data = {
       accessToken: user.accessToken,
       userToken: user.userToken,
-      name: user._json.login
+      name: user._json.login // eslint-disable-line no-underscore-dangle
     }
     const encrypted = {
       data: encryptObj(data)
     }
-    const token = generateAccessToken(user._json.login, encrypted)
+    const token = generateAccessToken(
+      user._json.login, // eslint-disable-line no-underscore-dangle
+      encrypted
+    )
+
     done(null, token)
   })
 
   passport.deserializeUser((obj, done) => {
     const data = verifyAccessToken(obj)
-    if(data === null){
+    if (data === null) {
       return done(null, null)
     }
     const decrypted = decryptObj(data.data)
-    done(null, decrypted)
+    return done(null, decrypted)
   })
 
   app.use(cookieSession({
@@ -171,27 +169,30 @@ const githubAppMiddleware = (app, webpackConfig) => {
   app.use(passport.initialize())
   app.use(passport.session())
 
-  app.get('/github/auth', 
+  app.get('/github/auth',
     passport.authenticate('github')
   )
   app.get('/github/auth/callback', (req, res, next) => {
-    passport.authenticate('github', (err, user, info) => {
-      if(err){
-        return next(err)
+    passport.authenticate('github', (err, user) => {
+      if (err) {
+        next(err)
+        return
       }
-      if(!user){
-        return res.redirect('/')
+      if (!user) {
+        res.redirect('/')
+        return
       }
-      req.logIn(user, (err) => {
-        if(err){
-          return next(err)
+      req.logIn(user, (_err) => {
+        if (_err) {
+          next(_err)
+          return
         }
         const authHtml = getAuthHtml(req.user.userToken)
         res.send(authHtml)
       })
     })(req, res, next)
   })
-  app.get('/github/logout', (req, res, next) => {
+  app.get('/github/logout', (req, res) => {
     req.logout()
     const logoutHtml = getLogoutHtml('/')
     res.send(logoutHtml)
@@ -199,54 +200,57 @@ const githubAppMiddleware = (app, webpackConfig) => {
 
   app.get('/github/*', checkUserToken)
   app.get('/github/user', (req, res) => {
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated()) {
       console.log('authenticated')
-      return fetch(`https://api.github.com/users/${req.user.name}`, {
-        headers: {Accept:'application/vnd.github.machine-man-preview+json'}
+      fetch(`https://api.github.com/users/${req.user.name}`, {
+        headers: { Accept: 'application/vnd.github.machine-man-preview+json' }
       })
-      .then(res => res.json())
-      .then(json => {
-        const user = {
-          name: json.login,
-          avatar_url: json.avatar_url + '&s=40'
-        }
-        console.log(JSON.stringify(user))
-        res.send(user)
-      })
-      .catch(err => {
-        console.error(err)
-        res.send({})
-      })
+        .then((_res) => _res.json())
+        .then((json) => {
+          const user = {
+            name: json.login,
+            avatar_url: `${json.avatar_url}&s=40`
+          }
+          console.log(JSON.stringify(user))
+          res.send(user)
+        })
+        .catch((err) => {
+          console.error(err)
+          res.send({})
+        })
+      return
     }
     console.log('not authenticated')
     res.send({})
   })
   app.get('/github/orgs/:instid/repos', (req, res) => {
-    if(!req.isAuthenticated){
-      return res.send([])
+    if (!req.isAuthenticated) {
+      res.send([])
+      return
     }
     getInstallationRepos(req.params.instid)
-    .then(repos => res.send(repos))
-    .catch(err => {
-      res.send([])
-    })
+      .then((repos) => res.send(repos))
+      .catch(() => {
+        res.send([])
+      })
   })
   app.get('/github/orgs', (req, res) => {
-    if(!req.isAuthenticated){
-      return res.send([])
+    if (!req.isAuthenticated) {
+      res.send([])
+      return
     }
     fetch('https://api.github.com/user/installations', {
-      headers: {Authorization:`token ${req.user.accessToken}`, Accept:'application/vnd.github.machine-man-preview+json'}
+      headers: { Authorization: `token ${req.user.accessToken}`, Accept: 'application/vnd.github.machine-man-preview+json' }
     })
-    .then(res => res.json())
-    .then(json => {
-      const orgs = json.installations.filter(installation => installation.target_type === 'Organization')
-      res.send(orgs)
-    })
-    .catch(err => {
-      console.error(err)
-      res.send([])
-    })
+      .then((_res) => _res.json())
+      .then((json) => {
+        const orgs = json.installations.filter((installation) => installation.target_type === 'Organization')
+        res.send(orgs)
+      })
+      .catch((err) => {
+        console.error(err)
+        res.send([])
+      })
   })
 
   return app

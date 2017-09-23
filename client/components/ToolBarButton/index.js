@@ -1,11 +1,16 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
-class ToolBarButton extends React.PureComponent {
-  render() {
-    return (
-      <button onClick={this.props.onClick}>Button</button>
-    )
-  }
+const ToolBarButton = ({ onClick }) => (
+  <button onClick={onClick}>Button</button>
+)
+
+ToolBarButton.defaultProps = {
+  onClick: () => {}
+}
+
+ToolBarButton.propTypes = {
+  onClick: PropTypes.func
 }
 
 export default ToolBarButton

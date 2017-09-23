@@ -1,15 +1,12 @@
-import { applyMiddleware } from 'redux'
-import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
 import createHistory from 'history/createBrowserHistory'
 import { connectRoutes } from 'redux-first-router'
 
-import routesMap, { 
+import routesMap, {
   routeOptions
 } from 'redux/routes/map'
 import {
-  ROUTE_HOME,
-  ROUTE_ORGS
+  ROUTE_HOME
 } from 'redux/routes/name'
 
 const history = createHistory()

@@ -8,8 +8,8 @@ const OPEN_WINDOW = 'window/OPEN_WINDOW'
 export function openWindow(page, features = {}) {
   return {
     type: OPEN_WINDOW,
-    page: page,
-    features: features
+    page,
+    features
   }
 }
 
@@ -27,15 +27,13 @@ const initialState = fromJS({
 
 // Reducer
 export default function reducer(state = initialState, action) {
-  switch(action.type){
-    case OPEN_WINDOW:
-      let features = []
+  switch (action.type) {
+    case OPEN_WINDOW: {
       const featureKeys = Object.keys(action.features)
-      for(const key of featureKeys){
-        features.push(`${key}=${action.features[key]}`)
-      }
+      const features = featureKeys.map((key) => `${key}=${action.features[key]}`)
       const subwindow = window.open(`./${action.page}.html`, `${action.page}`, features.join(','))
       return state.setIn(['list', action.page], subwindow)
+    }
     default:
       return state
   }

@@ -1,50 +1,49 @@
-import { redirect, NOT_FOUND } from 'redux-first-router'
+import { redirect } from 'redux-first-router'
 import { fromJS } from 'immutable'
 
-import * as Route from './name'
-import { 
-  userLoaded, 
+import {
+  userLoaded,
   organizationsLoaded,
   repositoriesLoaded,
-  repositoryLoaded,
-  getUser, 
-  getOrganizations, 
-  getRepositories,
-  setRepositoryId
+  getUser,
+  getOrganizations,
+  getRepositories
 } from 'redux/modules/github'
+import * as Route from './name'
 
 const isAllowed = (type, user, routesMap) => {
   const role = routesMap[type] && routesMap[type].role
 
-  if(!role) return true
-  if(!user || !user.roles) return false
+  if (!role) return true
+  if (!user || !user.roles) return false
 
   return user.roles.includes(role)
 }
 
 export const routeOptions = {
-  location: state => {
+  location: (state) => {
     const loc = state.get('location')
     return (loc && loc.toJS) ? loc.toJS() : loc
   },
   onBeforeChange: (dispatch, getState, action) => {
     const state = getState()
     const user = state.getIn(['github', 'user'])
-    if(typeof user.name === 'undefined' && localStorage.token){
-      return getUser().then((user) => {
-        dispatch(userLoaded(user))
+    if (typeof user.name === 'undefined' && localStorage.token) {
+      getUser().then((userData) => {
+        dispatch(userLoaded(userData))
       })
+      return
     }
     const loc = state.get('location')
     const routesMap = loc.routesMap
     const allowed = isAllowed(action.type, user, routesMap)
 
-    if(!allowed){
-      const action = redirect({ type: 'LOGIN' })
-      return dispatch(action)
+    if (!allowed) {
+      const redirectAction = redirect({ type: 'LOGIN' })
+      dispatch(redirectAction)
     }
   },
-  onAfterChange: (dispatch, getState) => {
+  onAfterChange: () => {
   }
 }
 
@@ -56,7 +55,7 @@ const routesMap = {
   [Route.ROUTE_ORGS]: {
     path: '/edit',
     page: 'RepositoryPage',
-    thunk: async (dispatch, getState) => {
+    thunk: async (dispatch) => {
       getOrganizations().then((data) => {
         dispatch(organizationsLoaded(data))
       })
@@ -70,8 +69,8 @@ const routesMap = {
       const state = getState()
       const orgname = state.get('location').payload.orgname
       getOrganizations().then((orgData) => {
-        const org = orgData.find(org => org.getIn(['account', 'login']) == orgname)
-        if(org){
+        const org = orgData.find((data) => data.getIn(['account', 'login']) == orgname) // eslint-disable-line eqeqeq
+        if (org) {
           getRepositories(org.get('id')).then((data) => {
             dispatch(repositoriesLoaded(data))
           })
@@ -86,13 +85,14 @@ const routesMap = {
     thunk: async (dispatch, getState) => {
       const state = getState()
       const orgname = state.get('location').payload.orgname
-      getOrganizations().then((data) => {
-        if(org){
+      getOrganizations().then((orgData) => {
+        const org = orgData.find((data) => data.getIn(['account', 'login']) == orgname) // eslint-disable-line eqeqeq
+        if (org) {
           getRepositories(org.get('id')).then((data) => {
             dispatch(repositoriesLoaded(data))
           })
         }
-        dispatch(organizationsLoaded(data))
+        dispatch(organizationsLoaded(orgData))
       })
     }
   }

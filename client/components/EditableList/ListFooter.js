@@ -12,6 +12,11 @@ class ListFooter extends React.PureComponent {
   }
 }
 
+ListFooter.defaultProps = {
+  onCreate: () => {},
+  onDelete: () => {}
+}
+
 ListFooter.propTypes = {
   onCreate: PropTypes.func,
   onDelete: PropTypes.func

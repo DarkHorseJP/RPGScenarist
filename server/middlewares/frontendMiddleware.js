@@ -1,8 +1,8 @@
+/* eslint global-require: 0 */
+
 const express = require('express')
 const path = require('path')
 const compression = require('compression')
-const pkg = require(path.resolve(process.cwd(), 'package.json'))
-const fs = require('fs')
 
 const githubAppMiddleware = require('./github')
 
@@ -10,6 +10,7 @@ const addDevMiddlewares = (app, webpackConfig) => {
   const webpack = require('webpack')
   const webpackDevMiddleware = require('webpack-dev-middleware')
   const webpackHotMiddleware = require('webpack-hot-middleware')
+
   const compiler = webpack(webpackConfig)
   const middleware = webpackDevMiddleware(compiler, {
     noInfo: true,
@@ -25,9 +26,9 @@ const addDevMiddlewares = (app, webpackConfig) => {
 
   app.get('*', (req, res) => {
     mfs.readFile(path.join(compiler.outputPath, 'index.html'), (err, file) => {
-      if(err){
+      if (err) {
         res.sendStatus(404)
-      }else{
+      } else {
         res.send(file.toString())
       }
     })
@@ -48,9 +49,9 @@ module.exports = (app, options) => {
   const isProd = process.env.NODE_ENV === 'production'
 
   githubAppMiddleware(app, options)
-  if(isProd){
+  if (isProd) {
     addProdMiddlewares(app, options)
-  }else{
+  } else {
     const webpackConfig = require('../../internals/webpack/webpack.dev.babel')
     addDevMiddlewares(app, webpackConfig)
   }
@@ -58,4 +59,3 @@ module.exports = (app, options) => {
   return app
 }
 
-  

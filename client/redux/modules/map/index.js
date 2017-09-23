@@ -1,6 +1,8 @@
 import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
 
+import request from 'utils/request'
+
 // Constants
 const CHANGE_MAP = 'map/CHANGE_MAP'
 const MAPS_LOADED = 'map/MAPS_LOADED'
@@ -17,7 +19,7 @@ export function changeMap(mapId) {
 export function mapsLoaded(list) {
   return {
     type: MAPS_LOADED,
-    list: list
+    list
   }
 }
 
@@ -25,6 +27,14 @@ export function loadMaps() {
   return {
     type: LOAD_MAPS
   }
+}
+
+export async function getMaps() {
+  const url = 'https://cdn.rawgit.com/magicien/ReactTest2/master/data/maps.json'
+  const mapJson = await request(url)
+  const mapIds = Object.keys(mapJson)
+  const maps = mapIds.map((id) => Object.assign({ id }, mapJson[id]))
+  return fromJS(maps)
 }
 
 // Selector
@@ -39,7 +49,7 @@ export const makeSelectMapId = () => createSelector(
 )
 export const makeSelectMapData = () => createSelector(
   selectMap,
-  (state) => { return {id: state.get('id'), name: state.get('name')} }
+  (state) => ({ id: state.get('id'), name: state.get('name') })
 )
 
 // Initial State
@@ -51,7 +61,7 @@ const initialState = fromJS({
 
 // Reducer
 export default function reducer(state = initialState, action) {
-  switch(action.type){
+  switch (action.type) {
     case CHANGE_MAP:
       return state.set('id', action.id)
     case MAPS_LOADED:

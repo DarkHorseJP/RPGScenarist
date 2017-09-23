@@ -1,5 +1,8 @@
 const chalk = require('chalk')
 const ip = require('ip')
+
+/* eslint no-console: 0 */
+
 const divider = chalk.gray('\n-------------------------------')
 
 const logger = {
@@ -10,7 +13,7 @@ const logger = {
   appStarted: (port, host, tunnelStarted) => {
     console.log(`Server started! ${chalk.green('✓')}`)
 
-    if(tunnelStarted){
+    if (tunnelStarted) {
       console.log(`Tunnel initialized ${chalk.green('✓')}`)
     }
 

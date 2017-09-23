@@ -1,11 +1,15 @@
+/* eslint global-require: 0 */
+
 const express = require('express')
 const logger = require('./logger')
 
 const argv = require('minimist')(process.argv.slice(2))
 const setup = require('./middlewares/frontendMiddleware')
+
 const isDev = process.env.NODE_ENV !== 'production'
 const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require('ngrok') : false
 const resolve = require('path').resolve
+
 const app = express()
 
 const customHost = argv.host || process.env.HOST
@@ -19,8 +23,9 @@ setup(app, {
 })
 
 let server = app
-if(isDev){
+if (isDev) {
   const https = require('https')
+
   const options = {
     key: process.env.SERVER_PRIVATE_KEY,
     cert: process.env.SERVER_CERT
@@ -30,21 +35,22 @@ if(isDev){
 }
 
 server.listen(port, host, (err) => {
-  if(err){
-    return logger.error(err.message)
+  if (err) {
+    logger.error(err.message)
+    return
   }
 
-  if(ngrok){
+  if (ngrok) {
     ngrok.connect(port, (innerErr, url) => {
-      if(innerErr){
-        return logger.error(innerErr)
+      if (innerErr) {
+        logger.error(innerErr)
+        return
       }
-      
+
       logger.appStarted(port, prettyHost, url)
     })
-  }else{
+  } else {
     logger.appStarted(port, prettyHost)
   }
 })
-
 

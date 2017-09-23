@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 import { Transition } from 'transition-group'
@@ -6,27 +7,26 @@ import universal from 'react-universal-component'
 
 import { selectPage } from 'redux/modules/location'
 
-const UniversalComponent = universal(props => import(`pages/${props.page}`), {
+const UniversalComponent = universal((props) => import(`pages/${props.page}`), {
   minDelay: 500,
-  chunkName: props => props.page
+  chunkName: (props) => props.page
 })
 
-const Switcher = (props) => {
-  return (
-    <Transition key={props.page}>
-      <UniversalComponent page={props.page} />
-    </Transition>
-  )
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-  }
-}
+const Switcher = ({ page }) => (
+  <Transition key={page}>
+    <UniversalComponent page={page} />
+  </Transition>
+)
 
 const mapStateToProps = createStructuredSelector({
   page: selectPage
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Switcher)
+Switcher.defaultProps = {}
+
+Switcher.propTypes = {
+  page: PropTypes.node.isRequired
+}
+
+export default connect(mapStateToProps)(Switcher)
 

@@ -1,9 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
 import { FormattedMessage } from 'react-intl'
 import { connect } from 'react-redux'
-//import { createStructuredSelector } from 'reselect'
+// import { createStructuredSelector } from 'reselect'
 import Link from 'redux-first-router-link'
 
 import CommonHeader from 'containers/CommonHeader'
@@ -28,15 +27,11 @@ class HomePage extends React.PureComponent {
   }
 }
 
+HomePage.defaultProps = {
+}
+
 HomePage.propTypes = {
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-  }
-}
-
-const mapStateToProps = (state) => {return {}}
-
-export default connect(mapStateToProps, mapDispatchToProps)(HomePage)
+export default connect()(HomePage)
 

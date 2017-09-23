@@ -1,15 +1,11 @@
 import React from 'react'
-//import { FormattedMessage } from 'react-intl'
+// import { FormattedMessage } from 'react-intl'
 
-//import messages from './messages'
+// import messages from './messages'
 
-class Header extends React.Component {
-  render() {
-    return (
-      <span></span>
-    )
-  }
-}
+const Header = () => (
+  <span />
+)
 
 export default Header
 

@@ -1,16 +1,15 @@
 import React from 'react'
-import { connect, dispatch } from 'react-redux'
-import { createStructuredSelector } from 'reselect'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import styled from 'styled-components'
 
 import ToolBarButton from 'components/ToolBarButton'
+import { openWindow } from 'redux/modules/window'
 
 const Wrapper = styled.div`
   height: 50px;
   background-color: lightsteelblue;
 `
-
-import { openWindow } from 'redux/modules/window'
 
 class ToolBar extends React.PureComponent {
   openWindow(page) {
@@ -40,13 +39,18 @@ class ToolBar extends React.PureComponent {
   }
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    onOpenWindow: (page, features) => { dispatch(openWindow(page, features)) }
-  }
+const mapDispatchToProps = (dispatch) => ({
+  onOpenWindow: (page, features) => { dispatch(openWindow(page, features)) }
+})
+
+const mapStateToProps = () => ({})
+
+ToolBar.defaultProps = {
 }
 
-const mapStateToProps = () => {return {}}
+ToolBar.propTypes = {
+  onOpenWindow: PropTypes.func.isRequired
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(ToolBar)
 

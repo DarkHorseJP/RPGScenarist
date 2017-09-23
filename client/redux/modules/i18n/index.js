@@ -33,25 +33,25 @@ export const translationMessages = {
 }
 
 export const renderTranslationMessages = (render) => {
-  //if(module.hot){
+  // if(module.hot){
   //  module.hot.accept('redux/modules/i18n', () => {
   //    render(translationMessages)
   //  })
-  //}
-  
-  if(!window.Intl){
+  // }
+
+  if (!window.Intl) {
     (new Promise((resolve) => {
       resolve(import('intl'))
     }))
-    .then(() => Promise.all([
+      .then(() => Promise.all([
       import('intl/locale-data/jsonp/en.js'),
       import('intl/locale-data/jsonp/ja.js')
-    ]))
-    .then(() => render(translationMessages))
-    .catch((err) => {
-      throw err
-    })
-  }else{
+      ]))
+      .then(() => render(translationMessages))
+      .catch((err) => {
+        throw err
+      })
+  } else {
     render(translationMessages)
   }
 }

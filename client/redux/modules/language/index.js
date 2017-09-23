@@ -22,15 +22,15 @@ export const makeSelectLocale = () => createSelector(
   selectLanguage,
   (languageState) => languageState.get('locale')
 )
-//export {
+// export {
 //  selectLanguage,
 //  makeSelectLocale
-//}
+// }
 
 // Initial State
 let defaultLocale = DEFAULT_LOCALE
-if(typeof window === 'object'){
-  if(window.navigator.languages && window.navigator.languages.length > 0){
+if (typeof window === 'object') {
+  if (window.navigator.languages && window.navigator.languages.length > 0) {
     defaultLocale = window.navigator.languages[0].split('-')[0]
   }
 }
@@ -41,7 +41,7 @@ const initialState = fromJS({
 
 // Reducer
 export default function languageProviderReducer(state = initialState, action) {
-  switch(action.type){
+  switch (action.type) {
     case CHANGE_LOCALE:
       return state.set('locale', action.locale)
     default:

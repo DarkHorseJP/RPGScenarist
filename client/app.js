@@ -53,7 +53,8 @@ const render = (messages) => {
 
 renderTranslationMessages(render)
 
-if(process.env.NODE_ENV === 'production'){
+/* eslint global-require: 0 */
+if (process.env.NODE_ENV === 'production') {
   require('offline-plugin/runtime').install()
 }
 

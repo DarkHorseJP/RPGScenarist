@@ -1,11 +1,11 @@
 import React from 'react'
-//import { FormattedMessage } from 'react-intl'
+// import { FormattedMessage } from 'react-intl'
 
-//import messages from './messages'
+// import messages from './messages'
 
 function Footer() {
   return (
-    <span></span>
+    <span />
   )
 }
 export default Footer

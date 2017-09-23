@@ -1,36 +1,35 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import ImmutablePropTypes from 'react-immutable-proptypes'
+import { fromJS } from 'immutable'
 import Helmet from 'react-helmet'
-import { FormattedMessage, FormattedDate } from 'react-intl'
 import { connect } from 'react-redux'
-import { Panel, ListGroup, ListGroupItem, PageHeader } from 'react-bootstrap'
+import { PageHeader } from 'react-bootstrap'
 import { createStructuredSelector } from 'reselect'
 
-import CommonHeader from 'containers/CommonHeader'
-import EditorHeader from 'containers/EditorHeader'
-import EditableList from 'components/EditableList'
-import OrganizationList from './OrganizationList'
-import RepositoryList from './RepositoryList'
-import messages from './messages'
-
-import { 
+import {
   selectOrganizationName,
   selectOrganizationList,
   selectRepositoryList
 } from 'redux/modules/github'
 
+import CommonHeader from 'containers/CommonHeader'
+
+import OrganizationList from './OrganizationList'
+import RepositoryList from './RepositoryList'
+
 class RepositoryPage extends React.Component {
   componentDidMount() {
   }
-  
+
   render() {
     const orgName = this.props.orgName || ''
     return (
       <div>
         <Helmet title="Repository" />
         <CommonHeader />
-        <div className="row" style={{margin: 0}}>
-          <div className="col-sm-3" style={{padding: '15px'}}>
+        <div className="row" style={{ margin: 0 }}>
+          <div className="col-sm-3" style={{ padding: '15px' }}>
             <OrganizationList list={this.props.orgList} />
           </div>
           <div className="col-sm-9">
@@ -43,13 +42,8 @@ class RepositoryPage extends React.Component {
   }
 }
 
-//RepositoryPage.propTypes = {
-//}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
+// RepositoryPage.propTypes = {
+// }
 
 const mapStateToProps = createStructuredSelector({
   orgName: selectOrganizationName,
@@ -57,5 +51,17 @@ const mapStateToProps = createStructuredSelector({
   repoList: selectRepositoryList
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(RepositoryPage)
+RepositoryPage.defaultProps = {
+  orgName: '',
+  orgList: fromJS([]),
+  repoList: fromJS([])
+}
+
+RepositoryPage.propTypes = {
+  orgName: PropTypes.string,
+  orgList: ImmutablePropTypes.list,
+  repoList: ImmutablePropTypes.list
+}
+
+export default connect(mapStateToProps)(RepositoryPage)
 
