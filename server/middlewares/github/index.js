@@ -87,6 +87,20 @@ const decryptObj = (encrypted) => {
   return obj
 }
 
+const getAccessToken = (instId) => {
+  const tokenUrl = `https://api.github.com/installations/${instId}/access_tokens`
+  const token = jwt.sign({}, privateKey, {
+    algorithm: 'RS256',
+    expiresIn: (60 * 10), // 10min
+    issuer: appId
+  })
+  return fetch(tokenUrl, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.machine-man-preview+json' }
+  }).then((res) => res.json())
+    .then((json) => json.token)
+}
+
 const getRepositories = (token) => fetch('https://api.github.com/installation/repositories', {
   headers: {
     Authorization: `token ${token}`,
@@ -95,22 +109,19 @@ const getRepositories = (token) => fetch('https://api.github.com/installation/re
 })
   .then((res) => res.json())
 
-const getInstallationRepos = (installationId) => {
-  const tokenUrl = `https://api.github.com/installations/${installationId}/access_tokens`
-  const token = jwt.sign({}, privateKey, {
-    algorithm: 'RS256',
-    expiresIn: (60 * 10), // 10min
-    issuer: appId
-  })
+const getInstallationRepos = (instId) => (
+  getAccessToken(instId)
+    .then((token) => getRepositories(token))
+)
 
-  return fetch(tokenUrl, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.machine-man-preview+json' }
-  })
-    .then((res) => res.json())
-    .then((json) => getRepositories(json.token))
-}
-
+// const setRepositoryDescription = (instId, repoId, desc) => {
+//   getAccessToken(instId)
+//     .then((token) => 
+// }
+const setRepositoryDescription = (instId) => (
+  getAccessToken(instId)
+    .then(() => 'desc')
+)
 
 const githubAppMiddleware = (app) => {
   passport.use(new GitHubStrategy({
@@ -223,6 +234,28 @@ const githubAppMiddleware = (app) => {
     console.log('not authenticated')
     res.send({})
   })
+
+  app.put('/github/orgs/:instid/repos/:repoid/desc', (req, res) => {
+    if (!req.isAuthenticated) {
+      res.send([])
+      return
+    }
+    const desc = req.body.desc
+    if (!desc) {
+      res.send([])
+      return
+    }
+    setRepositoryDescription(
+      req.params.instid,
+      req.params.repoid,
+      desc
+    ).then((result) => {
+      res.send(result)
+    }).catch(() => {
+      res.send([])
+    })
+  })
+
   app.get('/github/orgs/:instid/repos', (req, res) => {
     if (!req.isAuthenticated) {
       res.send([])

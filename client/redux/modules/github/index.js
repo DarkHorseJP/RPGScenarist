@@ -59,11 +59,12 @@ export function loadRepositories(instid) {
   }
 }
 
-const getOptions = () => ({
+const getOptions = (props) => ({
   headers: {
     'X-CSRF-TOKEN': localStorage.getItem('token')
   },
-  credentials: 'same-origin'
+  credentials: 'same-origin',
+  ...props
 })
 
 export async function getUser() {
@@ -88,6 +89,18 @@ export async function getRepository(instId, repoId) {
   const repositories = getRepositories(instId)
   const repository = repositories.find((repo) => repo.get('id') == repoId) // eslint-disable-line eqeqeq
   return repository
+}
+
+export async function setRepositoryDescription(instId, repoId, desc) {
+  const url = `/github/orgs/${instId}/repos/${repoId}/desc`
+  const options = getOptions({
+    method: 'POST',
+    body: JSON.stringify({
+      desc
+    })
+  })
+  const result = await request(url, options)
+  return result
 }
 
 // Selector
@@ -141,6 +154,7 @@ const initialState = fromJS({
 // Reducer
 export default function reducer(state = initialState, action) {
   switch (action.type) {
+    // Route actions
     case ROUTE_ORGS:
     case ROUTE_ORG_REPOS:
       return state.set('organizationName', action.payload.orgname)
