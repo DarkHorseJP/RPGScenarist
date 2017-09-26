@@ -200,6 +200,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
+    "body-parser": "^1.18.2",
     "chalk": "^2.1.0",
     "cheerio": "^1.0.0-rc.2",
     "circular-dependency-plugin": "^4.2.0",
