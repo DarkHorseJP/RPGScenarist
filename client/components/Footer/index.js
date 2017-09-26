@@ -3,9 +3,7 @@ import React from 'react'
 
 // import messages from './messages'
 
-function Footer() {
-  return (
-    <span />
-  )
-}
+const Footer = () => (
+  <span />
+)
 export default Footer

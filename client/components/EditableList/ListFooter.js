@@ -1,16 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-class ListFooter extends React.PureComponent {
-  render() {
-    return (
-      <div>
-        <button onClick={this.props.onCreate}>+</button>
-        <button onClick={this.props.onDelete}>-</button>
-      </div>
-    )
-  }
-}
+const ListFooter = ({ onCreate, onDelete }) => (
+  <div>
+    <button onClick={onCreate}>+</button>
+    <button onClick={onDelete}>-</button>
+  </div>
+)
 
 ListFooter.defaultProps = {
   onCreate: () => {},
@@ -23,3 +19,4 @@ ListFooter.propTypes = {
 }
 
 export default ListFooter
+
