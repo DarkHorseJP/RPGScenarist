@@ -28,7 +28,10 @@ export const routeOptions = {
   onBeforeChange: (dispatch, getState, action) => {
     const state = getState()
     const user = state.getIn(['github', 'user'])
-    if (typeof user.name === 'undefined' && localStorage.token) {
+    if (typeof user.name === 'undefined'
+      && window
+      && window.localStorage
+      && window.localStorage.token) {
       getUser().then((userData) => {
         dispatch(userLoaded(userData))
       })

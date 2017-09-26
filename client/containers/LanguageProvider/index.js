@@ -6,7 +6,7 @@ import { IntlProvider } from 'react-intl'
 
 import { makeSelectLocale } from 'redux/modules/language'
 
-class LanguageProvider extends React.PureComponent {
+export class LanguageProvider extends React.PureComponent {
   render() {
     return (
       <IntlProvider

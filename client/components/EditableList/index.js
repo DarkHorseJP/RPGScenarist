@@ -1,13 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ImmutablePropTypes from 'react-immutable-proptypes'
+import { fromJS } from 'immutable'
 import { ListGroup, ListGroupItem } from 'react-bootstrap'
 import styled from 'styled-components'
 
 import ListFooter from './ListFooter'
 
+const footerHeight = '30px'
 const Wrapper = styled.div`
-  height: calc(${(props) => props.height} - 30px);
+  height: calc(${(props) => props.height} - ${footerHeight});
   overflow-y: scroll;
 `
 
@@ -51,7 +53,7 @@ EditableList.defaultProps = {
   className: '',
   style: {},
   height: '100hv',
-  items: [],
+  items: fromJS([]),
   selectedKey: '',
   keyName: 'id',
   valueName: 'id',
