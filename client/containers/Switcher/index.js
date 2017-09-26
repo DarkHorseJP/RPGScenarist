@@ -8,7 +8,8 @@ import universal from 'react-universal-component'
 import { selectPage } from 'redux/modules/location'
 
 const UniversalComponent = universal((props) => import(`pages/${props.page}/index`), {
-  minDelay: 500
+  minDelay: 500,
+  chunkName: (props) => props.page
 })
 
 const Switcher = ({ page }) => (
