@@ -2,6 +2,9 @@
   "pages.HomePage.message01": "Hello!",
 
   "pages.RepositoryPage.updatedAt": "Updated At",
+  "pages.RepositoryPage.newRepositoryName": "New Repository Name",
+  "pages.RepositoryPage.cancel": "Cancel",
+  "pages.RepositoryPage.create": "Create",
 
   "pages.NotFoundPage.header": "Page not found"
 }

@@ -59,13 +59,26 @@ export function loadRepositories(instid) {
   }
 }
 
-const getOptions = (props) => ({
-  headers: {
+const getOptions = (props) => {
+  let reqHeader = {
     'X-CSRF-TOKEN': localStorage.getItem('token')
-  },
-  credentials: 'same-origin',
-  ...props
-})
+  }
+  let prop = {
+    credentials: 'same-origin'
+  }
+
+  if (props) {
+    const { headers, ...userProp } = props
+    reqHeader = Object.assign(reqHeader, headers)
+    prop = Object.assign(prop, userProp)
+  }
+
+  const options = {
+    headers: reqHeader,
+    ...prop
+  }
+  return options
+}
 
 export async function getUser() {
   const url = '/github/user'
@@ -91,11 +104,30 @@ export async function getRepository(instId, repoId) {
   return repository
 }
 
-export async function setRepositoryDescription(instId, repoId, desc) {
-  const url = `/github/orgs/${instId}/repos/${repoId}/desc`
+export async function createRepository(instId, owner, name) {
+  const url = `/github/orgs/${instId}/repos/${owner}`
   const options = getOptions({
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({
+      name
+    })
+  })
+  const result = await request(url, options)
+  return result
+}
+
+export async function setRepositoryInfo(instId, owner, repo, name, desc) {
+  const url = `/github/orgs/${instId}/repos/${owner}/${repo}`
+  const options = getOptions({
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name,
       desc
     })
   })
@@ -123,7 +155,7 @@ export const selectOrganization = createSelector(
 )
 export const selectInstallationId = createSelector(
   selectOrganization,
-  (org) => org.get('id')
+  (org) => (org ? org.get('id') : null)
 )
 export const selectRepositoryList = createSelector(
   selectGithub,

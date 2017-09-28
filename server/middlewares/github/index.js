@@ -101,26 +101,54 @@ const getAccessToken = (instId) => {
     .then((json) => json.token)
 }
 
-const getRepositories = (token) => fetch('https://api.github.com/installation/repositories', {
-  headers: {
-    Authorization: `token ${token}`,
-    Accept: 'application/vnd.github.machine-man-preview+json'
-  }
-})
-  .then((res) => res.json())
+const getRepositories = (token) => (
+  fetch('https://api.github.com/installation/repositories', {
+    headers: {
+      Authorization: `token ${token}`,
+      Accept: 'application/vnd.github.machine-man-preview+json'
+    }
+  }).then((res) => res.json())
+)
 
 const getInstallationRepos = (instId) => (
   getAccessToken(instId)
     .then((token) => getRepositories(token))
 )
 
-// const setRepositoryDescription = (instId, repoId, desc) => {
-//   getAccessToken(instId)
-//     .then((token) => 
-// }
-const setRepositoryDescription = (instId) => (
+const setRepositoryInfo = (instId, owner, repo, name, desc) => (
   getAccessToken(instId)
-    .then(() => 'desc')
+    .then((token) => (
+      fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: 'application/vnd.github.machine-man-preview+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          description: desc
+        })
+      })
+    ))
+    .then((res) => res.json())
+)
+
+const createNewRepository = (instId, orgName, repoName) => (
+  getAccessToken(instId)
+    .then((token) => (
+      fetch(`https://api.github.com/orgs/${orgName}/repos`, {
+        method: 'POST',
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: 'application/vnd.github.machine-man-preview+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: repoName
+        })
+      })
+    ))
 )
 
 const githubAppMiddleware = (app) => {
@@ -235,19 +263,43 @@ const githubAppMiddleware = (app) => {
     res.send({})
   })
 
-  app.put('/github/orgs/:instid/repos/:repoid/desc', (req, res) => {
+  app.post('/github/orgs/:instid/repos/:owner', (req, res) => {
     if (!req.isAuthenticated) {
       res.send([])
       return
     }
-    const desc = req.body.desc
-    if (!desc) {
+    const name = req.body.name
+    if (!name) {
       res.send([])
       return
     }
-    setRepositoryDescription(
+    createNewRepository(
       req.params.instid,
-      req.params.repoid,
+      req.params.owner,
+      name
+    ).then((result) => {
+      res.send(result)
+    }).catch(() => {
+      res.send([])
+    })
+  })
+
+  app.patch('/github/orgs/:instid/repos/:owner/:repo', (req, res) => {
+    if (!req.isAuthenticated) {
+      res.send([])
+      return
+    }
+    const name = req.body.name
+    const desc = req.body.desc
+    if (!desc || !name) {
+      res.send([])
+      return
+    }
+    setRepositoryInfo(
+      req.params.instid,
+      req.params.owner,
+      req.params.repo,
+      name,
       desc
     ).then((result) => {
       res.send(result)
