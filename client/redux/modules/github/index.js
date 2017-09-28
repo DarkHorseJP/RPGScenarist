@@ -59,12 +59,26 @@ export function loadRepositories(instid) {
   }
 }
 
-const getOptions = () => ({
-  headers: {
+const getOptions = (props) => {
+  let reqHeader = {
     'X-CSRF-TOKEN': localStorage.getItem('token')
-  },
-  credentials: 'same-origin'
-})
+  }
+  let prop = {
+    credentials: 'same-origin'
+  }
+
+  if (props) {
+    const { headers, ...userProp } = props
+    reqHeader = Object.assign(reqHeader, headers)
+    prop = Object.assign(prop, userProp)
+  }
+
+  const options = {
+    headers: reqHeader,
+    ...prop
+  }
+  return options
+}
 
 export async function getUser() {
   const url = '/github/user'
@@ -90,6 +104,37 @@ export async function getRepository(instId, repoId) {
   return repository
 }
 
+export async function createRepository(instId, owner, name) {
+  const url = `/github/orgs/${instId}/repos/${owner}`
+  const options = getOptions({
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name
+    })
+  })
+  const result = await request(url, options)
+  return result
+}
+
+export async function setRepositoryInfo(instId, owner, repo, name, desc) {
+  const url = `/github/orgs/${instId}/repos/${owner}/${repo}`
+  const options = getOptions({
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name,
+      desc
+    })
+  })
+  const result = await request(url, options)
+  return result
+}
+
 // Selector
 export const selectGithub = (state) => state.get('github')
 export const selectGithubUser = createSelector(
@@ -110,7 +155,7 @@ export const selectOrganization = createSelector(
 )
 export const selectInstallationId = createSelector(
   selectOrganization,
-  (org) => org.get('id')
+  (org) => (org ? org.get('id') : null)
 )
 export const selectRepositoryList = createSelector(
   selectGithub,
@@ -141,6 +186,7 @@ const initialState = fromJS({
 // Reducer
 export default function reducer(state = initialState, action) {
   switch (action.type) {
+    // Route actions
     case ROUTE_ORGS:
     case ROUTE_ORG_REPOS:
       return state.set('organizationName', action.payload.orgname)

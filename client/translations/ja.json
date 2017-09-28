@@ -2,6 +2,9 @@
   "pages.HomePage.message01": "こんにちは！",
 
   "pages.RepositoryPage.updatedAt": "更新日 ",
+  "pages.RepositoryPage.newRepositoryName": "新規リポジトリ名",
+  "pages.RepositoryPage.cancel": "キャンセル",
+  "pages.RepositoryPage.create": "作成",
 
   "pages.NotFoundPage.header": "ページが見つかりませんでした"
 }

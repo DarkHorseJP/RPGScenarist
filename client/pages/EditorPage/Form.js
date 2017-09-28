@@ -11,7 +11,15 @@ let EditorForm = ({ handleSubmit }) => (
   <Form horizontal onSubmit={handleSubmit}>
     <FormGroup>
       <Col componentClass={ControlLabel} sm={2}>
-          Description
+        Name
+      </Col>
+      <Col sm={10}>
+        <Field name="name" component={ReduxFormControl} type="text" />
+      </Col>
+    </FormGroup>
+    <FormGroup>
+      <Col componentClass={ControlLabel} sm={2}>
+        Description
       </Col>
       <Col sm={10}>
         <Field name="description" component={ReduxFormControl} type="text" />

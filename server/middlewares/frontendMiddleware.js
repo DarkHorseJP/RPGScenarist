@@ -3,6 +3,7 @@
 const express = require('express')
 const path = require('path')
 const compression = require('compression')
+const bodyParser = require('body-parser')
 
 const githubAppMiddleware = require('./github')
 
@@ -47,6 +48,9 @@ const addProdMiddlewares = (app, options) => {
 
 module.exports = (app, options) => {
   const isProd = process.env.NODE_ENV === 'production'
+
+  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(bodyParser.json())
 
   githubAppMiddleware(app, options)
   if (isProd) {
