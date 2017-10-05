@@ -5,8 +5,9 @@ import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 
 import EditableList from 'components/EditableList'
-import MapDataEditor from 'components/MapDataEditor'
 import { changeMap, makeSelectMapId, makeSelectMapList, makeSelectMapData } from 'redux/modules/map'
+
+import MapDataEditor from '../MapDataEditor'
 
 const MapEditor = ({ list, id, onChangeMap, data }) => (
   <div className="row">

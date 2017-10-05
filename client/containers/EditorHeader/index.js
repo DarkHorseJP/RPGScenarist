@@ -15,11 +15,18 @@ import {
   selectRepositoryName
 } from 'redux/modules/github'
 
-const EditorHeader = ({ org, orgName, repoName, children }) => {
+const EditorHeader = ({ org, orgName, repoName, children, pageName }) => {
   let orgLink = '#'
   let orgAvatar = ''
   let repLink = '#'
   let separator = ''
+
+  let mapLink = '#'
+  let modelLink = '#'
+  let motionLink = '#'
+  let imageLink = '#'
+  let musicLink = '#'
+  let soundLink = '#'
 
   if (org) {
     orgLink = `/edit/${orgName}`
@@ -28,6 +35,13 @@ const EditorHeader = ({ org, orgName, repoName, children }) => {
     if (repoName) {
       repLink = `/edit/${orgName}/${repoName}`
       separator = ' / '
+
+      mapLink = `${repLink}/maps`
+      modelLink = `${repLink}/model`
+      motionLink = `${repLink}/motions`
+      imageLink = `${repLink}/images`
+      musicLink = `${repLink}/musics`
+      soundLink = `${repLink}/sounds`
     }
   }
 
@@ -50,8 +64,14 @@ const EditorHeader = ({ org, orgName, repoName, children }) => {
       <Navbar.Collapse>
         {children}
         <Nav pullRight>
-          <NavDropdown title="PageName" id="editorPageName">
-            <LinkItem tag={MenuItem} href="#">AnotherPageName</LinkItem>
+          <NavDropdown title={pageName} id="editorPageName">
+            <LinkItem tag={MenuItem} href={repLink}>Info</LinkItem>
+            <LinkItem tag={MenuItem} href={mapLink}>Map</LinkItem>
+            <LinkItem tag={MenuItem} href={modelLink}>Model</LinkItem>
+            <LinkItem tag={MenuItem} href={motionLink}>Motion</LinkItem>
+            <LinkItem tag={MenuItem} href={imageLink}>Image</LinkItem>
+            <LinkItem tag={MenuItem} href={musicLink}>Music</LinkItem>
+            <LinkItem tag={MenuItem} href={soundLink}>Sound</LinkItem>
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
@@ -69,14 +89,16 @@ EditorHeader.defaultProps = {
   org: null,
   orgName: null,
   repoName: null,
-  children: null
+  children: null,
+  pageName: ''
 }
 
 EditorHeader.propTypes = {
   org: ImmutablePropTypes.map,
   orgName: PropTypes.string,
   repoName: PropTypes.string,
-  children: PropTypes.node
+  children: PropTypes.node,
+  pageName: PropTypes.string
 }
 
 export default connect(mapStateToProps)(EditorHeader)

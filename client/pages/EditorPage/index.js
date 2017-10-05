@@ -38,7 +38,7 @@ class EditorPage extends React.PureComponent {
       <div>
         <Helmet title="Editor" />
         <CommonHeader />
-        <EditorHeader />
+        <EditorHeader pageName="Info" />
         <PageHeader>Header</PageHeader>
         <Form onSubmit={(values) => this.onSubmit(values)} />
       </div>

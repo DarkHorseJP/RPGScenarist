@@ -29,9 +29,13 @@ export const selectRoutesMap = createSelector(
   selectLocation,
   (state) => state.routesMap
 )
-export const selectPage = createSelector(
+export const selectRouteDefinition = createSelector(
   selectLocation,
-  (state) => state.routesMap[state.type].page
+  (state) => state.routesMap[state.type]
+)
+export const selectPage = createSelector(
+  selectRouteDefinition,
+  (state) => (state ? state.page : null)
 )
 
 // middleware

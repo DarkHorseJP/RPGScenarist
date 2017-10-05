@@ -6,10 +6,10 @@ import { connect } from 'react-redux'
 // import { createStructuredSelector } from 'reselect'
 
 import ToolBar from 'containers/ToolBar'
-import MapEditor from 'containers/MapEditor'
-
 import { loadMaps } from 'redux/modules/map'
 // import mapSagas from 'redux/modules/map/sagas'
+
+import MapEditor from './MapEditor'
 
 class MapPage extends React.PureComponent {
   componentDidMount() {

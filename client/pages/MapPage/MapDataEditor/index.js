@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import MapInfoEditor from 'components/MapInfoEditor'
-import MapGeometryEditor from 'components/MapGeometryEditor'
+import MapInfoEditor from '../MapInfoEditor'
+import MapGeometryEditor from '../MapGeometryEditor'
 
 const MapDataEditor = ({ className, data }) => (
   <div className={className}>

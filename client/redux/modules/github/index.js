@@ -3,7 +3,8 @@ import { createSelector } from 'reselect'
 import {
   ROUTE_ORGS,
   ROUTE_ORG_REPOS,
-  ROUTE_EDIT
+  ROUTE_EDIT,
+  ROUTE_IMAGE_EDIT
 } from 'redux/routes/name'
 
 import request from 'utils/request'
@@ -17,6 +18,9 @@ const ORGANIZATIONS_LOADED = 'github/ORGANIZATIONS_LOADED'
 
 const LOAD_REPOSITORIES = 'github/LOAD_REPOSITORIES'
 const REPOSITORIES_LOADED = 'github/REPOSITORIES_LOADED'
+
+const LOAD_GAME_DATA = 'github/LOAD_GAME_DATA'
+const GAME_DATA_LOADED = 'github/GAME_DATA_LOADED'
 
 // Actions
 export function loadUser() {
@@ -56,6 +60,27 @@ export function loadRepositories(instid) {
   return {
     type: LOAD_REPOSITORIES,
     instid
+  }
+}
+
+export function gameDataLoaded(data) {
+  return {
+    type: GAME_DATA_LOADED,
+    data
+  }
+}
+
+export function loadGameData(repoid) {
+  return {
+    type: LOAD_GAME_DATA,
+    repoid
+  }
+}
+
+export function changeImage(orgname, reponame, imageid) {
+  return {
+    type: ROUTE_IMAGE_EDIT,
+    payload: { orgname, reponame, imageid }
   }
 }
 
@@ -102,6 +127,12 @@ export async function getRepository(instId, repoId) {
   const repositories = getRepositories(instId)
   const repository = repositories.find((repo) => repo.get('id') == repoId) // eslint-disable-line eqeqeq
   return repository
+}
+
+export async function getGameData(orgname, reponame, branch = 'master') {
+  const url = `https://rawgit.com/${orgname}/${reponame}/${branch}/data.json`
+  const json = await request(url)
+  return fromJS(json)
 }
 
 export async function createRepository(instId, owner, name) {
@@ -174,13 +205,26 @@ export const selectRepositoryId = createSelector(
   (repo) => repo.get('id')
 )
 
+export const selectGameData = createSelector(
+  selectGithub,
+  (state) => state.get('gameData')
+)
+
+export const selectGameImages = createSelector(
+  selectGameData,
+  (state) => state.get('images')
+)
+
 // Initial State
 const initialState = fromJS({
   user: {},
   organizations: [],
   organizationName: '',
   repositories: [],
-  repositoryName: ''
+  repositoryName: '',
+
+  gameData: {},
+  imageData: {}
 })
 
 // Reducer
@@ -192,8 +236,13 @@ export default function reducer(state = initialState, action) {
       return state.set('organizationName', action.payload.orgname)
     case ROUTE_EDIT:
       return state.withMutations((s) =>
-        s.set('repositoryName', action.payload.reponame)
-          .set('organizationName', action.payload.orgname)
+        s.set('organizationName', action.payload.orgname)
+          .set('repositoryName', action.payload.reponame)
+      )
+    case ROUTE_IMAGE_EDIT:
+      return state.withMutations((s) =>
+        s.set('organizationName', action.payload.orgname)
+          .set('repositoryName', action.payload.reponame)
       )
 
     case USER_LOADED:
@@ -202,6 +251,8 @@ export default function reducer(state = initialState, action) {
       return state.set('organizations', action.list)
     case REPOSITORIES_LOADED:
       return state.set('repositories', action.list)
+    case GAME_DATA_LOADED:
+      return state.set('gameData', action.data)
     default:
       return state
   }

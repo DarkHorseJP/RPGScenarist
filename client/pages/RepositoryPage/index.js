@@ -77,7 +77,7 @@ const mapStateToProps = createStructuredSelector({
 })
 
 RepositoryPage.defaultProps = {
-  instId: '',
+  instId: 0,
   orgName: '',
   orgList: fromJS([]),
   repoList: fromJS([])
@@ -85,7 +85,7 @@ RepositoryPage.defaultProps = {
 
 RepositoryPage.propTypes = {
   onShowDialog: PropTypes.func.isRequired,
-  instId: PropTypes.string,
+  instId: PropTypes.number,
   orgName: PropTypes.string,
   orgList: ImmutablePropTypes.list,
   repoList: ImmutablePropTypes.list
