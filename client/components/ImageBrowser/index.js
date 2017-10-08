@@ -4,32 +4,33 @@ import ImmutablePropTypes from 'react-immutable-proptypes'
 import { fromJS } from 'immutable'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
-import { Row, Col } from 'react-bootstrap'
+import { Row, Col, Thumbnail } from 'react-bootstrap'
 
-import { createGameImage } from 'components/GameImage'
+// import { createGameImage } from 'components/GameImage'
 import {
   selectOrganizationName,
   selectRepositoryName,
-  selectGameImages,
   changeImage
 } from 'redux/modules/github'
 import {
+  selectImageFiles,
   selectImageId
 } from 'redux/modules/image'
 
 const ImageBrowser = ({ list, selectedId, onChangeImage, orgName, repoName }) => {
-  const images = list.map((image) => {
-    const id = image.get('id')
+  /* eslint-disable react/no-array-index-key */
+  const images = list.map((file, id) => {
     const active = (id === selectedId)
-    const GameImage = createGameImage(id)
+    const src = URL.createObjectURL(file)
     return (
       <Col sm={4} key={id}>
-        <GameImage href="#" onClick={() => onChangeImage(orgName, repoName, id)} active={active}>
+        <Thumbnail src={src} href="#" onClick={() => onChangeImage(orgName, repoName, id)} active={active}>
           {id}
-        </GameImage>
+        </Thumbnail>
       </Col>
     )
-  })
+  }).toArray()
+  /* eslint-enable react/no-array-index-key */
 
   return (
     <Row>
@@ -53,21 +54,21 @@ const mapStateToProps = createStructuredSelector({
   orgName: selectOrganizationName,
   repoName: selectRepositoryName,
   selectedId: selectImageId,
-  list: selectGameImages
+  list: selectImageFiles
 })
 
 ImageBrowser.defaultProps = {
   orgName: '',
   repoName: '',
   selectedId: '',
-  list: fromJS([])
+  list: fromJS({})
 }
 
 ImageBrowser.propTypes = {
   orgName: PropTypes.string,
   repoName: PropTypes.string,
   selectedId: PropTypes.string,
-  list: ImmutablePropTypes.list,
+  list: ImmutablePropTypes.map,
   onChangeImage: PropTypes.func.isRequired
 }
 

@@ -3,61 +3,74 @@ import { createSelector } from 'reselect'
 import {
   ROUTE_IMAGE_EDIT
 } from 'redux/routes/name'
-
-import request from 'utils/request'
+import {
+  DB_LOADED
+} from 'redux/modules/db'
 
 // Constants
-const IMAGES_LOADED = 'image/IMAGES_LOADED'
-const IMAGE_LOADED = 'image/IMAGE_LOADED'
 
 // Actions
-export function imagesLoaded(images) {
-  return {
-    type: IMAGES_LOADED,
-    images
-  }
-}
-
-export function imageLoaded(id, props) {
-  return {
-    type: IMAGE_LOADED,
-    id,
-    props
-  }
-}
-
-export async function getImageData(orgname, reponame, id, branch = 'master') {
-  const domain = 'rawgit.com'
-  const url = `https://${domain}/${orgname}/${reponame}/${branch}/images/${id}/image.json`
-  return request(url)
-}
 
 // Selector
 export const selectImage = (state) => state.get('image')
-export const makeSelectImageUrl = (id) => createSelector(
-  selectImage,
-  (state) => state.getIn([id, 'url'])
-)
 export const selectImageId = createSelector(
   selectImage,
-  (state) => state.get('_selectedId')
+  (state) => state.get('id')
+)
+export const selectImageFiles = createSelector(
+  selectImage,
+  (state) => state.get('files')
+)
+export const makeSelectImageUrl = (id) => createSelector(
+  selectImageFiles,
+  (state) => {
+    const file = state.get(id)
+    if (!file) {
+      return null
+    }
+    return URL.createObjectURL(file)
+  }
 )
 
 // Initial State
 const initialState = fromJS({
-  _selectedId: ''
+  selected: '',
+  files: {}
 })
 
 // Reducer
+const parseDBData = (state, data) => {
+  const imageData = Object.values(data.files).filter((file) => file.category === 'images')
+  const files = {}
+  const jsons = {}
+  imageData.forEach((file) => {
+    if (file.dir) {
+      return
+    }
+    if (file.name === 'image.json') {
+      jsons[file.id] = file.content
+    } else {
+      files[file.path] = file.content
+    }
+  })
+  const images = {}
+  Object.keys(jsons).forEach((id) => {
+    const json = jsons[id]
+    const path = `images/${id}/${json.path}`
+    const image = files[path]
+    images[id] = image
+  })
+  return state.set('files', fromJS(images))
+}
+
 export default function reducer(state = initialState, action) {
   switch (action.type) {
     case ROUTE_IMAGE_EDIT:
-      return state.set('_selectedId', action.payload.imageid)
+      return state.set('selected', action.payload.imageid)
 
-    case IMAGES_LOADED:
-      return fromJS(action.images)
-    case IMAGE_LOADED:
-      return state.set(action.id, action.props)
+    case DB_LOADED:
+      // console.log('action: ' + Object.keys(action))
+      return parseDBData(state, action.data)
 
     default:
       return state

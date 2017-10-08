@@ -22,7 +22,9 @@ const mapStateToProps = createStructuredSelector({
   page: selectPage
 })
 
-Switcher.defaultProps = {}
+Switcher.defaultProps = {
+  page: 'NotFound'
+}
 
 Switcher.propTypes = {
   page: PropTypes.node.isRequired

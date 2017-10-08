@@ -1,10 +1,9 @@
 import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
+import JSZip from 'jszip'
 import {
-  ROUTE_ORGS,
-  ROUTE_ORG_REPOS,
-  ROUTE_EDIT,
-  ROUTE_IMAGE_EDIT
+  ROUTE_IMAGE_EDIT,
+  isRouteAction
 } from 'redux/routes/name'
 
 import request from 'utils/request'
@@ -129,10 +128,21 @@ export async function getRepository(instId, repoId) {
   return repository
 }
 
-export async function getGameData(orgname, reponame, branch = 'master') {
-  const url = `https://rawgit.com/${orgname}/${reponame}/${branch}/data.json`
-  const json = await request(url)
-  return fromJS(json)
+export async function getArchive(orgname, reponame, ref = 'master') {
+  const url = `/github/zipball/${orgname}/${reponame}/${ref}`
+  const options = getOptions()
+  const zipData = await fetch(url, options)
+  const blob = await zipData.blob()
+  return JSZip.loadAsync(blob)
+}
+
+export async function getHeadSha(instid, orgname, reponame, ref = 'master') {
+  const url = `/github/orgs/${instid}/repos/${orgname}/${reponame}/git/refs/heads/${ref}`
+  const options = getOptions()
+  const data = await fetch(url, options)
+  const json = await data.json()
+  const sha = json.object ? json.object.sha : null
+  return sha
 }
 
 export async function createRepository(instId, owner, name) {
@@ -229,22 +239,14 @@ const initialState = fromJS({
 
 // Reducer
 export default function reducer(state = initialState, action) {
-  switch (action.type) {
-    // Route actions
-    case ROUTE_ORGS:
-    case ROUTE_ORG_REPOS:
-      return state.set('organizationName', action.payload.orgname)
-    case ROUTE_EDIT:
-      return state.withMutations((s) =>
-        s.set('organizationName', action.payload.orgname)
-          .set('repositoryName', action.payload.reponame)
-      )
-    case ROUTE_IMAGE_EDIT:
-      return state.withMutations((s) =>
-        s.set('organizationName', action.payload.orgname)
-          .set('repositoryName', action.payload.reponame)
-      )
+  if (isRouteAction(action.type)) {
+    return state.withMutations((s) =>
+      s.set('organizationName', action.payload.orgname)
+        .set('repositoryName', action.payload.reponame)
+    )
+  }
 
+  switch (action.type) {
     case USER_LOADED:
       return state.set('user', action.user)
     case ORGANIZATIONS_LOADED:

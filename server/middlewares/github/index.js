@@ -101,6 +101,13 @@ const getAccessToken = (instId) => {
     .then((json) => json.token)
 }
 
+const getOption = (token) => ({
+  headers: {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github.machine-man-preview+json'
+  }
+})
+
 const getRepositories = (token) => (
   fetch('https://api.github.com/installation/repositories', {
     headers: {
@@ -237,30 +244,67 @@ const githubAppMiddleware = (app) => {
     res.send(logoutHtml)
   })
 
+
   app.get('/github/*', checkUserToken)
   app.get('/github/user', (req, res) => {
-    if (req.isAuthenticated()) {
-      console.log('authenticated')
-      fetch(`https://api.github.com/users/${req.user.name}`, {
-        headers: { Accept: 'application/vnd.github.machine-man-preview+json' }
+    fetch(`https://api.github.com/users/${req.user.name}`, {
+      headers: { Accept: 'application/vnd.github.machine-man-preview+json' }
+    })
+      .then((_res) => _res.json())
+      .then((json) => {
+        const user = {
+          name: json.login,
+          avatar_url: `${json.avatar_url}&s=40`
+        }
+        res.send(user)
       })
-        .then((_res) => _res.json())
-        .then((json) => {
-          const user = {
-            name: json.login,
-            avatar_url: `${json.avatar_url}&s=40`
-          }
-          console.log(JSON.stringify(user))
-          res.send(user)
-        })
-        .catch((err) => {
-          console.error(err)
-          res.send({})
-        })
-      return
+      .catch((err) => {
+        console.error(err)
+        res.send({})
+      })
+  })
+
+  app.get('/github/orgs/:instid/*', (req, res, next) => {
+    // TODO: check if the user is authenticated to access the installation
+    getAccessToken(req.params.instid)
+      .then((token) => {
+        req.fetchOption = getOption(token)
+        next()
+      })
+      .catch(() => {
+        res.send()
+      })
+  })
+
+  app.get([
+    '/github/orgs/:instid/repos/:org/:repo/git/refs/heads/:ref1',
+    '/github/orgs/:instid/repos/:org/:repo/git/refs/heads/:ref1/:ref2'
+  ], (req, res) => {
+    const org = req.params.org
+    const repo = req.params.repo
+    let ref = req.params.ref1
+    if (typeof req.params.ref2 !== 'undefined') {
+      ref += `/${req.params.ref2}`
     }
-    console.log('not authenticated')
-    res.send({})
+    const url = `https://api.github.com/repos/${org}/${repo}/git/refs/heads/${ref}`
+    fetch(url, req.fetchOption)
+      .then((data) => data.json())
+      .then((json) => res.send(json))
+      .catch(() => res.send([]))
+  })
+
+  app.get('/github/zipball/:org/:repo/:ref', (req, res) => {
+    const org = req.params.org
+    const repo = req.params.repo
+    const ref = req.params.ref
+    const url = `https://api.github.com/repos/${org}/${repo}/zipball/${ref}`
+    fetch(url).then((data) => {
+      res.setHeader('content-type', 'application/octet-stream')
+      data.body.pipe(res)
+    }).catch((err) => {
+      console.error(`error: ${err}`)
+      res.send(null)
+    })
   })
 
   app.post('/github/orgs/:instid/repos/:owner', (req, res) => {
