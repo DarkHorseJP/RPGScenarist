@@ -4,6 +4,10 @@ import { createSelector } from 'reselect'
 // Constants
 export const DB_LOADED = 'db/DB_LOADED'
 
+// FIXME: ref to modules/image
+const UPLOAD_IMAGE = 'image/UPLOAD_IMAGE'
+const SET_IMAGE_TAGS = 'image/SET_IMAGE_TAGS'
+
 // Actions
 export function dbLoaded(data) {
   return {
@@ -200,6 +204,90 @@ export async function hasEditData(owner, repo, user) {
   return db !== null
 }
 
+export async function setImage(owner, repo, user, id, file) {
+  const db = await getDB(owner, repo, user, 'edit')
+  const transaction = db.transaction(['files'], 'readwrite')
+  const filesStore = transaction.objectStore('files')
+
+  const dirPath = `images/${id}`
+  filesStore.put({
+    path: dirPath,
+    dir: true,
+    category: 'images',
+    id,
+    name: '',
+    content: null
+  })
+
+  const jsonFilePath = `images/${id}/image.json`
+  const jsonContent = {
+    path: file.name
+  }
+  filesStore.put({
+    path: jsonFilePath,
+    dir: false,
+    category: 'images',
+    id,
+    name: 'image.json',
+    content: jsonContent
+  })
+
+  const imagePath = `images/${id}/${file.name}`
+  filesStore.put({
+    path: imagePath,
+    dir: false,
+    category: 'images',
+    id,
+    name: file.name,
+    content: file
+  })
+
+  return waitTransaction(transaction)
+}
+
+/*
+export async function setImageTags(owner, repo, user, id, tags) {
+  const db = await getDB(owner, repo, user, 'edit')
+  const transaction = db.transaction(['files'], 'readwrite')
+  const filesStore = transaction.objectStore('files')
+
+  const dirPath = `images/${id}`
+  filesStore.put({
+    path: dirPath,
+    dir: true,
+    category: 'images',
+    id,
+    name: '',
+    content: null
+  })
+
+  const jsonFilePath = `images/${id}/image.json`
+  const jsonContent = {
+    path: file.name
+  }
+  filesStore.put({
+    path: jsonFilePath,
+    dir: false,
+    category: 'images',
+    id,
+    name: 'image.json',
+    content: jsonContent
+  })
+
+  const imagePath = `images/${id}/${file.name}`
+  filesStore.put({
+    path: imagePath,
+    dir: false,
+    category: 'images',
+    id,
+    name: file.name,
+    content: file
+  })
+
+  return waitTransaction(transaction)
+}
+*/
+
 // Selector
 export const selectDb = (state) => state.get('db')
 export const selectOwner = createSelector(
@@ -232,6 +320,30 @@ export default function reducer(state = initialState, action) {
           s.set(key, action.data.meta[key].value)
         })
       })
+
+    case UPLOAD_IMAGE:
+      setImage(
+        state.get('owner'),
+        state.get('repo'),
+        state.get('user'),
+        action.id,
+        action.file
+      )
+
+      return state
+
+    case SET_IMAGE_TAGS:
+      /*
+      setImageTags(
+        state.get('owner'),
+        state.get('repo'),
+        state.get('user'),
+        action.id,
+        action.tags
+      )
+      */
+
+      return state
 
     default:
       return state

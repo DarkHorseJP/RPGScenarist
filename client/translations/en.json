@@ -6,5 +6,11 @@
   "pages.RepositoryPage.cancel": "Cancel",
   "pages.RepositoryPage.create": "Create",
 
-  "pages.NotFoundPage.header": "Page not found"
+  "pages.NotFoundPage.header": "Page not found",
+
+  "components.ImageBrowser.addImage": "Add Image",
+  "components.ImageBrowser.dragImageFile": "or Drop image files.",
+  "components.ImageBrowser.chooseImageFile": "Choose an image file",
+  "components.ImageBrowser.cancel": "Cancel",
+  "components.ImageBrowser.add": "Add"
 }

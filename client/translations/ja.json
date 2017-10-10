@@ -6,5 +6,11 @@
   "pages.RepositoryPage.cancel": "キャンセル",
   "pages.RepositoryPage.create": "作成",
 
-  "pages.NotFoundPage.header": "ページが見つかりませんでした"
+  "pages.NotFoundPage.header": "ページが見つかりませんでした",
+
+  "components.ImageBrowser.addImage": "画像追加",
+  "components.ImageBrowser.dragImageFile": "または画像ファイルをドロップ",
+  "components.ImageBrowser.chooseImageFile": "画像ファイルを選択",
+  "components.ImageBrowser.cancel": "キャンセル",
+  "components.ImageBrowser.add": "追加"
 }

@@ -1,7 +1,5 @@
 import React from 'react'
 import Helmet from 'react-helmet'
-// import { connect } from 'react-redux'
-// import { createStructuredSelector } from 'reselect'
 
 import CommonHeader from 'containers/CommonHeader'
 import EditorHeader from 'containers/EditorHeader'
@@ -16,17 +14,6 @@ const ImagePage = () => (
     <ImageEditor />
   </div>
 )
-
-// const mapDispatchToProps = (dispatch) => ({
-// })
-// 
-// const mapStateToProps = () => ({})
-// 
-// ImagePage.defaultProps = {
-// }
-// 
-// ImagePage.propTypes = {
-// }
 
 export default ImagePage
 
