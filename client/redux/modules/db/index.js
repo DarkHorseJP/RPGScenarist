@@ -6,6 +6,7 @@ export const DB_LOADED = 'db/DB_LOADED'
 
 // FIXME: ref to modules/image
 const UPLOAD_IMAGE = 'image/UPLOAD_IMAGE'
+const DELETE_IMAGE = 'image/DELETE_IMAGE'
 const SET_IMAGE_TAGS = 'image/SET_IMAGE_TAGS'
 
 // Actions
@@ -204,52 +205,107 @@ export async function hasEditData(owner, repo, user) {
   return db !== null
 }
 
-export async function setImage(owner, repo, user, id, file) {
-  const db = await getDB(owner, repo, user, 'edit')
-  const transaction = db.transaction(['files'], 'readwrite')
-  const filesStore = transaction.objectStore('files')
-
-  const dirPath = `images/${id}`
-  filesStore.put({
-    path: dirPath,
-    dir: true,
-    category: 'images',
-    id,
-    name: '',
-    content: null
-  })
-
-  const jsonFilePath = `images/${id}/image.json`
-  const jsonContent = {
-    path: file.name
+const isDeleted = (file) => {
+  if (!file) {
+    return true
   }
-  filesStore.put({
-    path: jsonFilePath,
-    dir: false,
-    category: 'images',
-    id,
-    name: 'image.json',
-    content: jsonContent
-  })
+  console.log(`file.deleted: ${file.deleted}`)
+  return file.deleted === true
+}
 
-  const imagePath = `images/${id}/${file.name}`
-  filesStore.put({
-    path: imagePath,
-    dir: false,
-    category: 'images',
-    id,
-    name: file.name,
-    content: file
-  })
+export async function getFile(owner, repo, user, path) {
+  const editDb = await getDB(owner, repo, user, 'edit')
+  const editTransaction = editDb.transaction(['files'], 'readonly')
+  const editFilesStore = editTransaction.objectStore('files')
+  const file = await getResult(editFilesStore.get(path))
+  console.log(`edit file: ${file}`)
+  if (!isDeleted(file)) {
+    return file
+  }
 
-  return waitTransaction(transaction)
+  const origDb = await getDB(owner, repo, user, 'orig')
+  const origTransaction = origDb.transaction(['files'], 'readonly')
+  const origFilesStore = origTransaction.objectStore('files')
+  // return getResult(origFilesStore.get(path))
+  const result = await getResult(origFilesStore.get(path))
+  console.log(`org file: ${result}`)
+  return result
 }
 
 /*
-export async function setImageTags(owner, repo, user, id, tags) {
+export async function getFilesById(owner, repo, user, category, id) {
+  const editDb = await getDB(owner, repo, user, 'edit')
+  const editTransaction = editDb.transaction(['files'], 'readonly')
+  const editFilesStore = editTransaction.objectStore('files')
+  const editFiles = await getResult(editFilesStore.get(   ))
+
+  const origDb = await getDB(owner, repo, user, 'orig')
+  const origTransaction = origDb.transaction(['files'], 'readonly')
+  const origFilesStore = origTransaction.objectStore('files')
+  const files = await getResult(origFilesStore.get(   ))
+}
+*/
+
+export async function putData(owner, repo, user, category, id) {
+  const jsonData = await getFile(owner, repo, user, 'data.json')
   const db = await getDB(owner, repo, user, 'edit')
   const transaction = db.transaction(['files'], 'readwrite')
   const filesStore = transaction.objectStore('files')
+
+  const prevDate = new Date(jsonData.content.updated_at)
+  const now = new Date()
+  if (prevDate > now) {
+    throw new Error(`updated_at error ${prevDate} > ${now}`)
+  }
+  const updatedAt = now.toISOString()
+  jsonData.content.updated_at = updatedAt
+  if (jsonData.content[category][id]) {
+    jsonData.content[category][id].updated_at = updatedAt
+  } else {
+    jsonData.content[category].push({ id, updated_at: updatedAt })
+    jsonData.content[category].sort((a, b) => {
+      if (a.id > b.id) {
+        return 1
+      }
+      if (a.id < b.id) {
+        return -1
+      }
+      return 0
+    })
+  }
+  filesStore.put(jsonData)
+  return waitTransaction(transaction)
+}
+
+export async function deleteData(owner, repo, user, category, id) {
+  const jsonData = await getFile(owner, repo, user, 'data.json')
+  if (!jsonData.content[category][id]) {
+    return null
+  }
+  const db = await getDB(owner, repo, user, 'edit')
+  const transaction = db.transaction(['files'], 'readwrite')
+  const filesStore = transaction.objectStore('files')
+
+  const prevDate = new Date(jsonData.content.updated_at)
+  const now = new Date()
+  if (prevDate > now) {
+    throw new Error(`updated_at error ${prevDate} > ${now}`)
+  }
+  const updatedAt = now.toISOString()
+  jsonData.content.updated_at = updatedAt
+  delete jsonData.content[category][id]
+  filesStore.put(jsonData)
+  return waitTransaction(transaction)
+}
+
+export async function setImage(owner, repo, user, id, file) {
+  const imageJsonFilePath = `images/${id}/image.json`
+  const origImageData = await getFile(owner, repo, user, imageJsonFilePath)
+  const db = await getDB(owner, repo, user, 'edit')
+  const transaction = db.transaction(['files'], 'readwrite')
+  const filesStore = transaction.objectStore('files')
+
+  putData(owner, repo, user, 'images', id)
 
   const dirPath = `images/${id}`
   filesStore.put({
@@ -261,12 +317,17 @@ export async function setImageTags(owner, repo, user, id, tags) {
     content: null
   })
 
-  const jsonFilePath = `images/${id}/image.json`
-  const jsonContent = {
-    path: file.name
+  let jsonContent = {
+    path: file.name,
+    tags: []
+  }
+
+  if (origImageData) {
+    jsonContent = origImageData.content
+    jsonContent.path = file.name
   }
   filesStore.put({
-    path: jsonFilePath,
+    path: imageJsonFilePath,
     dir: false,
     category: 'images',
     id,
@@ -286,7 +347,52 @@ export async function setImageTags(owner, repo, user, id, tags) {
 
   return waitTransaction(transaction)
 }
-*/
+
+export async function setImageTags(owner, repo, user, id, tags) {
+  const jsonFilePath = `images/${id}/image.json`
+  const data = await getFile(owner, repo, user, jsonFilePath)
+
+  if (!data) {
+    console.error(`file not found: ${jsonFilePath}`)
+    return null
+  }
+
+  data.content.tags = tags
+
+  const db = await getDB(owner, repo, user, 'edit')
+  const transaction = db.transaction(['files'], 'readwrite')
+  const filesStore = transaction.objectStore('files')
+  filesStore.put({
+    path: jsonFilePath,
+    dir: false,
+    category: 'images',
+    id,
+    name: 'image.json',
+    content: data.content
+  })
+
+  return waitTransaction(transaction)
+}
+
+export async function deleteImage(owner, repo, user, id) {
+  const dirPath = `images/${id}`
+  const origData = await getFile(owner, repo, user, dirPath)
+  if (!origData) {
+    return null
+  }
+
+  deleteData(owner, repo, user, 'images', id)
+
+  const db = await getDB(owner, repo, user, 'edit')
+  const transaction = db.transaction(['files'], 'readwrite')
+  const filesStore = transaction.objectStore('files')
+  origData.deleted = true
+  console.log(`deleted origData: ${JSON.stringify(origData)}`)
+  filesStore.put(origData)
+
+  return waitTransaction(transaction)
+}
+
 
 // Selector
 export const selectDb = (state) => state.get('db')
@@ -329,11 +435,18 @@ export default function reducer(state = initialState, action) {
         action.id,
         action.file
       )
+      return state
 
+    case DELETE_IMAGE:
+      deleteImage(
+        state.get('owner'),
+        state.get('repo'),
+        state.get('user'),
+        action.id
+      )
       return state
 
     case SET_IMAGE_TAGS:
-      /*
       setImageTags(
         state.get('owner'),
         state.get('repo'),
@@ -341,7 +454,6 @@ export default function reducer(state = initialState, action) {
         action.id,
         action.tags
       )
-      */
 
       return state
 

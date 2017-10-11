@@ -23,17 +23,30 @@ class TagEditor extends React.PureComponent {
   }
 
   render() {
-    const { name, tags } = this.props
+    const { name, tags, placeholder, suggestions } = this.props
     const tagArray = tags.map((text) => ({ id: text, text }))
+
+    // const suggestionNodes = suggestions.map((text) => {
+    //   const node = () => (<a href='#'>{text}</a>)
+    //   node.toLowerCase = () => (text.toLowerCase())
+    //   return node
+    // })
+
     return (
       <ReactTags
         name={name}
         classNames={{
           tag: 'btn',
           remove: 'badge',
-          tagInputField: 'form-control'
+          tagInput: 'open',
+          tagInputField: 'form-control',
+          suggestions: 'dropdown-menu suggestion',
+          activeSuggestion: 'active'
         }}
         tags={tagArray}
+        placeholder={placeholder}
+        suggestions={suggestions}
+        minQueryLength={1}
         handleAddition={(tag) => this.onAddTag(tag)}
         handleDelete={(i) => this.onDeleteTag(i)}
         handleDrag={(tag, curPos, newPos) => this.onDragTag(curPos, newPos)}
@@ -45,12 +58,16 @@ class TagEditor extends React.PureComponent {
 TagEditor.defaultProps = {
   name: 'tags',
   tags: [],
+  placeholder: 'Add new tag',
+  suggestions: [],
   onChange: () => {}
 }
 
 TagEditor.propTypes = {
   name: PropTypes.string,
   tags: PropTypes.arrayOf(PropTypes.string),
+  placeholder: PropTypes.string,
+  suggestions: PropTypes.arrayOf(PropTypes.string),
   onChange: PropTypes.func
 }
 

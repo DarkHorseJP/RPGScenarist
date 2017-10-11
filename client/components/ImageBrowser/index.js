@@ -18,7 +18,8 @@ import {
 import {
   selectImageFiles,
   selectImageId,
-  uploadImage
+  uploadImage,
+  isValidImageFile
 } from 'redux/modules/image'
 
 import Header from './Header'
@@ -44,7 +45,17 @@ const ImageBrowser = ({
 }) => {
   let files = list
   if (search !== '') {
-    files = files.filter((file, id) => (id.indexOf(search) >= 0))
+    files = files.filter((file, id) => {
+      if (id.indexOf(search) >= 0) {
+        return true
+      }
+      const tags = file.getIn(['meta', 'tags'])
+      if (!tags) {
+        return false
+      }
+      const t = tags.find((tag) => tag === search)
+      return (typeof t !== 'undefined')
+    })
   }
   files = files.sortBy(
     (file, id) => id,
@@ -64,7 +75,7 @@ const ImageBrowser = ({
     const className = (id === selectedId ? 'active' : '')
     const src = URL.createObjectURL(data.get('file'))
     return (
-      <Col sm={4} key={id}>
+      <Col sm={4} md={3} lg={2} key={id}>
         <Thumbnail
           src={src}
           href={id}
@@ -124,12 +135,26 @@ const mapDispatchToProps = (dispatch) => ({
   },
   onUploadImage: (org, repo, files, list) => {
     let imageId = ''
-    files.forEach((file) => {
-      imageId = getNewId(file.name, list)
-      const action = uploadImage(imageId, file)
-      dispatch(action)
-    })
-    dispatch(changeImage(org, repo, imageId))
+    const promises = files.map((file) => (
+      isValidImageFile(file)
+        .then((valid) => {
+          if (valid) {
+            imageId = getNewId(file.name, list)
+            const action = uploadImage(imageId, file)
+            dispatch(action)
+          }
+          return valid
+        })
+    ))
+    Promise.all(promises)
+      .then((results) => {
+        if (results.find((result) => result === false)) {
+          console.error('invalid image file')
+        }
+        if (imageId !== '') {
+          dispatch(changeImage(org, repo, imageId))
+        }
+      })
   }
 })
 

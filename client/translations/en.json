@@ -6,7 +6,22 @@
   "pages.RepositoryPage.cancel": "Cancel",
   "pages.RepositoryPage.create": "Create",
 
+  "pages.ImagePage.id": "ID",
+  "pages.ImagePage.path": "Path",
+  "pages.ImagePage.updated": "Updated",
+  "pages.ImagePage.tags": "Tags",
+  "pages.ImagePage.image": "Image",
+  "pages.ImagePage.delete": "Delete",
+  "pages.ImagePage.addNewTag": "Add new tag",
+  "pages.ImagePage.required": "Required",
+  "pages.ImagePage.invalidId": "You can use letters, numbers, dash, underscore",
+  "pages.ImagePage.usedId": "This ID is already used",
+
   "pages.NotFoundPage.header": "Page not found",
+
+  "components.DeleteModal.wantToDelete": "Are you sure you want to delete {name}?",
+  "components.DeleteModal.cancel": "Cancel",
+  "components.DeleteModal.delete": "Delete",
 
   "components.ImageBrowser.addImage": "Add Image",
   "components.ImageBrowser.dragImageFile": "or Drop image files.",

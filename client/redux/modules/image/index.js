@@ -9,14 +9,23 @@ import {
 
 // Constants
 const UPLOAD_IMAGE = 'image/UPLOAD_IMAGE'
+const DELETE_IMAGE = 'image/DELETE_IMAGE'
 const SET_IMAGE_TAGS = 'image/SET_IMAGE_TAGS'
 
 // Actions
-export function uploadImage(id, file) {
+export function uploadImage(id, file, meta) {
   return {
     type: UPLOAD_IMAGE,
     id,
-    file
+    file,
+    meta
+  }
+}
+
+export function deleteImage(id) {
+  return {
+    type: DELETE_IMAGE,
+    id
   }
 }
 
@@ -28,6 +37,27 @@ export function setImageTags(id, tags) {
   }
 }
 
+// Utility functions
+export async function isValidImageFile(file) {
+  return new Promise((resolve) => {
+    try {
+      const url = URL.createObjectURL(file)
+      const img = new Image()
+      img.onerror = (err) => {
+        console.error(err)
+        resolve(false)
+      }
+      img.onload = () => {
+        resolve(true)
+      }
+      img.src = url
+    } catch (err) {
+      console.error(err)
+      resolve(false)
+    }
+  })
+}
+
 // Selector
 export const selectImage = (state) => state.get('image')
 export const selectImageId = createSelector(
@@ -36,7 +66,24 @@ export const selectImageId = createSelector(
 )
 export const selectImageFiles = createSelector(
   selectImage,
-  (state) => state.get('files')
+  (state) => state.get('files').filter((file) => (file.getIn(['meta', 'deleted']) !== true))
+)
+export const selectAllImageIds = createSelector(
+  selectImageFiles,
+  (files) => [...files.keys()]
+)
+export const selectAllImageTags = createSelector(
+  selectImageFiles,
+  (files) => {
+    const tagSet = files.reduce((set, data) => {
+      const tags = data.getIn(['meta', 'tags'])
+      if (tags) {
+        tags.forEach((tag) => set.add(tag))
+      }
+      return set
+    }, new Set())
+    return [...tagSet.values()]
+  }
 )
 export const selectImageData = createSelector(
   selectImageId, selectImageFiles,
@@ -85,8 +132,12 @@ const parseDBData = (state, data) => {
   const imageData = Object.values(data.files).filter((file) => file.category === 'images')
   const files = {}
   const jsons = {}
+  const deleted = {}
   imageData.forEach((file) => {
     if (file.dir) {
+      if (file.deleted) {
+        deleted[file.id] = true
+      }
       return
     }
     if (file.name === 'image.json') {
@@ -97,6 +148,9 @@ const parseDBData = (state, data) => {
   })
   const images = {}
   Object.keys(jsons).forEach((id) => {
+    if (deleted[id]) {
+      return
+    }
     const json = jsons[id]
     json.updated = updated[id]
     const path = `images/${id}/${json.path}`
@@ -119,12 +173,15 @@ export default function reducer(state = initialState, action) {
       return parseDBData(state, action.data)
 
     case UPLOAD_IMAGE: {
+      const meta = action.meta || {
+        path: action.file.name,
+        updated: (new Date()).toISOString(),
+        tags: []
+      }
+
       const image = fromJS({
         file: action.file,
-        meta: {
-          path: action.file.name,
-          updated: (new Date()).toISOString()
-        }
+        meta
       })
 
       return state.setIn(['files', action.id], image)
@@ -133,6 +190,15 @@ export default function reducer(state = initialState, action) {
     case SET_IMAGE_TAGS: {
       const tags = fromJS(action.tags)
       return state.setIn(['files', action.id, 'meta', 'tags'], tags)
+    }
+
+    case DELETE_IMAGE: {
+      const image = state.getIn(['files', action.id])
+      if (!image) {
+        return state
+      }
+      console.log(`image module DELETE ${action.id}`)
+      return state.setIn(['files', action.id, 'meta', 'deleted'], true)
     }
 
     default:

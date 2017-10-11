@@ -11,7 +11,7 @@ import {
 import ReduxFormControl from 'components/ReduxFormControl'
 
 let SearchForm = () => (
-  <Form onSubmit={() => false}>
+  <Form onSubmit={(e) => e.preventDefault()}>
     <FormGroup>
       <InputGroup>
         <InputGroup.Addon>
@@ -26,7 +26,7 @@ SearchForm = reduxForm({ form: 'components/ImageBrowser/SearchForm' })(SearchFor
 SearchForm = connect()(SearchForm)
 
 const Header = () => (
-  <SearchForm onSubmit={() => false} />
+  <SearchForm />
 )
 
 export default Header
