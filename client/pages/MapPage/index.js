@@ -5,7 +5,7 @@ import Helmet from 'react-helmet'
 import { connect } from 'react-redux'
 // import { createStructuredSelector } from 'reselect'
 
-import ToolBar from 'containers/ToolBar'
+// import ToolBar from 'containers/ToolBar'
 import { loadMaps } from 'redux/modules/map'
 // import mapSagas from 'redux/modules/map/sagas'
 
@@ -26,7 +26,6 @@ class MapPage extends React.PureComponent {
         <Helmet
           title="Map Editor"
         />
-        <ToolBar />
         <MapEditor />
       </article>
     )

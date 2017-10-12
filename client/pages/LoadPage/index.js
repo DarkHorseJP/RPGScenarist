@@ -2,8 +2,8 @@ import React from 'react'
 import Helmet from 'react-helmet'
 import { ProgressBar } from 'react-bootstrap'
 
-import CommonHeader from 'containers/CommonHeader'
-import EditorHeader from 'containers/EditorHeader'
+import CommonHeader from 'components/CommonHeader'
+import EditorHeader from 'components/EditorHeader'
 
 const LoadPage = () => (
   <div>

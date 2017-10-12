@@ -1,6 +1,8 @@
 {
   "pages.HomePage.message01": "こんにちは！",
 
+  "pages.RepositoryPage.loading": "読み込み中...",
+  "pages.RepositoryPage.newRepository": "新規作成",
   "pages.RepositoryPage.updatedAt": "更新日 ",
   "pages.RepositoryPage.newRepositoryName": "新規リポジトリ名",
   "pages.RepositoryPage.cancel": "キャンセル",
@@ -18,6 +20,18 @@
   "pages.ImagePage.usedId": "このIDは既に使われています",
 
   "pages.NotFoundPage.header": "ページが見つかりませんでした",
+
+  "components.EditorHeader.general": "一般",
+  "components.EditorHeader.releases": "リリース",
+  "components.EditorHeader.database": "データベース",
+  "components.EditorHeader.maps": "マップ",
+  "components.EditorHeader.battle": "戦闘",
+  "components.EditorHeader.models": "モデル",
+  "components.EditorHeader.motions": "モーション",
+  "components.EditorHeader.images": "画像",
+  "components.EditorHeader.musics": "BGM",
+  "components.EditorHeader.sounds": "効果音",
+  "components.EditorHeader.save": "保存",
 
   "components.DeleteModal.wantToDelete": "本当に {name} を削除しますか?",
   "components.DeleteModal.cancel": "キャンセル",

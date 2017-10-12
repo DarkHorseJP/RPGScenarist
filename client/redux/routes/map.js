@@ -2,7 +2,6 @@ import {
   redirect,
   NOT_FOUND
 } from 'redux-first-router'
-import { fromJS } from 'immutable'
 
 import {
   userLoaded,
@@ -125,7 +124,7 @@ const routesMap = {
     path: '/edit',
     page: 'RepositoryPage',
     thunk: async (dispatch) => {
-      dispatch(repositoriesLoaded(fromJS([])))
+      dispatch(repositoriesLoaded(null))
     }
   },
   [Route.ROUTE_ORG_REPOS]: {

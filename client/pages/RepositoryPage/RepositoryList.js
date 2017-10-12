@@ -10,15 +10,18 @@ import messages from './messages'
 
 const RepositoryList = ({ list, orgName }) => (
   <div>
-    {list.map((repo) => (
-      <Panel key={repo.get('id')}>
-        <Link to={`/edit/${orgName}/${repo.get('name')}`}>
-          <h3>{repo.get('name')}</h3>
-        </Link>
-        <p>{repo.get('description') || ''}</p>
-        <small><FormattedMessage {...messages.updatedAt} /> <FormattedDate value={repo.get('updated_at')} /></small>
-      </Panel>
-    ))}
+    {list
+      .sort((a, b) => ((new Date(b.get('updated_at'))) - (new Date(a.get('updated_at')))))
+      .map((repo) => (
+        <Panel key={repo.get('id')}>
+          <Link to={`/edit/${orgName}/${repo.get('name')}`}>
+            <h3>{repo.get('name')}</h3>
+          </Link>
+          <p>{repo.get('description') || ''}</p>
+          <small><FormattedMessage {...messages.updatedAt} /> <FormattedDate value={repo.get('updated_at')} /></small>
+        </Panel>
+      ))
+    }
   </div>
 )
 

@@ -124,6 +124,9 @@ export async function getRepositories(instId) {
 
 export async function getRepository(instId, repoId) {
   const repositories = getRepositories(instId)
+  if (!repositories) {
+    return null
+  }
   const repository = repositories.find((repo) => repo.get('id') == repoId) // eslint-disable-line eqeqeq
   return repository
 }
@@ -208,7 +211,7 @@ export const selectRepositoryName = createSelector(
 )
 export const selectRepository = createSelector(
   selectRepositoryList, selectRepositoryName,
-  (list, name) => list.find((info) => info.get('name') == name) // eslint-disable-line eqeqeq
+  (list, name) => (list ? list.find((info) => info.get('name') == name) : null) // eslint-disable-line eqeqeq
 )
 export const selectRepositoryId = createSelector(
   selectRepository,
@@ -230,7 +233,7 @@ const initialState = fromJS({
   user: {},
   organizations: [],
   organizationName: '',
-  repositories: [],
+  repositories: null,
   repositoryName: '',
 
   gameData: {},

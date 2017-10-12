@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 
 import configureStore from 'redux/configureStore'
 
-import CommonHeader from 'containers/CommonHeader'
+import CommonHeader from 'components/CommonHeader'
 import RepositoryPage from '../index'
 
 describe('<RepositoryPage />', () => {

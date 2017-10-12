@@ -13,8 +13,8 @@ import {
   setRepositoryInfo
 } from 'redux/modules/github'
 
-import CommonHeader from 'containers/CommonHeader'
-import EditorHeader from 'containers/EditorHeader'
+import CommonHeader from 'components/CommonHeader'
+import EditorHeader from 'components/EditorHeader'
 import Form from './Form'
 // import messages from './messages'
 

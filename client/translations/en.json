@@ -1,6 +1,8 @@
 {
   "pages.HomePage.message01": "Hello!",
 
+  "pages.RepositoryPage.loading": "Loading...",
+  "pages.RepositoryPage.newRepository": "New Repository",
   "pages.RepositoryPage.updatedAt": "Updated At",
   "pages.RepositoryPage.newRepositoryName": "New Repository Name",
   "pages.RepositoryPage.cancel": "Cancel",
@@ -18,6 +20,18 @@
   "pages.ImagePage.usedId": "This ID is already used",
 
   "pages.NotFoundPage.header": "Page not found",
+
+  "components.EditorHeader.general": "General",
+  "components.EditorHeader.releases": "Releases",
+  "components.EditorHeader.database": "Database",
+  "components.EditorHeader.maps": "Maps",
+  "components.EditorHeader.battle": "Battle",
+  "components.EditorHeader.models": "Models",
+  "components.EditorHeader.motions": "Motions",
+  "components.EditorHeader.images": "Images",
+  "components.EditorHeader.musics": "Musics",
+  "components.EditorHeader.sounds": "Sounds",
+  "components.EditorHeader.save": "Save",
 
   "components.DeleteModal.wantToDelete": "Are you sure you want to delete {name}?",
   "components.DeleteModal.cancel": "Cancel",

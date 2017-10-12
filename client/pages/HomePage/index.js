@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 // import { createStructuredSelector } from 'reselect'
 import Link from 'redux-first-router-link'
 
-import CommonHeader from 'containers/CommonHeader'
+import CommonHeader from 'components/CommonHeader'
 import messages from './messages'
 
 class HomePage extends React.PureComponent {
