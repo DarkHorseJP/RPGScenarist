@@ -4,7 +4,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes'
 import { fromJS } from 'immutable'
 import Helmet from 'react-helmet'
 import { connect } from 'react-redux'
-import { PageHeader, Button } from 'react-bootstrap'
+import { PageHeader, Button, Row, Col } from 'react-bootstrap'
 import { createStructuredSelector } from 'reselect'
 // import { FormattedMessage, FormattedDate } from 'react-intl'
 // import { show } from 'redux-modal'
@@ -37,11 +37,11 @@ class RepositoryPage extends React.Component {
       <div>
         <Helmet title="Repository" />
         <CommonHeader />
-        <div className="row" style={{ margin: 0 }}>
-          <div className="col-sm-3" style={{ padding: '15px' }}>
+        <Row style={{ padding: 15 }}>
+          <Col sm={3}>
             <OrganizationList list={this.props.orgList} />
-          </div>
-          <div className="col-sm-9">
+          </Col>
+          <Col sm={9}>
             <PageHeader>{orgName}</PageHeader>
             <RepositoryList list={this.props.repoList} orgName={orgName} />
             <Button bsStyle="primary" onClick={() => this.props.onShowDialog()}>
@@ -56,8 +56,8 @@ class RepositoryPage extends React.Component {
                 )
               }}
             />
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
     )
   }

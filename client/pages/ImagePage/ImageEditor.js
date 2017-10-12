@@ -5,13 +5,13 @@ import ImageBrowser from 'components/ImageBrowser'
 import ImageDataForm from './ImageDataForm'
 
 const ImageEditor = () => (
-  <Grid>
+  <Grid style={{ margin: 0 }} fluid>
     <Row>
-      <Col sm={6}>
-        <ImageBrowser />
+      <Col xs={6}>
+        <ImageBrowser height="100vh - 130px" />
       </Col>
-      <Col sm={6}>
-        <ImageDataForm />
+      <Col xs={6}>
+        <ImageDataForm height="100vh - 130px" />
       </Col>
     </Row>
   </Grid>

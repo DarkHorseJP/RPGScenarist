@@ -34,6 +34,10 @@ export const selectType = createSelector(
   selectLocation,
   (state) => state.type
 )
+export const selectPayload = createSelector(
+  selectLocation,
+  (state) => state.payload
+)
 export const selectRoutesMap = createSelector(
   selectLocation,
   (state) => state.routesMap

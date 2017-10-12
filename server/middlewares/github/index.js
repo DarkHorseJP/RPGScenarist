@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken')
 const fetch = require('node-fetch')
 const uid = require('uid2')
 const crypto = require('crypto')
+// const GitHub = require('github')
+const logger = require('../../logger')
 
 const config = require('../../config')
 
@@ -29,7 +31,8 @@ const getAuthHtml = (token, nextUrl = '/') => authHtmlText.replace('{{token}}', 
 const getLogoutHtml = (nextUrl = '/') => logoutHtmlText.replace('{{nextUrl}}', nextUrl)
 
 const generateAccessToken = (userId, payload = {}) => {
-  const expiresIn = '1 hour'
+  // const expiresIn = '1 hour'
+  const expiresIn = '1 day'
 
   const token = jwt.sign(payload, tokenSecret, {
     expiresIn,
@@ -50,7 +53,7 @@ const verifyAccessToken = (token) => {
     const data = jwt.verify(token, tokenSecret, { audience: tokenAudience, issuer: tokenIssuer })
     return data
   } catch (err) {
-    console.error(err)
+    logger.error(err)
     return null
   }
 }
@@ -259,7 +262,7 @@ const githubAppMiddleware = (app) => {
         res.send(user)
       })
       .catch((err) => {
-        console.error(err)
+        logger.error(err)
         res.send({})
       })
   })
@@ -271,7 +274,8 @@ const githubAppMiddleware = (app) => {
         req.fetchOption = getOption(token)
         next()
       })
-      .catch(() => {
+      .catch((err) => {
+        logger.error(err)
         res.send()
       })
   })
@@ -290,7 +294,10 @@ const githubAppMiddleware = (app) => {
     fetch(url, req.fetchOption)
       .then((data) => data.json())
       .then((json) => res.send(json))
-      .catch(() => res.send([]))
+      .catch((err) => {
+        logger.error(err)
+        res.send([])
+      })
   })
 
   app.get('/github/zipball/:org/:repo/:ref', (req, res) => {
@@ -302,7 +309,7 @@ const githubAppMiddleware = (app) => {
       res.setHeader('content-type', 'application/octet-stream')
       data.body.pipe(res)
     }).catch((err) => {
-      console.error(`error: ${err}`)
+      logger.error(`error: ${err}`)
       res.send(null)
     })
   })
@@ -314,6 +321,7 @@ const githubAppMiddleware = (app) => {
     }
     const name = req.body.name
     if (!name) {
+      logger.error('name must be defined')
       res.send([])
       return
     }
@@ -330,12 +338,14 @@ const githubAppMiddleware = (app) => {
 
   app.patch('/github/orgs/:instid/repos/:owner/:repo', (req, res) => {
     if (!req.isAuthenticated) {
+      logger.log('not authenticated')
       res.send([])
       return
     }
     const name = req.body.name
     const desc = req.body.desc
     if (!desc || !name) {
+      logger.error('name/desc must be defined')
       res.send([])
       return
     }
@@ -377,7 +387,7 @@ const githubAppMiddleware = (app) => {
         res.send(orgs)
       })
       .catch((err) => {
-        console.error(err)
+        logger.error(err)
         res.send([])
       })
   })

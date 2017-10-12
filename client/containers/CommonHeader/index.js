@@ -30,7 +30,7 @@ class CommonHeader extends React.PureComponent {
           style={[
             {
               type: 'text/css',
-              cssText: 'body {padding-top: 50px}'
+              cssText: 'body {padding-top: 52px}'
             }
           ]}
         />

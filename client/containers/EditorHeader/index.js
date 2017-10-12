@@ -51,7 +51,7 @@ const EditorHeader = ({ org, orgName, repoName, children, pageName }) => {
         style={[
           {
             type: 'text/css',
-            cssText: 'body {padding-top: 100px}'
+            cssText: 'body {padding-top: 103px}'
           }
         ]}
       />

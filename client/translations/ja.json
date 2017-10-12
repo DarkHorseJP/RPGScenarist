@@ -6,5 +6,26 @@
   "pages.RepositoryPage.cancel": "キャンセル",
   "pages.RepositoryPage.create": "作成",
 
-  "pages.NotFoundPage.header": "ページが見つかりませんでした"
+  "pages.ImagePage.id": "ID",
+  "pages.ImagePage.path": "ファイルパス",
+  "pages.ImagePage.updated": "更新日",
+  "pages.ImagePage.tags": "タグ",
+  "pages.ImagePage.image": "画像",
+  "pages.ImagePage.delete": "削除",
+  "pages.ImagePage.addNewTag": "タグを追加",
+  "pages.ImagePage.required": "必須項目",
+  "pages.ImagePage.invalidId": "半角英数字、ハイフン、アンダースコアのみ使用可",
+  "pages.ImagePage.usedId": "このIDは既に使われています",
+
+  "pages.NotFoundPage.header": "ページが見つかりませんでした",
+
+  "components.DeleteModal.wantToDelete": "本当に {name} を削除しますか?",
+  "components.DeleteModal.cancel": "キャンセル",
+  "components.DeleteModal.delete": "削除",
+
+  "components.ImageBrowser.addImage": "画像追加",
+  "components.ImageBrowser.dragImageFile": "または画像ファイルをドロップ",
+  "components.ImageBrowser.chooseImageFile": "画像ファイルを選択",
+  "components.ImageBrowser.cancel": "キャンセル",
+  "components.ImageBrowser.add": "追加"
 }

@@ -14,6 +14,8 @@ import Header from 'components/Header'
 import Footer from 'components/Footer'
 import Switcher from 'containers/Switcher'
 
+import './global-styles'
+
 const AppWrapper = styled.div`
   margin: 0;
   display: flex;
