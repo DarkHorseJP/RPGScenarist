@@ -135,6 +135,10 @@ export async function restoreData(owner, repo, user) {
   return data
 }
 
+// export async function createCommitData(owner, repo, user) {
+// TODO: implement
+// }
+
 export async function parseZipData(zip, owner, repo, user) {
   console.log('parseZipData')
   const dirPattern = RegExp(`^${owner}-${repo}-([0-9a-f]+)/$`)
@@ -226,10 +230,10 @@ export async function getFile(owner, repo, user, path) {
   const origDb = await getDB(owner, repo, user, 'orig')
   const origTransaction = origDb.transaction(['files'], 'readonly')
   const origFilesStore = origTransaction.objectStore('files')
-  // return getResult(origFilesStore.get(path))
-  const result = await getResult(origFilesStore.get(path))
-  console.log(`org file: ${result}`)
-  return result
+  return getResult(origFilesStore.get(path))
+  // const result = await getResult(origFilesStore.get(path))
+  // console.log(`org file: ${result}`)
+  // return result
 }
 
 /*

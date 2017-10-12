@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const fetch = require('node-fetch')
 const uid = require('uid2')
 const crypto = require('crypto')
+// const GitHub = require('github')
 const logger = require('../../logger')
 
 const config = require('../../config')
