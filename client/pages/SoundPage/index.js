@@ -5,17 +5,17 @@ import CommonHeader from 'components/CommonHeader'
 import EditorHeader from 'components/EditorHeader'
 import DisableScroll from 'components/DisableScroll'
 
-import ImageEditor from './ImageEditor'
+import SoundEditor from './SoundEditor'
 
-const ImagePage = () => (
+const SoundPage = () => (
   <div>
-    <Helmet title="Image Editor" />
+    <Helmet title="Sound Editor" />
     <DisableScroll />
     <CommonHeader />
-    <EditorHeader pageName="images" />
-    <ImageEditor />
+    <EditorHeader pageName="sounds" />
+    <SoundEditor />
   </div>
 )
 
-export default ImagePage
+export default SoundPage
 

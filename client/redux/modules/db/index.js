@@ -3,11 +3,9 @@ import { createSelector } from 'reselect'
 
 // Constants
 export const DB_LOADED = 'db/DB_LOADED'
-
-// FIXME: ref to modules/image
-const UPLOAD_IMAGE = 'image/UPLOAD_IMAGE'
-const DELETE_IMAGE = 'image/DELETE_IMAGE'
-const SET_IMAGE_TAGS = 'image/SET_IMAGE_TAGS'
+export const UPLOAD_ASSET = 'db/UPLOAD_ASSET'
+export const DELETE_ASSET = 'db/DELETE_ASSET'
+export const SET_ASSET_TAGS = 'db/SET_ASSET_TAGS'
 
 // Actions
 export function dbLoaded(data) {
@@ -302,20 +300,20 @@ export async function deleteData(owner, repo, user, category, id) {
   return waitTransaction(transaction)
 }
 
-export async function setImage(owner, repo, user, id, file) {
-  const imageJsonFilePath = `images/${id}/image.json`
-  const origImageData = await getFile(owner, repo, user, imageJsonFilePath)
+export async function setAsset(owner, repo, user, category, id, file) {
+  const jsonFilePath = `${category}/${id}/data.json`
+  const origData = await getFile(owner, repo, user, jsonFilePath)
   const db = await getDB(owner, repo, user, 'edit')
   const transaction = db.transaction(['files'], 'readwrite')
   const filesStore = transaction.objectStore('files')
 
-  putData(owner, repo, user, 'images', id)
+  putData(owner, repo, user, category, id)
 
-  const dirPath = `images/${id}`
+  const dirPath = `${category}/${id}`
   filesStore.put({
     path: dirPath,
     dir: true,
-    category: 'images',
+    category,
     id,
     name: '',
     content: null
@@ -326,24 +324,24 @@ export async function setImage(owner, repo, user, id, file) {
     tags: []
   }
 
-  if (origImageData) {
-    jsonContent = origImageData.content
+  if (origData) {
+    jsonContent = origData.content
     jsonContent.path = file.name
   }
   filesStore.put({
-    path: imageJsonFilePath,
+    path: jsonFilePath,
     dir: false,
-    category: 'images',
+    category,
     id,
-    name: 'image.json',
+    name: 'data.json',
     content: jsonContent
   })
 
-  const imagePath = `images/${id}/${file.name}`
+  const path = `${category}/${id}/${file.name}`
   filesStore.put({
-    path: imagePath,
+    path,
     dir: false,
-    category: 'images',
+    category,
     id,
     name: file.name,
     content: file
@@ -352,8 +350,8 @@ export async function setImage(owner, repo, user, id, file) {
   return waitTransaction(transaction)
 }
 
-export async function setImageTags(owner, repo, user, id, tags) {
-  const jsonFilePath = `images/${id}/image.json`
+export async function setAssetTags(owner, repo, user, category, id, tags) {
+  const jsonFilePath = `${category}/${id}/data.json`
   const data = await getFile(owner, repo, user, jsonFilePath)
 
   if (!data) {
@@ -369,23 +367,23 @@ export async function setImageTags(owner, repo, user, id, tags) {
   filesStore.put({
     path: jsonFilePath,
     dir: false,
-    category: 'images',
+    category,
     id,
-    name: 'image.json',
+    name: 'data.json',
     content: data.content
   })
 
   return waitTransaction(transaction)
 }
 
-export async function deleteImage(owner, repo, user, id) {
-  const dirPath = `images/${id}`
+export async function deleteAsset(owner, repo, user, category, id) {
+  const dirPath = `${category}/${id}`
   const origData = await getFile(owner, repo, user, dirPath)
   if (!origData) {
     return null
   }
 
-  deleteData(owner, repo, user, 'images', id)
+  deleteData(owner, repo, user, category, id)
 
   const db = await getDB(owner, repo, user, 'edit')
   const transaction = db.transaction(['files'], 'readwrite')
@@ -431,30 +429,33 @@ export default function reducer(state = initialState, action) {
         })
       })
 
-    case UPLOAD_IMAGE:
-      setImage(
+    case UPLOAD_ASSET:
+      setAsset(
         state.get('owner'),
         state.get('repo'),
         state.get('user'),
+        action.category,
         action.id,
         action.file
       )
       return state
 
-    case DELETE_IMAGE:
-      deleteImage(
+    case DELETE_ASSET:
+      deleteAsset(
         state.get('owner'),
         state.get('repo'),
         state.get('user'),
+        action.category,
         action.id
       )
       return state
 
-    case SET_IMAGE_TAGS:
-      setImageTags(
+    case SET_ASSET_TAGS:
+      setAssetTags(
         state.get('owner'),
         state.get('repo'),
         state.get('user'),
+        action.category,
         action.id,
         action.tags
       )

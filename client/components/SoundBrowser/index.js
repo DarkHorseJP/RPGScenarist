@@ -13,14 +13,14 @@ import Dropzone from 'react-dropzone'
 import {
   selectOrganizationName,
   selectRepositoryName,
-  changeImage
+  changeSound
 } from 'redux/modules/github'
 import {
-  selectImageFiles,
-  selectImageId,
-  uploadImage,
-  isValidImageFile
-} from 'redux/modules/image'
+  selectSoundFiles,
+  selectSoundId,
+  uploadSound,
+  isValidSoundFile
+} from 'redux/modules/sound'
 
 import Header from './Header'
 import Footer from './Footer'
@@ -33,15 +33,15 @@ const Wrapper = styled.div`
   overflow-y: scroll;
 `
 
-const ImageBrowser = ({
+const SoundBrowser = ({
   search,
   height,
   list,
   selectedId,
-  onChangeImage,
+  onChangeSound,
   orgName,
   repoName,
-  onUploadImage
+  onUploadSound
 }) => {
   let files = list
   if (search !== '') {
@@ -71,18 +71,18 @@ const ImageBrowser = ({
   )
 
   /* eslint-disable react/no-array-index-key */
-  const images = files.map((data, id) => {
+  const sounds = files.map((data, id) => {
     const className = (id === selectedId ? 'active' : '')
-    const src = URL.createObjectURL(data.get('file'))
-    const href = (typeof id !== 'undefined' ? `images/${id}` : id)
+    // const src = URL.createObjectURL(data.get('file'))
+    const href = (typeof id !== 'undefined' ? `sounds/${id}` : id)
     return (
       <Col sm={4} md={3} lg={2} key={id}>
         <Thumbnail
-          src={src}
+          src="#"
           href={href}
           onClick={(e) => {
             e.preventDefault()
-            onChangeImage(orgName, repoName, id)
+            onChangeSound(orgName, repoName, id)
           }}
           className={className}
         >
@@ -100,12 +100,12 @@ const ImageBrowser = ({
         disableClick
         style={{}}
         ref={(node) => { dropzoneRef = node }}
-        onDrop={(file) => onUploadImage(orgName, repoName, file, list)}
+        onDrop={(file) => onUploadSound(orgName, repoName, file, list)}
       >
         <Header />
         <Row>
           <Wrapper height={height}>
-            {images}
+            {sounds}
           </Wrapper>
         </Row>
         <Footer
@@ -120,28 +120,28 @@ const ImageBrowser = ({
 
 const getNewId = (name, list) => {
   const prefix = name.split('.')[0]
-  let imageId = prefix
-  let imageNo = 0
-  while (list.get(imageId)) {
-    imageNo += 1
-    imageId = prefix + imageNo
+  let soundId = prefix
+  let soundNo = 0
+  while (list.get(soundId)) {
+    soundNo += 1
+    soundId = prefix + soundNo
   }
-  return imageId
+  return soundId
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onChangeImage: (org, repo, imageId) => {
-    dispatch(changeImage(org, repo, imageId))
+  onChangeSound: (org, repo, soundId) => {
+    dispatch(changeSound(org, repo, soundId))
     return false
   },
-  onUploadImage: (org, repo, files, list) => {
-    let imageId = ''
+  onUploadSound: (org, repo, files, list) => {
+    let soundId = ''
     const promises = files.map((file) => (
-      isValidImageFile(file)
+      isValidSoundFile(file)
         .then((valid) => {
           if (valid) {
-            imageId = getNewId(file.name, list)
-            const action = uploadImage(imageId, file)
+            soundId = getNewId(file.name, list)
+            const action = uploadSound(soundId, file)
             dispatch(action)
           }
           return valid
@@ -150,25 +150,25 @@ const mapDispatchToProps = (dispatch) => ({
     Promise.all(promises)
       .then((results) => {
         if (results.find((result) => result === false)) {
-          console.error('invalid image file')
+          console.error('invalid sound file')
         }
-        if (imageId !== '') {
-          dispatch(changeImage(org, repo, imageId))
+        if (soundId !== '') {
+          dispatch(changeSound(org, repo, soundId))
         }
       })
   }
 })
 
-const formSelector = formValueSelector('components/ImageBrowser/SearchForm')
+const formSelector = formValueSelector('components/SoundBrowser/SearchForm')
 const mapStateToProps = createStructuredSelector({
   search: (state) => formSelector(state, 'search'),
   orgName: selectOrganizationName,
   repoName: selectRepositoryName,
-  selectedId: selectImageId,
-  list: selectImageFiles
+  selectedId: selectSoundId,
+  list: selectSoundFiles
 })
 
-ImageBrowser.defaultProps = {
+SoundBrowser.defaultProps = {
   search: '',
   height: '100hv',
   orgName: '',
@@ -177,16 +177,16 @@ ImageBrowser.defaultProps = {
   list: fromJS({})
 }
 
-ImageBrowser.propTypes = {
+SoundBrowser.propTypes = {
   search: PropTypes.string,
   height: PropTypes.string,
   orgName: PropTypes.string,
   repoName: PropTypes.string,
   selectedId: PropTypes.string,
   list: ImmutablePropTypes.map,
-  onChangeImage: PropTypes.func.isRequired,
-  onUploadImage: PropTypes.func.isRequired
+  onChangeSound: PropTypes.func.isRequired,
+  onUploadSound: PropTypes.func.isRequired
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImageBrowser)
+export default connect(mapStateToProps, mapDispatchToProps)(SoundBrowser)
 
