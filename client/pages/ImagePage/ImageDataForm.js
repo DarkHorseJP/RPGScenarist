@@ -134,16 +134,11 @@ let ImageDataForm = ({
               {tagsLabel}
             </Col>
             <Col sm={9}>
-              <FormattedMessage {...messages.addNewTag}>
-                {(placeholder) => (
-                  <TagEditor
-                    tags={tags}
-                    placeholder={placeholder}
-                    suggestions={suggestions}
-                    onChange={(newTags) => onChangeTags(id, newTags)}
-                  />
-                )}
-              </FormattedMessage>
+              <TagEditor
+                tags={tags}
+                suggestions={suggestions}
+                onChange={(newTags) => onChangeTags(id, newTags)}
+              />
             </Col>
           </Row>
         </FormGroup>

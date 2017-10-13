@@ -1,4 +1,7 @@
 import {
+  ROUTE_SOUND_EDIT
+} from 'redux/routes/name'
+import {
   uploadAsset,
   deleteAsset,
   setAssetTags,
@@ -7,6 +10,13 @@ import {
 } from 'redux/modules/asset'
 
 // Actions
+export function changeSound(orgname, reponame, soundid) {
+  return {
+    type: ROUTE_SOUND_EDIT,
+    payload: { orgname, reponame, soundid }
+  }
+}
+
 export function uploadSound(id, file, meta) {
   return uploadAsset('sounds', id, file, meta)
 }

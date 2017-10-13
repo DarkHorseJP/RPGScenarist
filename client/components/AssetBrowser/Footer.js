@@ -5,12 +5,12 @@ import { FormattedMessage } from 'react-intl'
 
 import messages from './messages'
 
-const Footer = ({ onClick }) => (
+const Footer = ({ onClick, assetName, filesName }) => (
   <div>
     <Button bsStyle="primary" onClick={onClick}>
-      <FormattedMessage {...messages.addImage} />
+      <FormattedMessage {...messages.add} values={{ assetName }} />
     </Button>
-    <FormattedMessage {...messages.dragImageFile} />
+    {' '}<FormattedMessage {...messages.dropFile} values={{ filesName }} />
   </div>
 )
 
@@ -19,7 +19,9 @@ Footer.defaultProps = {
 }
 
 Footer.propTypes = {
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  assetName: PropTypes.string.isRequired,
+  filesName: PropTypes.string.isRequired
 }
 
 export default Footer

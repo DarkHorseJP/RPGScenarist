@@ -14,7 +14,6 @@
   "pages.ImagePage.tags": "Tags",
   "pages.ImagePage.image": "Image",
   "pages.ImagePage.delete": "Delete",
-  "pages.ImagePage.addNewTag": "Add new tag",
   "pages.ImagePage.required": "Required",
   "pages.ImagePage.invalidId": "You can use letters, numbers, dash, underscore",
   "pages.ImagePage.usedId": "This ID is already used",
@@ -37,9 +36,19 @@
   "components.DeleteModal.cancel": "Cancel",
   "components.DeleteModal.delete": "Delete",
 
-  "components.ImageBrowser.addImage": "Add Image",
-  "components.ImageBrowser.dragImageFile": "or Drop image files.",
-  "components.ImageBrowser.chooseImageFile": "Choose an image file",
-  "components.ImageBrowser.cancel": "Cancel",
-  "components.ImageBrowser.add": "Add"
+  "components.AssetBrowser.addAsset": "Add {assetName}",
+  "components.AssetBrowser.dropFile": "or Drop {filesName}.",
+  "components.AssetBrowser.chooseFile": "Choose {fileName}",
+  "components.AssetBrowser.cancel": "Cancel",
+  "components.AssetBrowser.add": "Add",
+
+  "components.ImageBrowser.assetName": "Image",
+  "components.ImageBrowser.fileName": "an image file",
+  "components.ImageBrowser.filesName": "image files",
+
+  "components.SoundBrowser.assetName": "Sound",
+  "components.SoundBrowser.fileName": "an sound file",
+  "components.SoundBrowser.filesName": "sound files",
+
+  "components.TagEditor.addNewTag": "Add new tag"
 }

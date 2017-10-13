@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
+import { pathToAction } from 'redux/routes/map'
 import {
   isRouteAction
 } from 'redux/routes/name'
@@ -36,6 +37,11 @@ export function setAssetTags(category, id, tags) {
     id,
     tags
   }
+}
+
+export function changeAsset(orgname, reponame, category, assetid) {
+  console.log(`changeAsset ${orgname}/${reponame}/${category}/${assetid}`)
+  return pathToAction(`/edit/${orgname}/${reponame}/${category}/${assetid}`)
 }
 
 // Selector

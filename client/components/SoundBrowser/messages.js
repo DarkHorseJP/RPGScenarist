@@ -1,24 +1,17 @@
 import { defineMessages } from 'react-intl'
 
 export default defineMessages({
-  addSound: {
-    id: 'components.SoundBrowser.addSound',
-    defaultMessage: 'Add Sound'
+  assetName: {
+    id: 'components.SoundBrowser.assetName',
+    defaultMessage: 'Sound'
   },
-  dragSoundFile: {
-    id: 'components.SoundBrowser.dragSoundFile',
-    defaultMessage: 'or Drop Sound files.'
+  fileName: {
+    id: 'components.SoundBrowser.fileName',
+    defaultMessage: 'an sound file'
   },
-  chooseSoundFile: {
-    id: 'components.SoundBrowser.chooseSoundFile',
-    defaultMessage: 'Choose an sound file'
-  },
-  cancel: {
-    id: 'components.SoundBrowser.cancel',
-    defaultMessage: 'Cancel'
-  },
-  add: {
-    id: 'components.SoundBrowser.add',
-    defaultMessage: 'Add'
+  filesName: {
+    id: 'components.SoundBrowser.filesName',
+    defaultMessage: 'sound files'
   }
+
 })

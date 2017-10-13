@@ -120,22 +120,6 @@ let SoundDataForm = ({
   const soundLabel = (<FormattedMessage {...messages.sound} />)
 
   let player = null
-  //   controlCallbacks={{
-  //     togglePlayPause: (e) => {
-  //       e.preventDefault()
-  //       console.log('togglePlayPause')
-  //       //player.togglePlayPause()
-  //       console.log('audioElement: ' + player.audioElement)
-  //       player.audioElement.play()
-  //     },
-  //     togglePlayingState: (e) => {
-  //       e.preventDefault()
-  //       console.log('togglePlayingState')
-  //     }
-  //   }}
-  //   ref={(audioPlayer) => { player = audioPlayer }}
-
-  // const element = null
 
   return (
     <Wrapper height={height}>
@@ -198,13 +182,9 @@ let SoundDataForm = ({
                       element.play()
                     }
                   }
-                  // player.togglePlayPause = (e) => player._togglePlayPause(e)
                   player.handleEndedProgress = () => {}
                   player.playNext = true
                   player.loadSrc()
-                  // player.setState({ progress: 0 })
-                  // player.audioElement.currentTime = 0
-                  // player.audioElement.play()
                 }}
               />
             </Col>

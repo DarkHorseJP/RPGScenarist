@@ -1,5 +1,7 @@
 import {
   redirect,
+  pathToAction as origPathToAction,
+  actionToPath as origActionToPath,
   NOT_FOUND
 } from 'redux-first-router'
 
@@ -219,6 +221,9 @@ const routesMap = {
     page: 'NotFoundPage'
   }
 }
+
+export const pathToAction = (path) => origPathToAction(path, routesMap)
+export const actionToPath = (action) => origActionToPath(action, routesMap)
 
 export default routesMap
 

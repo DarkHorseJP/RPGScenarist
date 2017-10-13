@@ -1,6 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { WithContext as ReactTags } from 'react-tag-input'
+import { FormattedMessage } from 'react-intl'
+
+import messages from './messages'
 
 class TagEditor extends React.PureComponent {
   onAddTag(tag) {
@@ -23,34 +26,32 @@ class TagEditor extends React.PureComponent {
   }
 
   render() {
-    const { name, tags, placeholder, suggestions } = this.props
+    const { name, tags, suggestions } = this.props
     const tagArray = tags.map((text) => ({ id: text, text }))
 
-    // const suggestionNodes = suggestions.map((text) => {
-    //   const node = () => (<a href='#'>{text}</a>)
-    //   node.toLowerCase = () => (text.toLowerCase())
-    //   return node
-    // })
-
     return (
-      <ReactTags
-        name={name}
-        classNames={{
-          tag: 'btn',
-          remove: 'badge',
-          tagInput: 'open',
-          tagInputField: 'form-control',
-          suggestions: 'dropdown-menu suggestion',
-          activeSuggestion: 'active'
-        }}
-        tags={tagArray}
-        placeholder={placeholder}
-        suggestions={suggestions}
-        minQueryLength={1}
-        handleAddition={(tag) => this.onAddTag(tag)}
-        handleDelete={(i) => this.onDeleteTag(i)}
-        handleDrag={(tag, curPos, newPos) => this.onDragTag(curPos, newPos)}
-      />
+      <FormattedMessage {...messages.addNewTag}>
+        {(placeholder) => (
+          <ReactTags
+            name={name}
+            classNames={{
+              tag: 'btn',
+              remove: 'badge',
+              tagInput: 'open',
+              tagInputField: 'form-control',
+              suggestions: 'dropdown-menu suggestion',
+              activeSuggestion: 'active'
+            }}
+            tags={tagArray}
+            placeholder={placeholder}
+            suggestions={suggestions}
+            minQueryLength={1}
+            handleAddition={(tag) => this.onAddTag(tag)}
+            handleDelete={(i) => this.onDeleteTag(i)}
+            handleDrag={(tag, curPos, newPos) => this.onDragTag(curPos, newPos)}
+          />
+        )}
+      </FormattedMessage>
     )
   }
 }

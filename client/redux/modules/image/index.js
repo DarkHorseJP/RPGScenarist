@@ -1,4 +1,7 @@
 import {
+  ROUTE_IMAGE_EDIT
+} from 'redux/routes/name'
+import {
   uploadAsset,
   deleteAsset,
   setAssetTags,
@@ -6,17 +9,28 @@ import {
   makeReducer
 } from 'redux/modules/asset'
 
+const moduleName = 'image'
+const categoryName = 'images'
+const locationName = 'imageid'
+
 // Actions
+export function changeImage(orgname, reponame, imageid) {
+  return {
+    type: ROUTE_IMAGE_EDIT,
+    payload: { orgname, reponame, imageid }
+  }
+}
+
 export function uploadImage(id, file, meta) {
-  return uploadAsset('images', id, file, meta)
+  return uploadAsset(categoryName, id, file, meta)
 }
 
 export function deleteImage(id) {
-  return deleteAsset('images', id)
+  return deleteAsset(categoryName, id)
 }
 
 export function setImageTags(id, tags) {
-  return setAssetTags('images', id, tags)
+  return setAssetTags(categoryName, id, tags)
 }
 
 // Utility functions
@@ -41,7 +55,7 @@ export async function isValidImageFile(file) {
 }
 
 // Selector
-const selectors = makeSelectors('image')
+const selectors = makeSelectors(moduleName)
 export const selectImage = selectors.selectAsset
 export const selectImageId = selectors.selectId
 export const selectImageFiles = selectors.selectFiles
@@ -56,5 +70,5 @@ export const makeSelectImageInfo = selectors.makeSelectInfo
 export const makeSelectImageFile = selectors.makeSelectFile
 export const makeSelectImageUrl = selectors.makeSelectUrl
 
-export default makeReducer('images', 'imageid')
+export default makeReducer(categoryName, locationName)
 
