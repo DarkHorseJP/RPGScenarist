@@ -14,10 +14,19 @@
   "pages.ImagePage.tags": "タグ",
   "pages.ImagePage.image": "画像",
   "pages.ImagePage.delete": "削除",
-  "pages.ImagePage.addNewTag": "タグを追加",
   "pages.ImagePage.required": "必須項目",
   "pages.ImagePage.invalidId": "半角英数字、ハイフン、アンダースコアのみ使用可",
   "pages.ImagePage.usedId": "このIDは既に使われています",
+
+  "pages.SoundPage.id": "ID",
+  "pages.SoundPage.path": "ファイルパス",
+  "pages.SoundPage.updated": "更新日",
+  "pages.SoundPage.tags": "タグ",
+  "pages.SoundPage.sound": "効果音",
+  "pages.SoundPage.delete": "削除",
+  "pages.SoundPage.required": "必須項目",
+  "pages.SoundPage.invalidId": "半角英数字、ハイフン、アンダースコアのみ使用可",
+  "pages.SoundPage.usedId": "このIDは既に使われています",
 
   "pages.NotFoundPage.header": "ページが見つかりませんでした",
 
@@ -37,9 +46,20 @@
   "components.DeleteModal.cancel": "キャンセル",
   "components.DeleteModal.delete": "削除",
 
-  "components.ImageBrowser.addImage": "画像追加",
-  "components.ImageBrowser.dragImageFile": "または画像ファイルをドロップ",
-  "components.ImageBrowser.chooseImageFile": "画像ファイルを選択",
-  "components.ImageBrowser.cancel": "キャンセル",
-  "components.ImageBrowser.add": "追加"
+  "components.AssetBrowser.addAsset": "{assetName}を追加",
+  "components.AssetBrowser.dropFile": "または{filesName}をドロップ",
+  "components.AssetBrowser.chooseFile": "{fileName}を選択",
+  "components.AssetBrowser.cancel": "キャンセル",
+  "components.AssetBrowser.add": "追加",
+
+  "components.ImageBrowser.assetName": "画像",
+  "components.ImageBrowser.fileName": "画像ファイル",
+  "components.ImageBrowser.filesName": "画像ファイル",
+  
+  "components.SoundBrowser.assetName": "効果音",
+  "components.SoundBrowser.fileName": "音声ファイル",
+  "components.SoundBrowser.filesName": "音声ファイル",
+
+  "components.TagEditor.addNewTag": "タグを追加"
 }
+

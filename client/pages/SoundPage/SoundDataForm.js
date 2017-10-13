@@ -2,20 +2,21 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form/immutable'
-import { Form, FormGroup, FormControl, Button, Row, Col, ControlLabel, Thumbnail } from 'react-bootstrap'
+import { Form, FormGroup, FormControl, Button, Row, Col, ControlLabel } from 'react-bootstrap'
 import { FormattedMessage, FormattedDate, FormattedTime } from 'react-intl'
 import styled from 'styled-components'
+import AudioPlayer from 'react-audioplayer'
 
 import { showModal } from 'redux/modules/modal'
 import {
-  selectImageId,
-  selectImageUrl,
-  selectImageInfo,
-  selectAllImageTags,
-  selectAllImageIds,
-  setImageTags,
-  deleteImage
-} from 'redux/modules/image'
+  selectSoundId,
+  selectSoundUrl,
+  selectSoundInfo,
+  selectAllSoundTags,
+  selectAllSoundIds,
+  setSoundTags,
+  deleteSound
+} from 'redux/modules/sound'
 import ReduxFormControl from 'components/ReduxFormControl'
 import TagEditor from 'components/TagEditor'
 import DeleteModal from 'components/DeleteModal'
@@ -89,7 +90,7 @@ StaticControl.propTypes = {
   ])
 }
 
-let ImageDataForm = ({
+let SoundDataForm = ({
   handleSubmit, // eslint-disable-line react/prop-types
   onChangeTags,
   onShowDelete,
@@ -116,7 +117,9 @@ let ImageDataForm = ({
   const pathLabel = (<FormattedMessage {...messages.path} />)
   const updatedLabel = (<FormattedMessage {...messages.updated} />)
   const tagsLabel = (<FormattedMessage {...messages.tags} />)
-  const imageLabel = (<FormattedMessage {...messages.image} />)
+  const soundLabel = (<FormattedMessage {...messages.sound} />)
+
+  let player = null
 
   return (
     <Wrapper height={height}>
@@ -134,21 +137,56 @@ let ImageDataForm = ({
               {tagsLabel}
             </Col>
             <Col sm={9}>
-              <TagEditor
-                tags={tags}
-                suggestions={suggestions}
-                onChange={(newTags) => onChangeTags(id, newTags)}
-              />
+              <FormattedMessage {...messages.addNewTag}>
+                {(placeholder) => (
+                  <TagEditor
+                    tags={tags}
+                    placeholder={placeholder}
+                    suggestions={suggestions}
+                    onChange={(newTags) => onChangeTags(id, newTags)}
+                  />
+                )}
+              </FormattedMessage>
             </Col>
           </Row>
         </FormGroup>
         <FormGroup>
           <Row>
             <Col componentClass={ControlLabel} sm={3}>
-              {imageLabel}
+              {soundLabel}
             </Col>
             <Col sm={9}>
-              <Thumbnail src={src} />
+              <AudioPlayer
+                width="100%"
+                playlist={[{
+                  name: id,
+                  src
+                }]}
+                ref={(audioPlayer) => {
+                  if (!audioPlayer) {
+                    return
+                  }
+                  player = audioPlayer
+                  player.togglePlayPause = (e) => {
+                    const element = player.audioElement
+                    if (e) {
+                      e.preventDefault()
+                    }
+                    if (player.state.playing) {
+                      element.pause()
+                    } else {
+                      if (element.currentTime === element.duration) {
+                        player.setState({ progress: 0 })
+                        element.currentTime = 0
+                      }
+                      element.play()
+                    }
+                  }
+                  player.handleEndedProgress = () => {}
+                  player.playNext = true
+                  player.loadSrc()
+                }}
+              />
             </Col>
           </Row>
         </FormGroup>
@@ -186,27 +224,26 @@ const validations = (values, { id, ids }) => {
 
 const mapDispatchToProps = (dispatch) => ({
   onChangeTags: (id, tags) => {
-    dispatch(setImageTags(id, tags))
+    dispatch(setSoundTags(id, tags))
   },
   onShowDelete: () => {
     dispatch(showModal(DeleteModal.formName))
   },
   onDelete: (id) => {
-    dispatch(deleteImage(id))
+    dispatch(deleteSound(id))
   }
 })
 
 const mapStateToProps = (state) => {
-  // TODO: get image size (width x height)
-  const id = selectImageId(state)
-  const src = selectImageUrl(state)
-  const info = selectImageInfo(state)
+  const id = selectSoundId(state)
+  const src = selectSoundUrl(state)
+  const info = selectSoundInfo(state)
   const path = info ? info.get('path') : ''
   const updated = info ? info.get('updated') : ''
   const tags = info ? info.get('tags') : null
   const tagArray = tags ? tags.toArray() : []
-  const suggestions = selectAllImageTags(state).slice()
-  const ids = selectAllImageIds(state)
+  const suggestions = selectAllSoundTags(state).slice()
+  const ids = selectAllSoundIds(state)
 
   // remove existing tags from suggestions
   tagArray.forEach((tag) => {
@@ -230,13 +267,13 @@ const mapStateToProps = (state) => {
   }
 }
 
-ImageDataForm = reduxForm({
-  form: 'ImagePage/ImageDataForm',
+SoundDataForm = reduxForm({
+  form: 'SoundPage/SoundDataForm',
   enableReinitialize: true,
   validate: validations
-})(ImageDataForm)
+})(SoundDataForm)
 
-ImageDataForm.defaultProps = {
+SoundDataForm.defaultProps = {
   height: '',
   id: '',
   src: '',
@@ -247,7 +284,7 @@ ImageDataForm.defaultProps = {
   ids: []
 }
 
-ImageDataForm.propTypes = {
+SoundDataForm.propTypes = {
   onChangeTags: PropTypes.func.isRequired,
   onShowDelete: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
@@ -261,5 +298,5 @@ ImageDataForm.propTypes = {
   ids: PropTypes.arrayOf(PropTypes.string)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImageDataForm)
+export default connect(mapStateToProps, mapDispatchToProps)(SoundDataForm)
 

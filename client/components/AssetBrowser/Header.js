@@ -1,6 +1,5 @@
 import React from 'react'
 import { Field, reduxForm } from 'redux-form/immutable'
-import { connect } from 'react-redux'
 import {
   Form,
   FormGroup,
@@ -10,7 +9,7 @@ import {
 
 import ReduxFormControl from 'components/ReduxFormControl'
 
-let SearchForm = () => (
+const SearchForm = () => (
   <Form onSubmit={(e) => e.preventDefault()}>
     <FormGroup>
       <InputGroup>
@@ -22,12 +21,10 @@ let SearchForm = () => (
     </FormGroup>
   </Form>
 )
-SearchForm = reduxForm({ form: 'components/ImageBrowser/SearchForm' })(SearchForm)
-SearchForm = connect()(SearchForm)
 
-const Header = () => (
-  <SearchForm />
-)
+export const searchFormName = 'components/AssetBrowser/SearchForm'
+const ReduxSearchForm = reduxForm({ form: searchFormName })(SearchForm)
+const Header = () => (<ReduxSearchForm />)
 
 export default Header
 

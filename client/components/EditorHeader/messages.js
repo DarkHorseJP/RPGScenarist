@@ -1,6 +1,10 @@
 import { defineMessages } from 'react-intl'
 
 export default defineMessages({
+  loading: {
+    id: 'components.EditorHeader.loading',
+    defaultMessage: 'Loading...'
+  },
   general: {
     id: 'components.EditorHeader.general',
     defaultMessage: 'General'

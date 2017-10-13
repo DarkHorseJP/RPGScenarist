@@ -1,5 +1,7 @@
 import {
   redirect,
+  pathToAction as origPathToAction,
+  actionToPath as origActionToPath,
   NOT_FOUND
 } from 'redux-first-router'
 
@@ -206,11 +208,22 @@ const routesMap = {
     path: '/edit/:orgname/:reponame/images/:imageid',
     page: 'ImagePage'
   },
+  [Route.ROUTE_SOUNDS]: {
+    path: '/edit/:orgname/:reponame/sounds',
+    page: 'SoundPage'
+  },
+  [Route.ROUTE_SOUND_EDIT]: {
+    path: '/edit/:orgname/:reponame/sounds/:soundid',
+    page: 'SoundPage'
+  },
   [NOT_FOUND]: {
     path: '/not-found',
     page: 'NotFoundPage'
   }
 }
+
+export const pathToAction = (path) => origPathToAction(path, routesMap)
+export const actionToPath = (action) => origActionToPath(action, routesMap)
 
 export default routesMap
 

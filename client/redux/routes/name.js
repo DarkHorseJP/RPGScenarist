@@ -5,5 +5,7 @@ export const ROUTE_LOAD = 'routesMap/ROUTE_LOAD'
 export const ROUTE_EDIT = 'routesMap/ROUTE_EDIT'
 export const ROUTE_IMAGES = 'routesMap/ROUTE_IMAGES'
 export const ROUTE_IMAGE_EDIT = 'routesMap/ROUTE_IMAGE_EDIT'
+export const ROUTE_SOUNDS = 'routesMap/ROUTE_SOUNDS'
+export const ROUTE_SOUND_EDIT = 'routesMap/ROUTE_SOUND_EDIT'
 
 export const isRouteAction = (action) => (action.startsWith('routesMap/'))

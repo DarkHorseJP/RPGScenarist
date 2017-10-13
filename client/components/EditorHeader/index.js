@@ -75,38 +75,42 @@ const EditorHeader = ({ org, orgName, repoName, pageName }) => {
           <NavItem>
             <Link to={repLink}>{repoName}</Link>
           </NavItem>
-          <NavDropdown title={pageName} id="editorPageName">
-            <LinkItem tag={MenuItem} href={generalLink}>
-              <FormattedMessage {...messages.general} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={releaseLink}>
-              <FormattedMessage {...messages.releases} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={dbLink}>
-              <FormattedMessage {...messages.database} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={battleLink}>
-              <FormattedMessage {...messages.battle} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={mapLink}>
-              <FormattedMessage {...messages.maps} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={modelLink}>
-              <FormattedMessage {...messages.models} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={motionLink}>
-              <FormattedMessage {...messages.motions} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={imageLink}>
-              <FormattedMessage {...messages.images} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={musicLink}>
-              <FormattedMessage {...messages.musics} />
-            </LinkItem>
-            <LinkItem tag={MenuItem} href={soundLink}>
-              <FormattedMessage {...messages.sounds} />
-            </LinkItem>
-          </NavDropdown>
+          <FormattedMessage {...messages[pageName]}>
+            {(translatedPageName) => (
+              <NavDropdown title={translatedPageName} id="editorPageName">
+                <LinkItem tag={MenuItem} href={generalLink}>
+                  <FormattedMessage {...messages.general} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={releaseLink}>
+                  <FormattedMessage {...messages.releases} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={dbLink}>
+                  <FormattedMessage {...messages.database} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={battleLink}>
+                  <FormattedMessage {...messages.battle} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={mapLink}>
+                  <FormattedMessage {...messages.maps} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={modelLink}>
+                  <FormattedMessage {...messages.models} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={motionLink}>
+                  <FormattedMessage {...messages.motions} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={imageLink}>
+                  <FormattedMessage {...messages.images} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={musicLink}>
+                  <FormattedMessage {...messages.musics} />
+                </LinkItem>
+                <LinkItem tag={MenuItem} href={soundLink}>
+                  <FormattedMessage {...messages.sounds} />
+                </LinkItem>
+              </NavDropdown>
+            )}
+          </FormattedMessage>
         </Nav>
         <Nav pullRight>
           <Navbar.Form>

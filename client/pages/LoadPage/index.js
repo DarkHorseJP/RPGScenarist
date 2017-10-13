@@ -9,7 +9,7 @@ const LoadPage = () => (
   <div>
     <Helmet title="Loading..." />
     <CommonHeader />
-    <EditorHeader pageName="Loading..." />
+    <EditorHeader pageName="loading" />
     Loading...
     <ProgressBar active now={50} />
   </div>

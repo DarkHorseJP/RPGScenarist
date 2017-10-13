@@ -2,7 +2,6 @@ import { fromJS } from 'immutable'
 import { createSelector } from 'reselect'
 import JSZip from 'jszip'
 import {
-  ROUTE_IMAGE_EDIT,
   isRouteAction
 } from 'redux/routes/name'
 
@@ -73,13 +72,6 @@ export function loadGameData(repoid) {
   return {
     type: LOAD_GAME_DATA,
     repoid
-  }
-}
-
-export function changeImage(orgname, reponame, imageid) {
-  return {
-    type: ROUTE_IMAGE_EDIT,
-    payload: { orgname, reponame, imageid }
   }
 }
 
