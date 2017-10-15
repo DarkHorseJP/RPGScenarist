@@ -11,7 +11,7 @@ import ReduxFormControl from 'components/ReduxFormControl'
 
 const SearchForm = () => (
   <Form onSubmit={(e) => e.preventDefault()}>
-    <FormGroup>
+    <FormGroup style={{ margin: '5px 0' }}>
       <InputGroup>
         <InputGroup.Addon>
           <Glyphicon glyph="search" />

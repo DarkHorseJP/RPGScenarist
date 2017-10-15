@@ -52,7 +52,7 @@ class EditableList extends React.PureComponent {
 EditableList.defaultProps = {
   className: '',
   style: {},
-  height: '100hv',
+  height: '100vh',
   items: fromJS([]),
   selectedKey: '',
   keyName: 'id',

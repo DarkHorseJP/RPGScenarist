@@ -8,6 +8,17 @@
   "pages.RepositoryPage.cancel": "キャンセル",
   "pages.RepositoryPage.create": "作成",
 
+  "pages.ModelPage.id": "ID",
+  "pages.ModelPage.path": "ファイルパス",
+  "pages.ModelPage.updated": "更新日",
+  "pages.ModelPage.tags": "タグ",
+  "pages.ModelPage.model": "モデル",
+  "pages.ModelPage.delete": "削除",
+  "pages.ModelPage.required": "必須項目",
+  "pages.ModelPage.invalidId": "半角英数字、ハイフン、アンダースコアのみ使用可",
+  "pages.ModelPage.usedId": "このIDは既に使われています",
+
+
   "pages.ImagePage.id": "ID",
   "pages.ImagePage.path": "ファイルパス",
   "pages.ImagePage.updated": "更新日",
@@ -30,6 +41,7 @@
 
   "pages.NotFoundPage.header": "ページが見つかりませんでした",
 
+  "components.EditorHeader.loading": "読み込み中...",
   "components.EditorHeader.general": "一般",
   "components.EditorHeader.releases": "リリース",
   "components.EditorHeader.database": "データベース",
@@ -51,6 +63,10 @@
   "components.AssetBrowser.chooseFile": "{fileName}を選択",
   "components.AssetBrowser.cancel": "キャンセル",
   "components.AssetBrowser.add": "追加",
+
+  "components.ModelBrowser.assetName": "モデル",
+  "components.ModelBrowser.fileName": "モデルファイル",
+  "components.ModelBrowser.filesName": "モデルファイル",
 
   "components.ImageBrowser.assetName": "画像",
   "components.ImageBrowser.fileName": "画像ファイル",

@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux-immutable'
 import { reducer as form } from 'redux-form/immutable'
-// import { reducer as modal } from 'redux-modal'
 
 import db from './modules/db'
 import language from './modules/language'
 import github from './modules/github'
 import map from './modules/map'
+import model from './modules/model'
 import image from './modules/image'
 import sound from './modules/sound'
 import window from './modules/window'
@@ -18,6 +18,7 @@ export default function createReducer(asyncReducers) {
     language,
     github,
     map,
+    model,
     image,
     sound,
     window,

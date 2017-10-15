@@ -200,6 +200,14 @@ const routesMap = {
       dispatch(goBackAction)
     }
   },
+  [Route.ROUTE_MODELS]: {
+    path: '/edit/:orgname/:reponame/models',
+    page: 'ModelPage'
+  },
+  [Route.ROUTE_MODEL_EDIT]: {
+    path: '/edit/:orgname/:reponame/models/:modelid',
+    page: 'ModelPage'
+  },
   [Route.ROUTE_IMAGES]: {
     path: '/edit/:orgname/:reponame/images',
     page: 'ImagePage'

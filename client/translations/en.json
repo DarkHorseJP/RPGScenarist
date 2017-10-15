@@ -20,6 +20,7 @@
 
   "pages.NotFoundPage.header": "Page not found",
 
+  "components.EditorHeader.loading": "Loading...",
   "components.EditorHeader.general": "General",
   "components.EditorHeader.releases": "Releases",
   "components.EditorHeader.database": "Database",
@@ -41,6 +42,10 @@
   "components.AssetBrowser.chooseFile": "Choose {fileName}",
   "components.AssetBrowser.cancel": "Cancel",
   "components.AssetBrowser.add": "Add",
+
+  "components.ModelBrowser.assetName": "Model",
+  "components.ModelBrowser.fileName": "an model file",
+  "components.ModelBrowser.filesName": "model files",
 
   "components.ImageBrowser.assetName": "Image",
   "components.ImageBrowser.fileName": "an image file",

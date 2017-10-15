@@ -43,9 +43,9 @@ const EditorHeader = ({ org, orgName, repoName, pageName }) => {
 
       generalLink = `${repLink}/general`
       releaseLink = `${repLink}/releases`
-      dbLink = `${repLink}/database`
-      battleLink = `${repLink}/battle`
       mapLink = `${repLink}/maps`
+      battleLink = `${repLink}/battle`
+      dbLink = `${repLink}/database`
       modelLink = `${repLink}/models`
       motionLink = `${repLink}/motions`
       imageLink = `${repLink}/images`
@@ -84,15 +84,17 @@ const EditorHeader = ({ org, orgName, repoName, pageName }) => {
                 <LinkItem tag={MenuItem} href={releaseLink}>
                   <FormattedMessage {...messages.releases} />
                 </LinkItem>
-                <LinkItem tag={MenuItem} href={dbLink}>
-                  <FormattedMessage {...messages.database} />
+                <MenuItem divider />
+                <LinkItem tag={MenuItem} href={mapLink}>
+                  <FormattedMessage {...messages.maps} />
                 </LinkItem>
                 <LinkItem tag={MenuItem} href={battleLink}>
                   <FormattedMessage {...messages.battle} />
                 </LinkItem>
-                <LinkItem tag={MenuItem} href={mapLink}>
-                  <FormattedMessage {...messages.maps} />
+                <LinkItem tag={MenuItem} href={dbLink}>
+                  <FormattedMessage {...messages.database} />
                 </LinkItem>
+                <MenuItem divider />
                 <LinkItem tag={MenuItem} href={modelLink}>
                   <FormattedMessage {...messages.models} />
                 </LinkItem>
