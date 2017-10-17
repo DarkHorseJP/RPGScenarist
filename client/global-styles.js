@@ -37,4 +37,14 @@ injectGlobal`
     padding: inherit;
     background-color: inherit;
   }
+
+  .audio-player .progress {
+    height: 5px;
+    margin: 0 0 5px;
+    cursor: pointer;
+  }
+
+  .audio-player .progress-bar {
+    transition: inherit;
+  }
 `

@@ -77,6 +77,13 @@ export default class SCNViewer extends React.Component {
     return false
   }
 
+  componentWillUnmount() {
+    if (this.state.view) {
+      this.state.view.stop()
+    }
+  }
+
+
   _setupView() {
     const view = this.state.view
     view.showLoading()

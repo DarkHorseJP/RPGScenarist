@@ -5,56 +5,92 @@ import { createStructuredSelector } from 'reselect'
 
 import {
   loadAudio,
+  audioLoading,
   audioLoaded,
   audioEnded,
   currentTimeChanged,
+  audioUnloaded,
+
   playAudio,
   pauseAudio,
-  // setCurrentTime
+  setCurrentTime,
+  setVolume,
+
+  makeSelectState,
   makeSelectPlay,
-  makeSelectCurrentTime
+  makeSelectCurrentTime,
+  makeSelectDuration
 } from 'redux/modules/audio'
 
 import Skin from './Skin'
 
-const AudioComponent = (props) => (<div>{props.children(props)}</div>)
+const AudioComponent = (props) => (<div className="audio-player">{props.children(props)}</div>)
 AudioComponent.propTypes = {
   onPlay: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   onPause: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
+  onChangeCurrentTime: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
+  onChangeVolume: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   children: PropTypes.func.isRequired
 }
 
 class Audio extends React.Component {
-  componentDidMount() {
+  componentWillMount() {
     const {
-      name,
-      onLoad
+      name
     } = this.props
 
     const audioDispatchToProps = (dispatch) => ({
       onPlay: () => { dispatch(playAudio(name)) },
-      onPause: () => { dispatch(pauseAudio(name)) }
+      onPause: () => { dispatch(pauseAudio(name)) },
+      onChangeCurrentTime: (time) => { dispatch(setCurrentTime(name, time)) },
+      onChangeVolume: (volume) => { dispatch(setVolume(name, volume)) }
     })
 
     const audioStateToProps = createStructuredSelector({
+      state: makeSelectState(name),
       play: makeSelectPlay(name),
-      currentTime: makeSelectCurrentTime(name)
+      currentTime: makeSelectCurrentTime(name),
+      duration: makeSelectDuration(name)
     })
 
     this.audioComponent = connect(audioStateToProps, audioDispatchToProps)(AudioComponent)
+  }
 
+  componentDidMount() {
+    const {
+      name,
+      onLoading,
+      onLoad
+    } = this.props
+
+    onLoading(name)
     loadAudio(this.props).then((audio) => {
-      console.log(`audio: ${typeof audio}`)
-      console.log(`name: ${name}`)
       onLoad(name, audio, this.props)
     })
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.name !== nextProps.name) {
+      // TODO: handle changing name
+    }
+
+    if (this.props.src !== nextProps.src) {
+      const onLoad = nextProps.onLoad
+      const newProps = Object.assign({}, nextProps, { currentTime: 0 })
+      console.log(`newProps: ${JSON.stringify(newProps)}`)
+      newProps.onLoading(newProps.name)
+      loadAudio(newProps).then((audio) => {
+        onLoad(newProps.name, audio, newProps)
+      })
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.onUnload(this.props.name)
+  }
+
   render() {
     const Component = this.audioComponent
-    if (!Component) {
-      return null
-    }
 
     const {
       children,
@@ -71,9 +107,11 @@ class Audio extends React.Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
+  onLoading: (name) => dispatch(audioLoading(name)),
   onLoad: (name, audio, props) => dispatch(audioLoaded(name, audio, props)),
   onEnded: (name) => dispatch(audioEnded(name)),
-  onTimeChanged: (name, next) => dispatch(currentTimeChanged(name, next))
+  onTimeChanged: (name, next) => dispatch(currentTimeChanged(name, next)),
+  onUnload: (name) => dispatch(audioUnloaded(name))
 })
 
 Audio.defaultProps = {
@@ -105,9 +143,11 @@ Audio.propTypes = {
   onTimeChange: PropTypes.func,
   onError: PropTypes.func,
 
+  onLoading: PropTypes.func.isRequired,
   onLoad: PropTypes.func.isRequired,
   onEnded: PropTypes.func.isRequired,
-  onTimeChanged: PropTypes.func.isRequired
+  onTimeChanged: PropTypes.func.isRequired,
+  onUnload: PropTypes.func.isRequired
 }
 
 export default connect(null, mapDispatchToProps)(Audio)
