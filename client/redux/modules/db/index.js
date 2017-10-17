@@ -146,11 +146,19 @@ export async function parseZipData(zip, owner, repo, user) {
   }
   const hash = dirPattern.exec(dirname)[1]
   const filePattern = RegExp(`^${dirname}([^/]+)/([^/]+)/(.*)$`)
+  const modelDirectory = `${dirname}/models`
 
   const promises = Object.keys(zip.files)
     .filter((fileName) => {
       if (!fileName.startsWith(dirname)) {
         console.error(`file pattern unmatch: ${fileName}`)
+        return false
+      }
+      if (fileName.startsWith(modelDirectory)) {
+        // Model data is too large to store in the local db.
+        if (fileName.endsWith('/data.json')) {
+          return true
+        }
         return false
       }
       return true
@@ -172,6 +180,7 @@ export async function parseZipData(zip, owner, repo, user) {
       if (!isDir) {
         if (fileName.endsWith('.json')) {
           contentPromise = file.async('string').then(JSON.parse)
+            .catch((err) => { console.error(`${fileName}:${err}`) })
         } else {
           contentPromise = file.async('blob')
         }

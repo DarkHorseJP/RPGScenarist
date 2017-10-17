@@ -8,18 +8,11 @@
   "pages.RepositoryPage.cancel": "Cancel",
   "pages.RepositoryPage.create": "Create",
 
-  "pages.ImagePage.id": "ID",
-  "pages.ImagePage.path": "Path",
-  "pages.ImagePage.updated": "Updated",
-  "pages.ImagePage.tags": "Tags",
   "pages.ImagePage.image": "Image",
-  "pages.ImagePage.delete": "Delete",
-  "pages.ImagePage.required": "Required",
-  "pages.ImagePage.invalidId": "You can use letters, numbers, dash, underscore",
-  "pages.ImagePage.usedId": "This ID is already used",
 
   "pages.NotFoundPage.header": "Page not found",
 
+  "components.EditorHeader.loading": "Loading...",
   "components.EditorHeader.general": "General",
   "components.EditorHeader.releases": "Releases",
   "components.EditorHeader.database": "Database",
@@ -32,6 +25,15 @@
   "components.EditorHeader.sounds": "Sounds",
   "components.EditorHeader.save": "Save",
 
+  "components.AssetDataForm.id": "ID",
+  "components.AssetDataForm.path": "Path",
+  "components.AssetDataForm.updated": "Updated",
+  "components.AssetDataForm.tags": "Tags",
+  "components.AssetDataForm.delete": "Delete",
+  "components.AssetDataForm.required": "Required",
+  "components.AssetDataForm.invalidId": "You can use letters, numbers, dash, underscore",
+  "components.AssetDataForm.usedId": "This ID is already used",
+
   "components.DeleteModal.wantToDelete": "Are you sure you want to delete {name}?",
   "components.DeleteModal.cancel": "Cancel",
   "components.DeleteModal.delete": "Delete",
@@ -41,6 +43,10 @@
   "components.AssetBrowser.chooseFile": "Choose {fileName}",
   "components.AssetBrowser.cancel": "Cancel",
   "components.AssetBrowser.add": "Add",
+
+  "components.ModelBrowser.assetName": "Model",
+  "components.ModelBrowser.fileName": "an model file",
+  "components.ModelBrowser.filesName": "model files",
 
   "components.ImageBrowser.assetName": "Image",
   "components.ImageBrowser.fileName": "an image file",

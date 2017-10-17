@@ -22,7 +22,7 @@ import {
 import Header, { searchFormName } from './Header'
 import Footer from './Footer'
 
-const headerHeight = '40px'
+const headerHeight = '155px'
 const footerHeight = '40px'
 const Wrapper = styled.div`
   height: calc(${(props) => props.height} - ${headerHeight} - ${footerHeight});
@@ -245,7 +245,7 @@ AssetBrowser.defaultProps = {
   groupComponent: defaultGroupComponent,
   itemComponent: defaultItemComponent,
   validate: () => Promise.resolve(true),
-  height: '100hv',
+  height: '100vh',
   onChange: (dispatch, org, repo, category, id) => {
     dispatch(changeAsset(org, repo, category, id))
   }
