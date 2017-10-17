@@ -133,6 +133,9 @@ export default class SCNViewer extends React.Component {
         console.log('then source')
         const model = source.getModel()
         if (model) {
+          const scale = this.props.scale
+          console.log(`scale: ${scale}`)
+          model.scale = new SCNVector3(scale, scale, scale)
           if (this.state.modelObj) {
             this.state.modelObj.removeFromParentNode()
           }
@@ -249,6 +252,7 @@ export default class SCNViewer extends React.Component {
 SCNViewer.defaultProps = {
   model: null,
   motion: null,
+  scale: 1.0,
   onModelChanged: null,
   onMotionChanged: null,
   onError: null
@@ -257,6 +261,7 @@ SCNViewer.defaultProps = {
 SCNViewer.propTypes = {
   model: PropTypes.string,
   motion: PropTypes.string,
+  scale: PropTypes.number,
   onModelChanged: PropTypes.func,
   onMotionChanged: PropTypes.func,
   onError: PropTypes.func

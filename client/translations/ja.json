@@ -8,36 +8,11 @@
   "pages.RepositoryPage.cancel": "キャンセル",
   "pages.RepositoryPage.create": "作成",
 
-  "pages.ModelPage.id": "ID",
-  "pages.ModelPage.path": "ファイルパス",
-  "pages.ModelPage.updated": "更新日",
-  "pages.ModelPage.tags": "タグ",
   "pages.ModelPage.model": "モデル",
-  "pages.ModelPage.delete": "削除",
-  "pages.ModelPage.required": "必須項目",
-  "pages.ModelPage.invalidId": "半角英数字、ハイフン、アンダースコアのみ使用可",
-  "pages.ModelPage.usedId": "このIDは既に使われています",
 
-
-  "pages.ImagePage.id": "ID",
-  "pages.ImagePage.path": "ファイルパス",
-  "pages.ImagePage.updated": "更新日",
-  "pages.ImagePage.tags": "タグ",
   "pages.ImagePage.image": "画像",
-  "pages.ImagePage.delete": "削除",
-  "pages.ImagePage.required": "必須項目",
-  "pages.ImagePage.invalidId": "半角英数字、ハイフン、アンダースコアのみ使用可",
-  "pages.ImagePage.usedId": "このIDは既に使われています",
 
-  "pages.SoundPage.id": "ID",
-  "pages.SoundPage.path": "ファイルパス",
-  "pages.SoundPage.updated": "更新日",
-  "pages.SoundPage.tags": "タグ",
   "pages.SoundPage.sound": "効果音",
-  "pages.SoundPage.delete": "削除",
-  "pages.SoundPage.required": "必須項目",
-  "pages.SoundPage.invalidId": "半角英数字、ハイフン、アンダースコアのみ使用可",
-  "pages.SoundPage.usedId": "このIDは既に使われています",
 
   "pages.NotFoundPage.header": "ページが見つかりませんでした",
 
@@ -53,6 +28,15 @@
   "components.EditorHeader.musics": "BGM",
   "components.EditorHeader.sounds": "効果音",
   "components.EditorHeader.save": "保存",
+
+  "components.AssetDataForm.id": "ID",
+  "components.AssetDataForm.path": "ファイルパス",
+  "components.AssetDataForm.updated": "更新日",
+  "components.AssetDataForm.tags": "タグ",
+  "components.AssetDataForm.delete": "削除",
+  "components.AssetDataForm.required": "必須項目",
+  "components.AssetDataForm.invalidId": "半角英数字、ハイフン、アンダースコアのみ使用可",
+  "components.AssetDataForm.usedId": "このIDは既に使われています",
 
   "components.DeleteModal.wantToDelete": "本当に {name} を削除しますか?",
   "components.DeleteModal.cancel": "キャンセル",

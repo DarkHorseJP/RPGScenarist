@@ -4,6 +4,7 @@ import { reducer as form } from 'redux-form/immutable'
 import db from './modules/db'
 import language from './modules/language'
 import github from './modules/github'
+import audio from './modules/audio'
 import map from './modules/map'
 import model from './modules/model'
 import image from './modules/image'
@@ -17,6 +18,7 @@ export default function createReducer(asyncReducers) {
     db,
     language,
     github,
+    audio,
     map,
     model,
     image,
