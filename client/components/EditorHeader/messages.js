@@ -48,5 +48,13 @@ export default defineMessages({
   save: {
     id: 'components.EditorHeader.save',
     defaultMessage: 'Save'
+  },
+  saving: {
+    id: 'components.EditorHeader.saving',
+    defaultMessage: 'Saving...'
+  },
+  dataIsUpToDate: {
+    id: 'components.EditorHeader.dataIsUpToDate',
+    defaultMessage: 'Data is up to date'
   }
 })

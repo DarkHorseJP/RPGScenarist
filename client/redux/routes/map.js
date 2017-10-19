@@ -14,12 +14,14 @@ import {
   getRepositories,
   getArchive,
   getHeadSha,
+  getAllSha,
   selectInstallationId
 } from 'redux/modules/github'
 import {
-//  deleteDB,
+  // deleteDB,
   restoreData,
   parseZipData,
+  setShaData,
   dbLoaded
 } from 'redux/modules/db'
 import * as Route from './name'
@@ -50,6 +52,68 @@ const getMetaData = (data, key) => {
   return metaData ? metaData.value : null
 }
 
+async function loadData(dispatch, state) {
+  const loc = state.get('location')
+  const payload = loc.payload
+  const userName = state.getIn(['github', 'user', 'name'])
+  const instid = selectInstallationId(state)
+
+  const { orgname, reponame } = payload
+
+  let goBackAction = loc.prev
+  if (!goBackAction
+    || !goBackAction.payload
+    || !goBackAction.payload.orgname
+    || !goBackAction.payload.reponame) {
+    goBackAction = {
+      type: Route.ROUTE_EDIT,
+      payload: { orgname, reponame }
+    }
+  }
+
+  // DEBUG
+  // await deleteDB(orgname, reponame, userName, 'orig')
+  // await deleteDB(orgname, reponame, userName, 'edit')
+
+  const dbData = await restoreData(orgname, reponame, userName)
+  const headSha = await getHeadSha(instid, orgname, reponame, `user/${userName}`)
+  if (dbData) {
+    if (headSha === null) {
+      // could not get a branch sha
+      // TODO: create branch
+      return
+    }
+
+    // const shortSha = headSha.substring(0, 7)
+    const dbSha = getMetaData(dbData, 'sha')
+
+    if (headSha === dbSha) {
+      // up to date
+      console.log(`UpToDate headSha: ${headSha}`)
+      dispatch(dbLoaded(instid, dbData))
+      console.log('goback')
+      dispatch(goBackAction)
+      return
+    }
+  }
+
+  const branch = encodeURIComponent(`user/${userName}`)
+  const zip = await getArchive(instid, orgname, reponame, branch)
+  if (!zip) {
+    // TODO: create a branch
+    throw new Error('archive load error')
+  }
+  await parseZipData(zip, orgname, reponame, userName)
+
+  const shaData = await getAllSha(instid, orgname, reponame, headSha)
+  await setShaData(orgname, reponame, userName, shaData)
+
+  const data = await restoreData(orgname, reponame, userName)
+  dispatch(dbLoaded(instid, data))
+  console.log('goback')
+  dispatch(goBackAction)
+}
+
 export const routeOptions = {
   location: (state) => {
     const loc = state.get('location')
@@ -62,6 +126,7 @@ export const routeOptions = {
       && window
       && window.localStorage
       && window.localStorage.token) {
+      console.log('INITIALIZE')
       const redirectAction = redirect({ type: 'INITIALIZE' })
       dispatch(redirectAction)
       getUser()
@@ -105,6 +170,7 @@ export const routeOptions = {
           if (dbInfo.get('owner') !== payload.orgname
             || dbInfo.get('repo') !== payload.reponame
             || dbInfo.get('user') !== userName) {
+            console.log('go to load')
             // go to load data
             dispatch({ type: Route.ROUTE_LOAD, payload })
           }
@@ -142,62 +208,7 @@ const routesMap = {
     page: 'LoadPage',
     thunk: async (dispatch, getState) => {
       const state = getState()
-      const loc = state.get('location')
-      const payload = loc.payload
-      const userName = state.getIn(['github', 'user', 'name'])
-      const instid = selectInstallationId(state)
-
-      const { orgname, reponame } = payload
-
-      let goBackAction = loc.prev
-      if (!goBackAction
-        || !goBackAction.payload
-        || !goBackAction.payload.orgname
-        || !goBackAction.payload.reponame) {
-        goBackAction = {
-          type: Route.ROUTE_EDIT,
-          payload: { orgname, reponame }
-        }
-      }
-
-      // DEBUG
-      // await deleteDB(orgname, reponame, userName, 'orig')
-      // await deleteDB(orgname, reponame, userName, 'edit')
-
-      const dbData = await restoreData(orgname, reponame, userName)
-      if (dbData) {
-        const headSha = await getHeadSha(instid, orgname, reponame, `user/${userName}`)
-        if (headSha === null) {
-          // could not get a branch sha
-          // TODO: create branch
-          return
-        }
-
-        const shortSha = headSha.substring(0, 7)
-        const dbSha = getMetaData(dbData, 'sha')
-        // const dbOwner = getMetaData(dbData, 'owner')
-        // const dbRepo = getMetaData(dbData, 'repo')
-        // const dbUser = getMetaData(dbData, 'user')
-
-        if (shortSha === dbSha) {
-          // up to date
-          dispatch(dbLoaded(dbData))
-          dispatch(goBackAction)
-          return
-        }
-      }
-
-      const branch = encodeURIComponent(`user/${userName}`)
-      const zip = await getArchive(orgname, reponame, branch)
-      if (!zip) {
-        // TODO: create a branch
-        console.error('archive load error')
-        return
-      }
-      await parseZipData(zip, orgname, reponame, userName)
-      const data = await restoreData(orgname, reponame, userName)
-      dispatch(dbLoaded(data))
-      dispatch(goBackAction)
+      loadData(dispatch, state)
     }
   },
   [Route.ROUTE_MODELS]: {

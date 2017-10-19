@@ -43,8 +43,8 @@ export const selectRoutesMap = createSelector(
   (state) => state.routesMap
 )
 export const selectRouteDefinition = createSelector(
-  selectLocation,
-  (state) => state.routesMap[state.type]
+  selectRoutesMap, selectType,
+  (map, type) => map[type]
 )
 export const selectPage = createSelector(
   selectRouteDefinition,

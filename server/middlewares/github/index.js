@@ -69,6 +69,7 @@ const isValidUserToken = (req) => {
 
 const checkUserToken = (req, res, next) => {
   if (isValidUserToken(req)) {
+    // TODO: check instid
     return next()
   }
   return res.send()
@@ -159,6 +160,85 @@ const createNewRepository = (instId, orgName, repoName) => (
         })
       })
     ))
+    .then((res) => res.json())
+)
+
+const createNewBlob = (instId, orgName, repoName, content, encoding) => (
+  getAccessToken(instId)
+    .then((token) => (
+      fetch(`https://api.github.com/repos/${orgName}/${repoName}/git/blobs`, {
+        method: 'POST',
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: 'application/vnd.github.machine-man-preview+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content,
+          encoding
+        })
+      })
+    ))
+    .then((res) => res.json())
+)
+
+const createNewTree = (instId, orgName, repoName, tree, baseTree) => (
+  getAccessToken(instId)
+    .then((token) => (
+      fetch(`https://api.github.com/repos/${orgName}/${repoName}/git/trees`, {
+        method: 'POST',
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: 'application/vnd.github.machine-man-preview+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          tree,
+          base_tree: baseTree
+        })
+      })
+    ))
+    .then((res) => res.json())
+)
+
+const createNewCommit = (instId, orgName, repoName, message, tree, parents, author) => (
+  getAccessToken(instId)
+    .then((token) => (
+      fetch(`https://api.github.com/repos/${orgName}/${repoName}/git/commits`, {
+        method: 'POST',
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: 'application/vnd.github.machine-man-preview+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message,
+          tree,
+          parents,
+          author
+        })
+      })
+    ))
+    .then((res) => res.json())
+)
+
+const changeRef = (instId, orgName, repoName, ref, sha, force) => (
+  getAccessToken(instId)
+    .then((token) => (
+      fetch(`https://api.github.com/repos/${orgName}/${repoName}/git/refs/heads/${ref}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: 'application/vnd.github.machine-man-preview+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sha,
+          force
+        })
+      })
+    ))
+    .then((res) => res.json())
 )
 
 const githubAppMiddleware = (app) => {
@@ -177,10 +257,12 @@ const githubAppMiddleware = (app) => {
   }))
 
   passport.serializeUser((user, done) => {
+    console.log(`user._json: ${JSON.stringify(user)}`)
     const data = {
       accessToken: user.accessToken,
       userToken: user.userToken,
-      name: user._json.login // eslint-disable-line no-underscore-dangle
+      name: user._json.login, // eslint-disable-line no-underscore-dangle
+      email: user._json.email // eslint-disable-line no-underscore-dangle
     }
     const encrypted = {
       data: encryptObj(data)
@@ -249,6 +331,7 @@ const githubAppMiddleware = (app) => {
 
 
   app.get('/github/*', checkUserToken)
+
   app.get('/github/user', (req, res) => {
     fetch(`https://api.github.com/users/${req.user.name}`, {
       headers: { Accept: 'application/vnd.github.machine-man-preview+json' }
@@ -300,18 +383,144 @@ const githubAppMiddleware = (app) => {
       })
   })
 
-  app.get('/github/zipball/:org/:repo/:ref', (req, res) => {
+  app.get('/github/orgs/:instid/repos/:org/:repo/git/trees/:sha', (req, res) => {
+    const org = req.params.org
+    const repo = req.params.repo
+    const sha = req.params.sha
+    const url = `https://api.github.com/repos/${org}/${repo}/git/trees/${sha}?recursive=1`
+    fetch(url, req.fetchOption)
+      .then((data) => data.json())
+      .then((json) => res.send(json))
+      .catch((err) => {
+        logger.error(err)
+        res.send([])
+      })
+  })
+
+  app.post('/github/orgs/:instid/repos/:org/:repo/git/blobs', (req, res) => {
+    if (!req.isAuthenticated) {
+      res.send([])
+      return
+    }
+    const instid = req.params.instid
+    const org = req.params.org
+    const repo = req.params.repo
+
+    const content = req.body.content
+    const encoding = req.body.encoding
+
+    createNewBlob(instid, org, repo, content, encoding)
+      .then((result) => {
+        res.send(result)
+      }).catch((err) => {
+        logger.error(err)
+        res.send([])
+      })
+  })
+
+  app.post('/github/orgs/:instid/repos/:org/:repo/git/trees', (req, res) => {
+    if (!req.isAuthenticated) {
+      res.send([])
+      return
+    }
+    const instid = req.params.instid
+    const org = req.params.org
+    const repo = req.params.repo
+
+    const tree = req.body.tree
+    const baseTree = req.body.base_tree
+
+    createNewTree(instid, org, repo, tree, baseTree)
+      .then((result) => {
+        res.send(result)
+      }).catch((err) => {
+        logger.error(err)
+        res.send([])
+      })
+  })
+
+  app.post('/github/orgs/:instid/repos/:org/:repo/git/commits', (req, res) => {
+    if (!req.isAuthenticated) {
+      res.send([])
+      return
+    }
+    const instid = req.params.instid
+    const org = req.params.org
+    const repo = req.params.repo
+
+    const message = req.body.message
+    const tree = req.body.tree
+    const parents = [req.body.parents]
+
+    // name: req.user.name,
+    // email: req.user.email,
+    const author = {
+      name: 'RPGScenarist (bot)',
+      email: 'darkhorse2.0spec@gmail.com',
+      date: (new Date()).toISOString()
+    }
+
+    createNewCommit(instid, org, repo, message, tree, parents, author)
+      .then((result) => {
+        res.send(result)
+      }).catch((err) => {
+        logger.error(err)
+        res.send([])
+      })
+  })
+
+  app.patch([
+    '/github/orgs/:instid/repos/:org/:repo/git/refs/heads/:ref1',
+    '/github/orgs/:instid/repos/:org/:repo/git/refs/heads/:ref1/:ref2'
+  ], (req, res) => {
+    if (!req.isAuthenticated) {
+      res.send([])
+      return
+    }
+    const instid = req.params.instid
+    const org = req.params.org
+    const repo = req.params.repo
+    let ref = req.params.ref1
+    if (typeof req.params.ref2 !== 'undefined') {
+      ref += `/${req.params.ref2}`
+    }
+
+    const sha = req.body.sha
+    const force = req.body.force
+
+    changeRef(instid, org, repo, ref, sha, force)
+      .then((result) => {
+        res.send(result)
+      }).catch((err) => {
+        logger.error(err)
+        res.send([])
+      })
+  })
+
+  app.get('/github/orgs/:instid/repos/:org/:repo/zipball/:ref', (req, res) => {
+    const instid = req.params.instid
     const org = req.params.org
     const repo = req.params.repo
     const ref = req.params.ref
     const url = `https://api.github.com/repos/${org}/${repo}/zipball/${ref}`
-    fetch(url).then((data) => {
-      res.setHeader('content-type', 'application/octet-stream')
-      data.body.pipe(res)
-    }).catch((err) => {
-      logger.error(`error: ${err}`)
-      res.send(null)
-    })
+
+    getAccessToken(instid)
+      .then((token) => (
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            Authorization: `token ${token}`,
+            Accept: 'application/vnd.github.machine-man-preview+json',
+            'Content-Type': 'application/json'
+          }
+        }).then((data) => {
+          res.setHeader('content-type', 'application/octet-stream')
+          data.body.pipe(res)
+        }).catch((err) => {
+          logger.error(`error: ${err}`)
+          res.send(null)
+        })
+      ))
   })
 
   app.post('/github/orgs/:instid/repos/:owner', (req, res) => {

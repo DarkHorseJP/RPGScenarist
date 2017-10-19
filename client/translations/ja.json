@@ -28,6 +28,8 @@
   "components.EditorHeader.musics": "BGM",
   "components.EditorHeader.sounds": "効果音",
   "components.EditorHeader.save": "保存",
+  "components.EditorHeader.saving": "保存中...",
+  "components.EditorHeader.dataIsUpToDate": "データは最新です",
 
   "components.AssetDataForm.id": "ID",
   "components.AssetDataForm.path": "ファイルパス",

@@ -24,6 +24,8 @@
   "components.EditorHeader.musics": "Musics",
   "components.EditorHeader.sounds": "Sounds",
   "components.EditorHeader.save": "Save",
+  "components.EditorHeader.saving": "Saving...",
+  "components.EditorHeader.dataIsUpToDate": "Data is up to date",
 
   "components.AssetDataForm.id": "ID",
   "components.AssetDataForm.path": "Path",

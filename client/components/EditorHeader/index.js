@@ -4,7 +4,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 import Helmet from 'react-helmet'
-import { Nav, Navbar, NavItem, NavDropdown, MenuItem, Button } from 'react-bootstrap'
+import { Nav, Navbar, NavItem, NavDropdown, MenuItem, Button, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { FormattedMessage } from 'react-intl'
 import Link from 'redux-first-router-link'
 
@@ -13,11 +13,16 @@ import {
   selectOrganizationName,
   selectRepositoryName
 } from 'redux/modules/github'
+import {
+  commitEditDb,
+  finishEditDb,
+  selectState
+} from 'redux/modules/db'
 import LinkItem from 'components/LinkItem'
 
 import messages from './messages'
 
-const EditorHeader = ({ org, orgName, repoName, pageName }) => {
+const EditorHeader = ({ org, orgName, repoName, pageName, onSave, state }) => {
   let orgLink = '#'
   let orgAvatar = ''
   let repLink = '#'
@@ -52,6 +57,47 @@ const EditorHeader = ({ org, orgName, repoName, pageName }) => {
       musicLink = `${repLink}/musics`
       soundLink = `${repLink}/sounds`
     }
+  }
+
+  let SaveButton
+  if (state === 'upToDate') {
+    const tooltip = (
+      <Tooltip id="saveButton">
+        <FormattedMessage {...messages.dataIsUpToDate} />
+      </Tooltip>
+    )
+
+    SaveButton = (
+      <OverlayTrigger placement="bottom" overlay={tooltip}>
+        <Button
+          bsStyle="default"
+          onClick={(e) => e.preventDefault()}
+        >
+          <FormattedMessage {...messages.save} />
+        </Button>
+      </OverlayTrigger>
+    )
+  } else if (state === 'saving') {
+    SaveButton = (
+      <Button
+        bsStyle="primary"
+        disabled
+      >
+        <FormattedMessage {...messages.saving} />
+      </Button>
+    )
+  } else {
+    SaveButton = (
+      <Button
+        bsStyle="primary"
+        onClick={(e) => {
+          e.preventDefault()
+          onSave()
+        }}
+      >
+        <FormattedMessage {...messages.save} />
+      </Button>
+    )
   }
 
   return (
@@ -116,9 +162,7 @@ const EditorHeader = ({ org, orgName, repoName, pageName }) => {
         </Nav>
         <Nav pullRight>
           <Navbar.Form>
-            <Button bsStyle="primary">
-              <FormattedMessage {...messages.save} />
-            </Button>
+            {SaveButton}
           </Navbar.Form>
         </Nav>
       </Navbar.Collapse>
@@ -129,7 +173,19 @@ const EditorHeader = ({ org, orgName, repoName, pageName }) => {
 const mapStateToProps = createStructuredSelector({
   org: selectOrganization,
   orgName: selectOrganizationName,
-  repoName: selectRepositoryName
+  repoName: selectRepositoryName,
+  state: selectState
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  onSave: () => {
+    const next = (result) => {
+      console.log(`result: ${JSON.stringify(result)}`)
+      // TODO: check error
+      dispatch(finishEditDb())
+    }
+    dispatch(commitEditDb(next))
+  }
 })
 
 EditorHeader.defaultProps = {
@@ -137,7 +193,8 @@ EditorHeader.defaultProps = {
   orgName: null,
   repoName: null,
   children: null,
-  pageName: ''
+  pageName: '',
+  state: ''
 }
 
 EditorHeader.propTypes = {
@@ -145,8 +202,10 @@ EditorHeader.propTypes = {
   orgName: PropTypes.string,
   repoName: PropTypes.string,
   children: PropTypes.node,
-  pageName: PropTypes.string
+  pageName: PropTypes.string,
+  state: PropTypes.string,
+  onSave: PropTypes.func.isRequired
 }
 
-export default connect(mapStateToProps)(EditorHeader)
+export default connect(mapStateToProps, mapDispatchToProps)(EditorHeader)
 

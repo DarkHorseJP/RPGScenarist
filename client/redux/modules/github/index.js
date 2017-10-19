@@ -123,8 +123,8 @@ export async function getRepository(instId, repoId) {
   return repository
 }
 
-export async function getArchive(orgname, reponame, ref = 'master') {
-  const url = `/github/zipball/${orgname}/${reponame}/${ref}`
+export async function getArchive(instid, orgname, reponame, ref = 'master') {
+  const url = `/github/orgs/${instid}/repos/${orgname}/${reponame}/zipball/${ref}`
   const options = getOptions()
   const zipData = await fetch(url, options)
   const blob = await zipData.blob()
@@ -138,6 +138,21 @@ export async function getHeadSha(instid, orgname, reponame, ref = 'master') {
   const json = await data.json()
   const sha = json.object ? json.object.sha : null
   return sha
+}
+
+export async function getAllSha(instid, orgname, reponame, sha) {
+  const url = `/github/orgs/${instid}/repos/${orgname}/${reponame}/git/trees/${sha}`
+  const options = getOptions()
+  const data = await fetch(url, options)
+  const json = await data.json()
+  const shaData = {}
+  json.tree.forEach((obj) => {
+    const path = (obj.type === 'tree' ? `${obj.path}/` : obj.path)
+    shaData[path] = obj.sha
+  })
+  shaData['/'] = json.sha
+
+  return shaData
 }
 
 export async function createRepository(instId, owner, name) {
@@ -169,6 +184,174 @@ export async function setRepositoryInfo(instId, owner, repo, name, desc) {
   })
   const result = await request(url, options)
   return result
+}
+
+function createBase64(blob) {
+  const reader = new FileReader()
+  const promise = new Promise((resolve, reject) => {
+    reader.onloadend = () => {
+      resolve(reader.result.split(',')[1])
+    }
+    reader.onerror = () => {
+      reject(reader)
+    }
+    reader.onabort = () => {
+      reject(reader)
+    }
+  })
+  reader.readAsDataURL(blob)
+  return promise
+}
+
+export async function createBlob(instid, orgname, reponame, data, isBlob = false) {
+  console.log('createBlob start')
+  const encoding = (isBlob ? 'base64' : 'utf-8')
+  let content
+  if (isBlob) {
+    console.log('await createBase64')
+    content = await createBase64(data)
+    console.log('createBase64 done')
+  } else if (typeof data === 'string') {
+    // nothing to do
+  } else if (typeof data === 'object') {
+    content = JSON.stringify(data, null, 2)
+  } else {
+    console.error(`type ${typeof data}`)
+    throw new Error(`unsupported data type: ${typeof data}`)
+  }
+
+  const url = `/github/orgs/${instid}/repos/${orgname}/${reponame}/git/blobs`
+  const options = getOptions({
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      content,
+      encoding
+    })
+  })
+  const result = await request(url, options)
+  console.log(`createBlob result: ${JSON.stringify(result)}`)
+  return result
+
+  // DEBUG
+  // return {
+  //   "url": "https://api.github.com/hoge",
+  //   "sha": "3a0f86fb8db8eea7ccbb9a95f325ddbedfb25e15"
+  // }
+}
+
+export async function createTree(instid, orgname, reponame, files, baseTreeSha = null) {
+  const url = `/github/orgs/${instid}/repos/${orgname}/${reponame}/git/trees`
+  const body = {
+    tree: files
+  }
+  if (baseTreeSha) {
+    body.base_tree = baseTreeSha
+  }
+  const options = getOptions({
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  })
+  const result = await request(url, options)
+  console.log(`createTree result: ${JSON.stringify(result)}\nrequest: ${JSON.stringify(body)}`)
+  return result
+  // DEBUG
+  // return {
+  //   "sha": "cd8274d15fa3ae2ab983129fb037999f264ba9a7",
+  //   "url": "https://api.github.com/hoge",
+  //   "tree": [
+  //     {
+  //       "path": "hoge",
+  //       "mode": "100644",
+  //       "type": "blob",
+  //       "size": 132,
+  //       "sha": "7c258a9869f33c1e1e1f74fbb32f07c86cb5a75b",
+  //       "url": "https://api.github.com/hoge"
+  //     }
+  //   ]
+  // }
+}
+
+export async function createCommit(instid, orgname, reponame, username, treeSha, parentSha, message = '') {
+  const url = `/github/orgs/${instid}/repos/${orgname}/${reponame}/git/commits`
+  /*
+  const author = {
+    name: username,
+    date: (new Date()).toISOString()
+  }
+  */
+  const options = getOptions({
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message,
+      tree: treeSha,
+      parents: parentSha
+    })
+  })
+  const result = await request(url, options)
+  console.log(`createCommit result: ${JSON.stringify(result)}`)
+  return result
+  // return {
+  //   "sha": "7638417db6d59f3c431d3e1f261cc637155684cd",
+  //   "url": "https://api.github.com/hoge",
+  //   "author": {
+  //   },
+  //   "comitter": {
+  //   },
+  //   "message": "",
+  //   "tree": {
+  //     "url": "",
+  //     "sha": "827efc6d56897b048c772eb4087f854f46256132"
+  //   },
+  //   "parents": [
+  //     {
+  //       "url": "",
+  //       "sha": ""
+  //     }
+  //   ],
+  //   "verification": {
+  //     "verified": false,
+  //     "reason": "unsigned",
+  //     "signature": null,
+  //     "payload": null
+  //   }
+  // }
+}
+
+export async function changeRef(instid, orgname, reponame, branch, newSha) {
+  const url = `/github/orgs/${instid}/repos/${orgname}/${reponame}/git/refs/heads/${branch}`
+  const options = getOptions({
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      sha: newSha,
+      force: false
+    })
+  })
+  const result = await request(url, options)
+  console.log(`changeRef result: ${JSON.stringify(result)}`)
+  return result
+
+  // DEBUG
+  // return {
+  //   "ref": "refs/heads/hoge",
+  //   "url": "https://api.github.com/hoge",
+  //   "object": {
+  //     "type": "commit",
+  //     "sha": "aa218f56b14c9653891f9e74264a383fa43fefbd",
+  //     "url": "https://api.github.com/hoge"
+  //   }
+  // }
 }
 
 // Selector
