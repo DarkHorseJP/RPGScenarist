@@ -19,38 +19,42 @@ import {
   makeSelectState,
   makeSelectPlay,
   makeSelectCurrentTime,
-  makeSelectDuration
+  makeSelectDuration,
+  makeSelectVolume,
+  makeSelectSampleRate
 } from 'redux/modules/audio'
 
 import Skin from './Skin'
 
 const AudioComponent = (props) => (<div className="audio-player">{props.children(props)}</div>)
 AudioComponent.propTypes = {
-  onPlay: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
-  onPause: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
-  onChangeCurrentTime: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
-  onChangeVolume: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   children: PropTypes.func.isRequired
 }
 
 class Audio extends React.Component {
   componentWillMount() {
     const {
-      name
+      name,
+      onPlay,
+      onPause,
+      onChangeCurrentTime,
+      onChangeVolume
     } = this.props
 
-    const audioDispatchToProps = (dispatch) => ({
-      onPlay: () => { dispatch(playAudio(name)) },
-      onPause: () => { dispatch(pauseAudio(name)) },
-      onChangeCurrentTime: (time) => { dispatch(setCurrentTime(name, time)) },
-      onChangeVolume: (volume) => { dispatch(setVolume(name, volume)) }
+    const audioDispatchToProps = () => ({
+      onPlay: () => { onPlay(name) },
+      onPause: () => { onPause(name) },
+      onChangeCurrentTime: (time) => { onChangeCurrentTime(name, time) },
+      onChangeVolume: (volume) => { onChangeVolume(name, volume) }
     })
 
     const audioStateToProps = createStructuredSelector({
       state: makeSelectState(name),
       play: makeSelectPlay(name),
       currentTime: makeSelectCurrentTime(name),
-      duration: makeSelectDuration(name)
+      duration: makeSelectDuration(name),
+      volume: makeSelectVolume(name),
+      sampleRate: makeSelectSampleRate(name)
     })
 
     this.audioComponent = connect(audioStateToProps, audioDispatchToProps)(AudioComponent)
@@ -60,12 +64,17 @@ class Audio extends React.Component {
     const {
       name,
       onLoading,
-      onLoad
+      onLoad,
+      onPlay,
+      autoplay
     } = this.props
 
     onLoading(name)
     loadAudio(this.props).then((audio) => {
       onLoad(name, audio, this.props)
+      if (autoplay) {
+        onPlay(name)
+      }
     })
   }
 
@@ -81,6 +90,9 @@ class Audio extends React.Component {
       newProps.onLoading(newProps.name)
       loadAudio(newProps).then((audio) => {
         onLoad(newProps.name, audio, newProps)
+        if (newProps.autoplay) {
+          newProps.onPlay(newProps.name)
+        }
       })
     }
   }
@@ -99,7 +111,7 @@ class Audio extends React.Component {
     } = this.props
 
     return (
-      <Component {...props}>
+      <Component ref={(r) => { this.ref = r }} {...props}>
         {children}
       </Component>
     )
@@ -111,7 +123,12 @@ const mapDispatchToProps = (dispatch) => ({
   onLoad: (name, audio, props) => dispatch(audioLoaded(name, audio, props)),
   onEnded: (name) => dispatch(audioEnded(name)),
   onTimeChanged: (name, next) => dispatch(currentTimeChanged(name, next)),
-  onUnload: (name) => dispatch(audioUnloaded(name))
+  onUnload: (name) => dispatch(audioUnloaded(name)),
+
+  onPlay: (name) => { dispatch(playAudio(name)) },
+  onPause: (name) => { dispatch(pauseAudio(name)) },
+  onChangeCurrentTime: (name, time) => { dispatch(setCurrentTime(name, time)) },
+  onChangeVolume: (name, volume) => { dispatch(setVolume(name, volume)) }
 })
 
 Audio.defaultProps = {
@@ -121,6 +138,7 @@ Audio.defaultProps = {
   loopEnd: 0,
   gain: 1.0,
   playbackRate: 1.0,
+  autoplay: false,
   play: false,
   onComplete: () => {},
   onStateChange: () => {},
@@ -137,6 +155,7 @@ Audio.propTypes = {
   loopEnd: PropTypes.number,
   gain: PropTypes.number,
   playbackRate: PropTypes.number,
+  autoplay: PropTypes.bool,
   play: PropTypes.bool,
   onComplete: PropTypes.func,
   onStateChange: PropTypes.func,
@@ -147,7 +166,12 @@ Audio.propTypes = {
   onLoad: PropTypes.func.isRequired,
   onEnded: PropTypes.func.isRequired,
   onTimeChanged: PropTypes.func.isRequired,
-  onUnload: PropTypes.func.isRequired
+  onUnload: PropTypes.func.isRequired,
+
+  onPlay: PropTypes.func.isRequired,
+  onPause: PropTypes.func.isRequired,
+  onChangeCurrentTime: PropTypes.func.isRequired,
+  onChangeVolume: PropTypes.func.isRequired
 }
 
 export default connect(null, mapDispatchToProps)(Audio)

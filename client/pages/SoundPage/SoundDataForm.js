@@ -14,6 +14,7 @@ const SoundPlayer = ({ src }) => (
     <Audio
       name="sound"
       src={src}
+      autoplay
     />
   </FormGroupRow>
 )

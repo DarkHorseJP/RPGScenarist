@@ -7,7 +7,7 @@ export default defineMessages({
   },
   fileName: {
     id: 'components.SoundBrowser.fileName',
-    defaultMessage: 'an sound file'
+    defaultMessage: 'a sound file'
   },
   filesName: {
     id: 'components.SoundBrowser.filesName',

@@ -64,7 +64,8 @@ const AssetDataForm = ({
   category,
   validate,
   height,
-  children
+  children,
+  ...otherProps
 }) => {
   const selectors = makeSelectors(module)
   let _AssetDataForm = (props) => { // eslint-disable-line no-underscore-dangle
@@ -90,8 +91,6 @@ const AssetDataForm = ({
       return null
     }
 
-    // const ChildNode = children
-    // <ChildNode props={props} />
     return (
       <Wrapper height={height}>
         <Form horizontal onSubmit={handleSubmit}>
@@ -141,10 +140,23 @@ const AssetDataForm = ({
     const id = selectors.selectId(state)
     const src = selectors.selectUrl(state)
     const info = selectors.selectInfo(state)
-    const path = info ? info.get('path') : ''
-    const updated = info ? info.get('updated') : ''
-    const tags = info ? info.get('tags') : null
-    const tagArray = tags ? tags.toArray() : []
+    const jsInfo = info ? info.toJS() : {}
+    let {
+      path,
+      updated,
+      tags,
+      ...otherInfo // eslint-disable-line prefer-const
+    } = jsInfo
+    if (typeof path === 'undefined') {
+      path = ''
+    }
+    if (typeof updated === 'undefined') {
+      updated = ''
+    }
+    if (typeof tags === 'undefined') {
+      tags = []
+    }
+    const tagArray = tags
     const suggestions = selectors.selectAllTags(state).slice()
     const ids = selectors.selectAllIds(state)
 
@@ -165,8 +177,12 @@ const AssetDataForm = ({
       tags: tagArray,
       suggestions,
       ids,
+      ...otherInfo,
+      ...otherProps,
       initialValues: {
-        id
+        id,
+        ...otherInfo,
+        ...otherProps
       }
     }
   }

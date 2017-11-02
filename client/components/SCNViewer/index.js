@@ -105,7 +105,7 @@ export default class SCNViewer extends React.Component {
     lightNode.light.type = SCNLight.LightType.directional
     lightNode.light.castsShadow = true
     lightNode.position = new SCNVector3(0, 100, 0)
-    lightNode.rotation = new SCNVector4(1, 0, 0, -Math.PI * 0.5)
+    lightNode.rotation = new SCNVector4(1, 0, 0, Math.PI * 0.5)
     scene.rootNode.addChildNode(lightNode)
 
     // create and add an ambient light to the scene

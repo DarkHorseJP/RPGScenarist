@@ -1,39 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {
-  Panel,
-  ProgressBar,
-  Button,
-  Glyphicon
+  ProgressBar
 } from 'react-bootstrap'
-
-const PlayButton = ({ onPlay }) => (
-  <Button
-    onClick={(e) => {
-      e.preventDefault()
-      onPlay()
-    }}
-  >
-    <Glyphicon glyph="play" />
-  </Button>
-)
-PlayButton.propTypes = {
-  onPlay: PropTypes.func.isRequired
-}
-
-const PauseButton = ({ onPause }) => (
-  <Button
-    onClick={(e) => {
-      e.preventDefault()
-      onPause()
-    }}
-  >
-    <Glyphicon glyph="pause" />
-  </Button>
-)
-PauseButton.propTypes = {
-  onPause: PropTypes.func.isRequired
-}
 
 class TimeBar extends React.PureComponent {
   getClickedTime(event) {
@@ -105,41 +74,5 @@ TimeBar.propTypes = {
   onChangeCurrentTime: PropTypes.func.isRequired
 }
 
-const minSecStr = (time) => {
-  const min = Math.floor(time / 60)
-  const sec = (`0${Math.floor(time % 60)}`).slice(-2)
-  return `${min}:${sec}`
-}
-
-const Skin = ({ state, play, currentTime, duration, onPlay, onPause, onChangeCurrentTime }) => {
-  const PlayPauseButton = play ? PauseButton : PlayButton
-  const current = currentTime || 0
-  const currentStr = minSecStr(current)
-  const durationStr = minSecStr(duration)
-  const display = (state === 'loading' ? 'Loading...' : `${currentStr} / ${durationStr}`)
-
-  return (
-    <Panel>
-      {display}
-      <TimeBar
-        currentTime={currentTime}
-        duration={duration}
-        onChangeCurrentTime={onChangeCurrentTime}
-      />
-      <PlayPauseButton onPlay={onPlay} onPause={onPause} />
-    </Panel>
-  )
-}
-
-Skin.propTypes = {
-  state: PropTypes.string.isRequired,
-  play: PropTypes.bool.isRequired,
-  currentTime: PropTypes.number.isRequired,
-  duration: PropTypes.number.isRequired,
-  onPlay: PropTypes.func.isRequired,
-  onPause: PropTypes.func.isRequired,
-  onChangeCurrentTime: PropTypes.func.isRequired
-}
-
-export default Skin
+export default TimeBar
 

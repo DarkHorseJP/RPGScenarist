@@ -35,7 +35,14 @@ export async function loadAudio(props) {
 
     const context = new AudioContext()
     const data = await dataPromise
-    context.buffer = await context.decodeAudioData(data)
+    if (AudioContext === window.webkitAudioContext) {
+      const promise = new Promise((resolve, reject) => {
+        context.decodeAudioData(data, resolve, reject)
+      })
+      context.buffer = await promise
+    } else {
+      context.buffer = await context.decodeAudioData(data)
+    }
 
     return context
   } catch (err) {
@@ -63,6 +70,7 @@ function registerAudio(state, name, audio, props) {
       .setIn([name, 'loopEnd'], props.loopEnd)
       .setIn([name, 'gain'], props.gain)
       .setIn([name, 'playbackRate'], props.playbackRate)
+      .setIn([name, 'sampleRate'], audio.buffer.sampleRate)
       .setIn([name, 'currentTime'], props.currentTime)
       .setIn([name, 'onEnded'], props.onEnded)
       .setIn([name, 'onTimeChanged'], props.onTimeChanged)
@@ -166,6 +174,14 @@ export const makeSelectDuration = (name) => createSelector(
   makeSelectContext(name),
   (context) => (context ? context.buffer.duration : null)
 )
+export const makeSelectVolume = (name) => createSelector(
+  makeSelectAudio(name),
+  (state) => (state ? state.get('gain') : null)
+)
+export const makeSelectSampleRate = (name) => createSelector(
+  makeSelectAudio(name),
+  (state) => (state ? state.get('sampleRate') : null)
+)
 
 // Functions
 const play = (state, name) => {
@@ -188,6 +204,9 @@ const play = (state, name) => {
   source.loopStart = audioState.get('loopStart') / buffer.sampleRate
   source.loopEnd = audioState.get('loopEnd') / buffer.sampleRate
   source.playbackRate.value = audioState.get('playbackRate')
+  console.log(`loop: ${source.loop}`)
+  console.log(`loopStart: ${source.loopStart}`)
+  console.log(`loopEnd: ${source.loopEnd}`)
   if (window.webkitAudioContext) {
     source.connect(context.destination)
   } else {
@@ -198,7 +217,6 @@ const play = (state, name) => {
   }
   source.gain.value = audioState.get('gain')
   source.onended = () => {
-    console.log('onended')
     audioState.get('onEnded')(name)
   }
   const currentTime = audioState.get('currentTime') || 0
@@ -288,8 +306,12 @@ export default function reducer(state = initialState, action) {
       }
       const currentTime = context.currentTime
       const baseTime = state.getIn([action.name, 'baseTime'])
+      const source = state.getIn([action.name, 'audio'])
       let time = currentTime - baseTime
-      if (time > context.buffer.duration) {
+      if (source.loop && time > source.loopEnd) {
+        const loopLength = source.loopEnd - source.loopStart
+        time = source.loopStart + ((time - source.loopStart) % loopLength)
+      } else if (time > context.buffer.duration) {
         time = context.buffer.duration
       }
       if (state.getIn([action.name, 'play'])) {
@@ -305,8 +327,10 @@ export default function reducer(state = initialState, action) {
       }
       if (audioState.get('play')) {
         const audio = audioState.get('audio')
+        audio.onended = () => {}
         audio.stop()
-        const newState = state.setIn([action.name, 'currentTime'], action.time)
+        const newState = state.deleteIn([action.name, 'audio'])
+          .setIn([action.name, 'currentTime'], action.time)
         return play(newState, action.name)
       }
       return state.setIn([action.name, 'currentTime'], action.time)

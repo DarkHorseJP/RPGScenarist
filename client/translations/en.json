@@ -8,7 +8,17 @@
   "pages.RepositoryPage.cancel": "Cancel",
   "pages.RepositoryPage.create": "Create",
 
+  "pages.ModelPage.model": "Model",
+
   "pages.ImagePage.image": "Image",
+
+  "pages.MusicPage.music": "Music",
+  "pages.MusicPage.loopStart": "Loop Start",
+  "pages.MusicPage.loopEnd": "Loop End",
+  "pages.MusicPage.volume": "Volume",
+
+  "pages.SoundPage.sound": "Sound",
+  "pages.SoundPage.volume": "Volume",
 
   "pages.NotFoundPage.header": "Page not found",
 
@@ -53,6 +63,10 @@
   "components.ImageBrowser.assetName": "Image",
   "components.ImageBrowser.fileName": "an image file",
   "components.ImageBrowser.filesName": "image files",
+
+  "components.MusicBrowser.assetName": "Music",
+  "components.MusicBrowser.fileName": "a music file",
+  "components.MusicBrowser.filesName": "music files",
 
   "components.SoundBrowser.assetName": "Sound",
   "components.SoundBrowser.fileName": "an sound file",

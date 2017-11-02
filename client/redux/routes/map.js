@@ -235,6 +235,15 @@ const routesMap = {
     path: '/edit/:orgname/:reponame/sounds/:soundid',
     page: 'SoundPage'
   },
+  [Route.ROUTE_MUSICS]: {
+    path: '/edit/:orgname/:reponame/musics',
+    page: 'MusicPage'
+  },
+  [Route.ROUTE_MUSIC_EDIT]: {
+    path: '/edit/:orgname/:reponame/musics/:musicid',
+    page: 'MusicPage'
+  },
+
   [NOT_FOUND]: {
     path: '/not-found',
     page: 'NotFoundPage'

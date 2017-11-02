@@ -126,11 +126,11 @@ const parseDBData = (state, data, category) => {
   const arr = data.files['data.json'].content[category]
   const updated = {}
   arr.forEach((json) => { updated[json.id] = json.updated_at })
-  const accetData = Object.values(data.files).filter((file) => file.category === category)
+  const assetData = Object.values(data.files).filter((file) => file.category === category)
   const files = {}
   const jsons = {}
   const deleted = {}
-  accetData.forEach((file) => {
+  assetData.forEach((file) => {
     if (file.dir) {
       if (file.deleted) {
         deleted[file.id] = true
@@ -143,21 +143,22 @@ const parseDBData = (state, data, category) => {
       files[file.path] = file.content
     }
   })
-  const accets = {}
+  const assets = {}
   Object.keys(jsons).forEach((id) => {
     if (deleted[id]) {
       return
     }
     const json = jsons[id]
+    console.log(`id: ${id}`)
     json.updated = updated[id]
     const path = `${category}/${id}/${json.path}`
-    const accet = files[path]
-    accets[id] = {
-      file: accet,
+    const asset = files[path]
+    assets[id] = {
+      file: asset,
       meta: json
     }
   })
-  return state.set('files', fromJS(accets))
+  return state.set('files', fromJS(assets))
 }
 
 export const makeReducer = (category, idName) => {
@@ -184,12 +185,12 @@ export const makeReducer = (category, idName) => {
           tags: []
         }
 
-        const accet = fromJS({
+        const asset = fromJS({
           file: action.file,
           meta
         })
 
-        return state.setIn(['files', action.id], accet)
+        return state.setIn(['files', action.id], asset)
       }
 
       case SET_ASSET_TAGS: {
@@ -204,8 +205,8 @@ export const makeReducer = (category, idName) => {
         if (action.category !== category) {
           return state
         }
-        const accet = state.getIn(['files', action.id])
-        if (!accet) {
+        const asset = state.getIn(['files', action.id])
+        if (!asset) {
           return state
         }
         console.log(`${category} module DELETE ${action.id}`)

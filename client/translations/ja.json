@@ -12,7 +12,13 @@
 
   "pages.ImagePage.image": "画像",
 
+  "pages.MusicPage.music": "BGM",
+  "pages.MusicPage.loopStart": "ループ開始",
+  "pages.MusicPage.loopEnd": "ループ終了",
+  "pages.MusicPage.volume": "音量",
+
   "pages.SoundPage.sound": "効果音",
+  "pages.SoundPage.volume": "音量",
 
   "pages.NotFoundPage.header": "ページが見つかりませんでした",
 
@@ -58,6 +64,10 @@
   "components.ImageBrowser.fileName": "画像ファイル",
   "components.ImageBrowser.filesName": "画像ファイル",
   
+  "components.MusicBrowser.assetName": "BGM",
+  "components.MusicBrowser.fileName": "音声ファイル",
+  "components.MusicBrowser.filesName": "音声ファイル",
+
   "components.SoundBrowser.assetName": "効果音",
   "components.SoundBrowser.fileName": "音声ファイル",
   "components.SoundBrowser.filesName": "音声ファイル",
