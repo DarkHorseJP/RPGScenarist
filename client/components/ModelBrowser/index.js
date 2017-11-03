@@ -10,11 +10,14 @@ import { isValidModelFile, changeModel } from 'redux/modules/model'
 import messages from './messages'
 
 const ModelItemComponent = ({
+  orgName,
+  repoName,
+  category,
   id,
   active,
   handleClick
 }) => {
-  const href = (active ? `sounds/${id}` : id)
+  const href = `/edit/${orgName}/${repoName}/${category}/${id}`
   const className = (active ? 'active' : '')
   return (
     <Col sm={4} md={3} lg={2}>
@@ -29,6 +32,9 @@ const ModelItemComponent = ({
   )
 }
 ModelItemComponent.propTypes = {
+  orgName: PropTypes.string.isRequired,
+  repoName: PropTypes.string.isRequired,
+  category: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   active: PropTypes.bool.isRequired,
   handleClick: PropTypes.func.isRequired

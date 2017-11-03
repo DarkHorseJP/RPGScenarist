@@ -12,6 +12,8 @@ import {
   deleteAsset,
   makeSelectors
 } from 'redux/modules/asset'
+import { selectUser } from 'redux/modules/db'
+import { selectOrganizationName, selectRepositoryName } from 'redux/modules/github'
 
 import TagEditor from 'components/TagEditor'
 import DeleteModal from 'components/DeleteModal'
@@ -137,6 +139,10 @@ const AssetDataForm = ({
   })
 
   const mapStateToProps = (state) => {
+    const organization = selectOrganizationName(state)
+    const repository = selectRepositoryName(state)
+    const user = selectUser(state)
+
     const id = selectors.selectId(state)
     const src = selectors.selectUrl(state)
     const info = selectors.selectInfo(state)
@@ -169,6 +175,9 @@ const AssetDataForm = ({
     })
 
     return {
+      organization,
+      repository,
+      user,
       id,
       src,
       info,

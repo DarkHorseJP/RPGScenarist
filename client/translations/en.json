@@ -10,6 +10,8 @@
 
   "pages.ModelPage.model": "Model",
 
+  "pages.MotionPage.model": "Motion",
+
   "pages.ImagePage.image": "Image",
 
   "pages.MusicPage.music": "Music",
@@ -59,6 +61,10 @@
   "components.ModelBrowser.assetName": "Model",
   "components.ModelBrowser.fileName": "an model file",
   "components.ModelBrowser.filesName": "model files",
+
+  "components.MotionBrowser.assetName": "Motion",
+  "components.MotionBrowser.fileName": "an motion file",
+  "components.MotionBrowser.filesName": "motion files",
 
   "components.ImageBrowser.assetName": "Image",
   "components.ImageBrowser.fileName": "an image file",
