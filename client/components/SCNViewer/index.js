@@ -13,7 +13,8 @@ import {
 } from 'jscenekit'
 import {
   MMDCameraNode,
-  MMDSceneSource
+  MMDSceneSource,
+  MMDIKController
 } from 'jmmdscenekit'
 
 import ModelView from './ModelView'
@@ -127,7 +128,7 @@ export default class SCNViewer extends React.Component {
     // configure the view
     view.backgroundColor = SKColor.white
 
-    // view.delegate = MMDIKController.sharedController
+    view.delegate = MMDIKController.sharedController
     view.eventsDelegate = this
   }
 
@@ -165,23 +166,22 @@ export default class SCNViewer extends React.Component {
 
   _updateMotion(motionPath) {
     this.state.pipe = this.state.pipe.then(() => {
-      const promise = Promise.resolve(MMDSceneSource.sceneSourceWithURLOptions(motionPath))
-        .then((source) => {
-          const motion = source.getMotion()
-          if (motion) {
-            motion.repeatCount = Infinity
-            this.state.motionObj = motion
-            if (this.props.onMotionChanged) {
-              this.props.onMotionChanged(this.state.motionObj)
-            }
+      const source = MMDSceneSource.sceneSourceWithURLOptions(motionPath)
+      return source.didLoad.then(() => {
+        const motion = source.getMotion()
+        if (motion) {
+          motion.repeatCount = Infinity
+          this.state.motionObj = motion
+          if (this.props.onMotionChanged) {
+            this.props.onMotionChanged(this.state.motionObj)
           }
-        })
+        }
+      })
         .catch((error) => {
           if (this.props.onError) {
             this.props.onError(error)
           }
         })
-      return promise
     })
   }
 

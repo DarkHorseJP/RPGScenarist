@@ -9,19 +9,21 @@ import SCNViewer from 'components/SCNViewer'
 
 import messages from './messages'
 
-const modelLabel = (<FormattedMessage {...messages.model} />)
-const Model = ({ organization, repository, user, id, path, info }) => {
+const motionLabel = (<FormattedMessage {...messages.motion} />)
+const Motion = ({ organization, repository, user, id, path, info }) => {
   const branch = `user/${user}`
-  const src = id ? `https://cdn.rawgit.com/${organization}/${repository}/${branch}/models/${id}/${path}` : ''
+  const src = id ? `https://cdn.rawgit.com/${organization}/${repository}/${branch}/motions/${id}/${path}` : ''
   const scale = info.get('scale') || 1.0
-  console.warn(`src: ${src}`)
+  // upload a default model file
+  const modelPath = info.get('previewModel') || 'https://cdn.rawgit.com/TestOrganizationForGitHubApps/TestRepository3/user/magicien/models/miku/MikuV2 wDummy.pmd'
   console.log(`scale: ${scale}`)
 
   return (
-    <FormGroupRow label={modelLabel}>
+    <FormGroupRow label={motionLabel}>
       <Panel>
         <SCNViewer
-          model={src}
+          model={modelPath}
+          motion={src}
           scale={scale}
           onError={(err) => console.error(`Viewer error: ${err}`)}
         />
@@ -30,7 +32,7 @@ const Model = ({ organization, repository, user, id, path, info }) => {
   )
 }
 
-Model.propTypes = {
+Motion.propTypes = {
   organization: PropTypes.string.isRequired,
   repository: PropTypes.string.isRequired,
   user: PropTypes.string.isRequired,
@@ -39,23 +41,23 @@ Model.propTypes = {
   info: ImmutablePropTypes.map.isRequired
 }
 
-const ModelDataForm = ({ height }) => (
+const MotionDataForm = ({ height }) => (
   <AssetDataForm
-    module="model"
-    category="models"
+    module="motion"
+    category="motions"
     height={height}
   >
-    {Model}
+    {Motion}
   </AssetDataForm>
 )
 
-ModelDataForm.defaultProps = {
+MotionDataForm.defaultProps = {
   height: ''
 }
 
-ModelDataForm.propTypes = {
+MotionDataForm.propTypes = {
   height: PropTypes.string
 }
 
-export default ModelDataForm
+export default MotionDataForm
 

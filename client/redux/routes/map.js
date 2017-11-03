@@ -219,6 +219,15 @@ const routesMap = {
     path: '/edit/:orgname/:reponame/models/:modelid',
     page: 'ModelPage'
   },
+  [Route.ROUTE_MOTIONS]: {
+    path: '/edit/:orgname/:reponame/motions',
+    page: 'MotionPage'
+  },
+  [Route.ROUTE_MOTION_EDIT]: {
+    path: '/edit/:orgname/:reponame/motions/:motionid',
+    page: 'MotionPage'
+  },
+
   [Route.ROUTE_IMAGES]: {
     path: '/edit/:orgname/:reponame/images',
     page: 'ImagePage'

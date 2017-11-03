@@ -7,6 +7,7 @@ import github from './modules/github'
 import audio from './modules/audio'
 import map from './modules/map'
 import model from './modules/model'
+import motion from './modules/motion'
 import image from './modules/image'
 import music from './modules/music'
 import sound from './modules/sound'
@@ -22,6 +23,7 @@ export default function createReducer(asyncReducers) {
     audio,
     map,
     model,
+    motion,
     image,
     music,
     sound,

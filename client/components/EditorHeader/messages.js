@@ -31,7 +31,7 @@ export default defineMessages({
   },
   motions: {
     id: 'components.EditorHeader.motions',
-    defaultMessage: 'Cancel'
+    defaultMessage: 'Motions'
   },
   images: {
     id: 'components.EditorHeader.images',
