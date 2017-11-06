@@ -7,7 +7,7 @@ import { Button, Form, FormGroup, Col, ControlLabel } from 'react-bootstrap'
 import ReduxFormControl from 'components/ReduxFormControl'
 import { selectRepository } from 'redux/modules/github'
 
-let EditorForm = ({ handleSubmit }) => ( // eslint-disable-line react/prop-types
+let GeneralForm = ({ handleSubmit }) => ( // eslint-disable-line react/prop-types
   <Form horizontal onSubmit={handleSubmit}>
     <FormGroup>
       <Col componentClass={ControlLabel} sm={2}>
@@ -52,13 +52,13 @@ const mapStateToProps = (state) => {
     }
   }
 }
-EditorForm = reduxForm({ form: 'EditorPage/Form' })(EditorForm)
+GeneralForm = reduxForm({ form: 'GeneralPage/Form' })(GeneralForm)
 
-EditorForm.defaultProps = {
+GeneralForm.defaultProps = {
 }
 
-EditorForm.propTypes = {
+GeneralForm.propTypes = {
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditorForm)
+export default connect(mapStateToProps, mapDispatchToProps)(GeneralForm)
 

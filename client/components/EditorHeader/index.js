@@ -100,6 +100,9 @@ const EditorHeader = ({ org, orgName, repoName, pageName, onSave, state }) => {
     )
   }
 
+  const pageNameObj = messages[pageName] || messages.top
+  console.log(`pageName: ${pageName}, pageNameObj: ${JSON.stringify(pageNameObj)}`)
+
   return (
     <Navbar fixedTop fluid style={{ top: '50px', zIndex: '970' }}>
       <Helmet
@@ -121,7 +124,7 @@ const EditorHeader = ({ org, orgName, repoName, pageName, onSave, state }) => {
           <NavItem>
             <Link to={repLink}>{repoName}</Link>
           </NavItem>
-          <FormattedMessage {...messages[pageName]}>
+          <FormattedMessage {...pageNameObj}>
             {(translatedPageName) => (
               <NavDropdown title={translatedPageName} id="editorPageName">
                 <LinkItem tag={MenuItem} href={generalLink}>

@@ -207,10 +207,6 @@ const routesMap = {
     path: '/edit/:orgname',
     page: 'RepositoryPage'
   },
-  [Route.ROUTE_EDIT]: {
-    path: '/edit/:orgname/:reponame',
-    page: 'EditorPage'
-  },
   [Route.ROUTE_LOAD]: {
     path: '/load/:orgname/:reponame',
     page: 'LoadPage',
@@ -218,6 +214,26 @@ const routesMap = {
       const state = getState()
       loadData(dispatch, state)
     }
+  },
+  [Route.ROUTE_EDIT]: {
+    path: '/edit/:orgname/:reponame',
+    page: 'EditorPage'
+  },
+  [Route.ROUTE_GENERAL]: {
+    path: '/edit/:orgname/:reponame/general',
+    page: 'GeneralPage'
+  },
+  [Route.ROUTE_RELEASES]: {
+    path: '/edit/:orgname/:reponame/releases',
+    page: 'GeneralPage'
+  },
+  [Route.ROUTE_DB]: {
+    path: '/edit/:orgname/:reponame/db',
+    page: 'GeneralPage'
+  },
+  [Route.ROUTE_BATTLE]: {
+    path: '/edit/:orgname/:reponame/battle',
+    page: 'GeneralPage'
   },
   [Route.ROUTE_MODELS]: {
     path: '/edit/:orgname/:reponame/models',
@@ -235,7 +251,6 @@ const routesMap = {
     path: '/edit/:orgname/:reponame/motions/:motionid',
     page: 'MotionPage'
   },
-
   [Route.ROUTE_IMAGES]: {
     path: '/edit/:orgname/:reponame/images',
     page: 'ImagePage'
@@ -244,14 +259,6 @@ const routesMap = {
     path: '/edit/:orgname/:reponame/images/:imageid',
     page: 'ImagePage'
   },
-  [Route.ROUTE_SOUNDS]: {
-    path: '/edit/:orgname/:reponame/sounds',
-    page: 'SoundPage'
-  },
-  [Route.ROUTE_SOUND_EDIT]: {
-    path: '/edit/:orgname/:reponame/sounds/:soundid',
-    page: 'SoundPage'
-  },
   [Route.ROUTE_MUSICS]: {
     path: '/edit/:orgname/:reponame/musics',
     page: 'MusicPage'
@@ -259,6 +266,14 @@ const routesMap = {
   [Route.ROUTE_MUSIC_EDIT]: {
     path: '/edit/:orgname/:reponame/musics/:musicid',
     page: 'MusicPage'
+  },
+  [Route.ROUTE_SOUNDS]: {
+    path: '/edit/:orgname/:reponame/sounds',
+    page: 'SoundPage'
+  },
+  [Route.ROUTE_SOUND_EDIT]: {
+    path: '/edit/:orgname/:reponame/sounds/:soundid',
+    page: 'SoundPage'
   },
 
   [NOT_FOUND]: {

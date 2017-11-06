@@ -1,65 +1,78 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
-// import { FormattedMessage } from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 import { connect } from 'react-redux'
-import { PageHeader } from 'react-bootstrap'
+import Link from 'redux-first-router-link'
+import { Table } from 'react-bootstrap'
 import { createStructuredSelector } from 'reselect'
 
 import {
-  selectInstallationId,
   selectOrganizationName,
-  selectRepositoryName,
-  setRepositoryInfo
+  selectRepositoryName
 } from 'redux/modules/github'
 
 import CommonHeader from 'components/CommonHeader'
 import EditorHeader from 'components/EditorHeader'
-import Form from './Form'
-// import messages from './messages'
+import editorMessages from 'components/EditorHeader/messages'
+
+const pageNames = [
+  'general',
+  'releases',
+  'maps',
+  'battle',
+  'database',
+  'models',
+  'motions',
+  'images',
+  'musics',
+  'sounds'
+]
+
+const PageRow = ({ repLink, name }) => (
+  <tr>
+    <th><Link to={`${repLink}/${name}`}><FormattedMessage {...editorMessages[name]} /></Link></th>
+    <td><FormattedMessage {...editorMessages[`${name}Help`]} /></td>
+  </tr>
+)
+PageRow.propTypes = {
+  repLink: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired
+}
 
 class EditorPage extends React.PureComponent {
-  componentDidMount() {
-  }
-
-  onSubmit(values) {
-    const instId = this.props.instId
-    const owner = this.props.orgName
-    const repo = this.props.repoName
-    const name = values.get('name')
-    const desc = values.get('description')
-    setRepositoryInfo(instId, owner, repo, name, desc)
-      .then((res) => alert(`result: ${JSON.stringify(res)}`))
-      .catch((err) => alert(`error: ${err}`))
-  }
-
   render() {
+    const { orgName, repoName } = this.props
+    const repLink = `/edit/${orgName}/${repoName}`
+
     return (
       <div>
         <Helmet title="Editor" />
         <CommonHeader />
-        <EditorHeader pageName="general" />
-        <PageHeader>Header</PageHeader>
-        <Form onSubmit={(values) => this.onSubmit(values)} />
+        <EditorHeader pageName="" />
+        <Table bordered condensed>
+          <tbody>
+            {pageNames.map((name) => (
+              <PageRow repLink={repLink} name={name} />
+            ))}
+          </tbody>
+        </Table>
       </div>
     )
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  instId: selectInstallationId,
   orgName: selectOrganizationName,
   repoName: selectRepositoryName
 })
 
 EditorPage.defaultProps = {
-  instId: '',
   orgName: '',
   repoName: ''
 }
 
 EditorPage.propTypes = {
-  instId: PropTypes.string,
   orgName: PropTypes.string,
   repoName: PropTypes.string
 }
