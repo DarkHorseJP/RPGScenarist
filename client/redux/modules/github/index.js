@@ -20,6 +20,34 @@ const REPOSITORIES_LOADED = 'github/REPOSITORIES_LOADED'
 const LOAD_GAME_DATA = 'github/LOAD_GAME_DATA'
 const GAME_DATA_LOADED = 'github/GAME_DATA_LOADED'
 
+/*
+const INITIAL_DIRECTORIES = [
+  'effects',
+  'images',
+  'lang',
+  'maps',
+  'misc',
+  'models',
+  'motions',
+  'musics',
+  'scenes',
+  'sounds'
+]
+*/
+const INITIAL_DATA_JSON = `{
+  "updated_at": "2000-01-01T00:00:00",
+  "effects": [],
+  "images": [],
+  "lang": [],
+  "maps": [],
+  "misc": [],
+  "models": [],
+  "motions": [],
+  "musics": [],
+  "scenes": [],
+  "sounds": []
+}`
+
 // Actions
 export function loadUser() {
   return {
@@ -108,14 +136,14 @@ export async function getOrganizations() {
   return fromJS(json)
 }
 
-export async function getRepositories(instId) {
-  const url = `/github/orgs/${instId}/repos`
+export async function getRepositories(instid) {
+  const url = `/github/orgs/${instid}/repos`
   const json = await request(url, getOptions())
   return fromJS(json.repositories)
 }
 
-export async function getRepository(instId, repoId) {
-  const repositories = getRepositories(instId)
+export async function getRepository(instid, repoId) {
+  const repositories = getRepositories(instid)
   if (!repositories) {
     return null
   }
@@ -155,37 +183,6 @@ export async function getAllSha(instid, orgname, reponame, sha) {
   return shaData
 }
 
-export async function createRepository(instId, owner, name) {
-  const url = `/github/orgs/${instId}/repos/${owner}`
-  const options = getOptions({
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name
-    })
-  })
-  const result = await request(url, options)
-  return result
-}
-
-export async function setRepositoryInfo(instId, owner, repo, name, desc) {
-  const url = `/github/orgs/${instId}/repos/${owner}/${repo}`
-  const options = getOptions({
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name,
-      desc
-    })
-  })
-  const result = await request(url, options)
-  return result
-}
-
 function createBase64(blob) {
   const reader = new FileReader()
   const promise = new Promise((resolve, reject) => {
@@ -212,7 +209,7 @@ export async function createBlob(instid, orgname, reponame, data, isBlob = false
     content = await createBase64(data)
     console.log('createBase64 done')
   } else if (typeof data === 'string') {
-    // nothing to do
+    content = data
   } else if (typeof data === 'object') {
     content = JSON.stringify(data, null, 2)
   } else {
@@ -250,6 +247,7 @@ export async function createTree(instid, orgname, reponame, files, baseTreeSha =
   if (baseTreeSha) {
     body.base_tree = baseTreeSha
   }
+  console.warn(`createTree body: ${JSON.stringify(body)}`)
   const options = getOptions({
     method: 'POST',
     headers: {
@@ -285,16 +283,23 @@ export async function createCommit(instid, orgname, reponame, username, treeSha,
     date: (new Date()).toISOString()
   }
   */
+  const requestBody = {
+    message,
+    tree: treeSha,
+    parents: []
+  }
+  if (parentSha) {
+    // requestBody.parents = [parentSha]
+    requestBody.parents = parentSha
+  }
+  console.log(`createCommit body: ${JSON.stringify(requestBody)}`)
+
   const options = getOptions({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      message,
-      tree: treeSha,
-      parents: parentSha
-    })
+    body: JSON.stringify(requestBody)
   })
   const result = await request(url, options)
   console.log(`createCommit result: ${JSON.stringify(result)}`)
@@ -326,6 +331,25 @@ export async function createCommit(instid, orgname, reponame, username, treeSha,
   // }
 }
 
+export async function createBranch(instid, owner, repo, branchName, sha) {
+  const url = `/github/orgs/${instid}/repos/${owner}/${repo}/git/refs`
+  const ref = `refs/heads/${branchName}`
+  const options = getOptions({
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ref,
+      sha
+    })
+  })
+  const result = await request(url, options)
+  console.warn(`result: ${JSON.stringify(result)}`)
+  return result
+}
+
+
 export async function changeRef(instid, orgname, reponame, branch, newSha) {
   const url = `/github/orgs/${instid}/repos/${orgname}/${reponame}/git/refs/heads/${branch}`
   const options = getOptions({
@@ -352,6 +376,121 @@ export async function changeRef(instid, orgname, reponame, branch, newSha) {
   //     "url": "https://api.github.com/hoge"
   //   }
   // }
+}
+
+export async function createRepository(instid, owner, name) {
+  const url = `/github/orgs/${instid}/repos/${owner}`
+  const options = getOptions({
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name,
+      auto_init: true
+    })
+  })
+  let result = await request(url, options)
+  if (typeof result.id === 'undefined') {
+    throw new Error(`createRepository error: ${JSON.strintify(result)}`)
+  }
+  console.warn(`createRepository result: ${JSON.stringify(result)}`)
+
+  // get sha of master HEAD
+  result = await getHeadSha(instid, owner, name, 'master')
+  const initSha = result
+  if (!initSha) {
+    throw new Error(`getHeadSha error: ${JSON.stringify(result)}`)
+  }
+
+  // create an empty directory
+  /*
+  result = await createTree(instid, owner, name, [])
+  const emptyDirSha = result.sha
+  if (typeof emptyDirSha === 'undefined') {
+    // TODO: error handling
+    console.error('createTree error: ' + JSON.stringify(result))
+    return
+  }
+  */
+
+  // create data.json
+  result = await createBlob(instid, owner, name, INITIAL_DATA_JSON)
+  const dataJsonSha = result.sha
+  if (typeof dataJsonSha === 'undefined') {
+    throw new Error(`createBlob error: ${JSON.stringify(result)}`)
+  }
+
+  // create a root directory
+  const rootFiles = [
+    {
+      path: 'data.json',
+      mode: '100644',
+      type: 'blob',
+      sha: dataJsonSha
+    }
+  ]
+
+  /*
+  const dirNames = [
+    'images',
+    'lang',
+    'maps',
+    'misc',
+    'models',
+    'motions',
+    'musics',
+    'scenes',
+    'sounds'
+  ]
+  dirNames.forEach((name) => {
+    rootFiles.push({
+      path: name,
+      mode: '040000',
+      type: 'tree',
+      sha: emptyDirSha
+    })
+  })
+  */
+
+  result = await createTree(instid, owner, name, rootFiles)
+  const treeSha = result.sha
+  if (typeof treeSha === 'undefined') {
+    throw new Error(`createTree error: ${JSON.stringify(result)}`)
+  }
+
+  // commit
+  const userName = null
+  result = await createCommit(instid, owner, name, userName, treeSha, initSha, 'Initial commit')
+  const newSha = result.sha
+  if (typeof newSha === 'undefined') {
+    throw new Error(`createCommit error: ${treeSha}`)
+  }
+
+  // change master HEAD to the new commit
+  result = await changeRef(instid, owner, name, 'master', newSha)
+
+  // create 'develop' branch
+  result = await createBranch(instid, owner, name, 'develop', newSha)
+
+  return result
+}
+
+export async function setRepositoryInfo(instid, owner, repo, name, desc) {
+  const url = `/github/orgs/${instid}/repos/${owner}/${repo}`
+  const options = getOptions({
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name,
+      desc
+    })
+  })
+  const result = await request(url, options)
+  // console.warn('result: ' + JSON.stringify(result))
+  return result
 }
 
 // Selector

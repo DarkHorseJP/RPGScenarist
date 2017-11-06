@@ -145,8 +145,10 @@ const setRepositoryInfo = (instId, owner, repo, name, desc) => (
     .then((res) => res.json())
 )
 
-const createNewRepository = (instId, orgName, repoName) => (
-  getAccessToken(instId)
+const createNewRepository = (instId, orgName, repoName, options = {}) => {
+  const body = Object.assign({}, options, { name: repoName })
+  console.log(`createNewRepository: ${JSON.stringify(body)}`)
+  return getAccessToken(instId)
     .then((token) => (
       fetch(`https://api.github.com/orgs/${orgName}/repos`, {
         method: 'POST',
@@ -155,8 +157,25 @@ const createNewRepository = (instId, orgName, repoName) => (
           Accept: 'application/vnd.github.machine-man-preview+json',
           'Content-Type': 'application/json'
         },
+        body: JSON.stringify(body)
+      })
+    ))
+    .then((res) => res.json())
+}
+
+const createNewBranch = (instId, orgName, repoName, ref, sha) => (
+  getAccessToken(instId)
+    .then((token) => (
+      fetch(`https://api.github.com/repos/${orgName}/${repoName}/git/refs`, {
+        method: 'POST',
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: 'application/vnd.github.machine-man-preview+json',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-          name: repoName
+          ref,
+          sha
         })
       })
     ))
@@ -363,6 +382,38 @@ const githubAppMiddleware = (app) => {
       })
   })
 
+  app.get('/github/orgs/:instid/repos/:org/:repo/branches', (req, res) => {
+    const org = req.params.org
+    const repo = req.params.repo
+    const url = `https://api.github.com/repos/${org}/${repo}/branches`
+    fetch(url, req.fetchOption)
+      .then((data) => data.json())
+      .then((json) => res.send(json))
+      .catch((err) => {
+        logger.error(err)
+        res.send([])
+      })
+  })
+
+  app.post([
+    '/github/orgs/:instid/repos/:org/:repo/git/refs'
+  ], (req, res) => {
+    const instid = req.params.instid
+    const org = req.params.org
+    const repo = req.params.repo
+
+    const ref = req.body.ref
+    const sha = req.body.sha
+
+    createNewBranch(instid, org, repo, ref, sha)
+      .then((result) => {
+        res.send(result)
+      }).catch((err) => {
+        logger.error(err)
+        res.send([])
+      })
+  })
+
   app.get([
     '/github/orgs/:instid/repos/:org/:repo/git/refs/heads/:ref1',
     '/github/orgs/:instid/repos/:org/:repo/git/refs/heads/:ref1/:ref2'
@@ -534,10 +585,13 @@ const githubAppMiddleware = (app) => {
       res.send([])
       return
     }
+    const options = req.body
+    delete options.name
     createNewRepository(
       req.params.instid,
       req.params.owner,
-      name
+      name,
+      options
     ).then((result) => {
       res.send(result)
     }).catch(() => {

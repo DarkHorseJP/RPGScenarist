@@ -15,6 +15,7 @@ import {
   getArchive,
   getHeadSha,
   getAllSha,
+  createBranch,
   selectInstallationId
 } from 'redux/modules/github'
 import {
@@ -76,12 +77,20 @@ async function loadData(dispatch, state) {
   // await deleteDB(orgname, reponame, userName, 'edit')
 
   const dbData = await restoreData(orgname, reponame, userName)
-  const headSha = await getHeadSha(instid, orgname, reponame, `user/${userName}`)
+  let headSha = await getHeadSha(instid, orgname, reponame, `user/${userName}`)
   if (dbData) {
     if (headSha === null) {
-      // could not get a branch sha
-      // TODO: create branch
-      return
+      // create branch
+      const devSha = await getHeadSha(instid, orgname, reponame, 'develop')
+      if (devSha === null) {
+        throw new Error('develop branch is not found')
+      }
+
+      const result = await createBranch(instid, orgname, reponame, `user/${userName}`, devSha)
+      if (typeof result.object === 'undefined' || typeof result.object.sha === 'undefined') {
+        throw new Error(`createBranch error: ${JSON.stringify(result)}`)
+      }
+      headSha = result.object.sha
     }
 
     // const shortSha = headSha.substring(0, 7)
@@ -100,7 +109,6 @@ async function loadData(dispatch, state) {
   const branch = encodeURIComponent(`user/${userName}`)
   const zip = await getArchive(instid, orgname, reponame, branch)
   if (!zip) {
-    // TODO: create a branch
     throw new Error('archive load error')
   }
   await parseZipData(zip, orgname, reponame, userName)

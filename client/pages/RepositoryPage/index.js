@@ -15,7 +15,9 @@ import {
   selectOrganizationName,
   selectOrganizationList,
   selectRepositoryList,
-  createRepository
+  createRepository,
+  getRepositories,
+  repositoriesLoaded
 } from 'redux/modules/github'
 import {
   showModal
@@ -65,7 +67,9 @@ class RepositoryPage extends React.Component {
                 this.props.instId,
                 this.props.orgName,
                 repoName
-              )
+              ).then(() => {
+                this.props.onUpdateRepositories(this.props.instId)
+              })
             }}
           />
           <RepoList />
@@ -92,7 +96,12 @@ class RepositoryPage extends React.Component {
 
 const mapDispatchToProps = (dispatch) => ({
   onShowDialog: () => {
-    dispatch(showModal('test'))
+    dispatch(showModal('RepositoryPage/CreateRepositoryModal'))
+  },
+  onUpdateRepositories: (instId) => {
+    getRepositories(instId).then((data) => {
+      dispatch(repositoriesLoaded(data))
+    })
   }
 })
 
@@ -112,6 +121,7 @@ RepositoryPage.defaultProps = {
 
 RepositoryPage.propTypes = {
   onShowDialog: PropTypes.func.isRequired,
+  onUpdateRepositories: PropTypes.func.isRequired,
   instId: PropTypes.number,
   orgName: PropTypes.string,
   orgList: ImmutablePropTypes.list,

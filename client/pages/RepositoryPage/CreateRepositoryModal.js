@@ -11,8 +11,8 @@ import ReduxFormControl from 'components/ReduxFormControl'
 
 import messages from './messages'
 
-const InnerForm = () => (
-  <Form>
+const InnerForm = ({ handleSubmit }) => ( // eslint-disable-line react/prop-types
+  <Form onSubmit={handleSubmit}>
     <FormGroup>
       <Field name="repositoryName" component={ReduxFormControl} type="text" />
     </FormGroup>
@@ -38,14 +38,27 @@ class CreateRepositoryModal extends React.PureComponent {
         </Modal.Header>
 
         <Modal.Body>
-          <NameForm />
+          <NameForm onSubmit={() => {
+            this.handleClose()
+          }}
+          />
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={this.props.handleHide}>
+          <Button onClick={(e) => {
+            e.preventDefault()
+            this.props.handleHide()
+          }}
+          >
             <FormattedMessage {...messages.cancel} />
           </Button>
-          <Button bsStyle="primary" onClick={() => this.handleClose()}>
+          <Button
+            bsStyle="primary"
+            onClick={(e) => {
+              e.preventDefault()
+              this.handleClose()
+            }}
+          >
             <FormattedMessage {...messages.create} />
           </Button>
         </Modal.Footer>
@@ -59,19 +72,18 @@ const mapStateToProps = (state) => ({
 })
 
 CreateRepositoryModal.defaultProps = {
-  onCreateRepository: () => {},
   repositoryName: '',
   show: false
 }
 
 CreateRepositoryModal.propTypes = {
-  onCreateRepository: PropTypes.func,
+  onCreateRepository: PropTypes.func.isRequired,
   handleHide: PropTypes.func.isRequired,
   repositoryName: PropTypes.string,
   show: PropTypes.bool
 }
 
-export default connectModal({ name: 'test' })(
+export default connectModal({ name: 'RepositoryPage/CreateRepositoryModal' })(
   connect(mapStateToProps)(CreateRepositoryModal)
 )
 
